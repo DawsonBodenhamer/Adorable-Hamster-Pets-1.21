@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "adorablehamsterpets",
+	"version": "${version}",
+	"name": "Adorable Hamster Pets",
+	"description": "Sure, you’ve got dragons and machines, but let’s be honest— no respectable mod pack is complete without tiny fluffy freeloaders running around.",
+	"authors": [
+		"The Scarlet Fox"
+	],
+	"contact": {
+		"homepage": "https://www.fortheking.design/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/adorablehamsterpets/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.dawson.adorablehamsterpets.AdorableHamsterPets"
+		],
+		"fabric-datagen": [
+			"net.dawson.adorablehamsterpets.AdorableHamsterPetsDataGenerator"
+		],
+		"client": [
+			"net.dawson.adorablehamsterpets.AdorableHamsterPetsClient"
+		]
+	},
+	"mixins": [
+		"adorablehamsterpets.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
