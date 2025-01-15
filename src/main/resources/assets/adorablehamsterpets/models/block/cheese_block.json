@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "adorablehamsterpets:block/cheese_block"
+  }
+}

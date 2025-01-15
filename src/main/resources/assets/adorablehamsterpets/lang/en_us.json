@@ -1,11 +1,45 @@
 {
   "item.adorablehamsterpets.pink_garnet": "Pink Garnet",
   "item.adorablehamsterpets.raw_pink_garnet": "Raw Pink Garnet",
+  "item.adorablehamsterpets.chisel": "Chisel",
+  "item.adorablehamsterpets.cauliflower": "Cauliflower",
+  "item.adorablehamsterpets.starlight_ashes": "Starlight Ashes",
+
   "item.adorablehamsterpets.cucumber": "Cucumber",
   "item.adorablehamsterpets.sliced_cucumber": "Sliced Cucumber",
   "item.adorablehamsterpets.green_beans": "Green Beans",
   "item.adorablehamsterpets.steamed_green_beans": "Steamed Green Beans",
   "item.adorablehamsterpets.sunflower_seeds": "Sunflower Seeds",
   "item.adorablehamsterpets.cheese": "Cheese",
-  "item.adorablehamsterpets.hamster_food_mix": "Hamster Food Mix"
+  "item.adorablehamsterpets.hamster_food_mix": "Hamster Food Mix",
+
+
+
+
+  "block.adorablehamsterpets.pink_garnet_block": "Block of Pink Garnet",
+  "block.adorablehamsterpets.raw_pink_garnet_block": "Block of Raw Pink Garnet",
+  "block.adorablehamsterpets.pink_garnet_ore": "Pink Garnet Ore",
+  "block.adorablehamsterpets.pink_garnet_deepslate_ore": "Pink Garnet Deepslate Ore",
+  "block.adorablehamsterpets.magic_block": "Magic Block",
+
+  "block.adorablehamsterpets.cheese_block": "Block of Cheese",
+
+
+
+
+  "itemgroup.adorablehamsterpets.pink_garnet_items" : "Pink Garnet Items",
+  "itemgroup.adorablehamsterpets.pink_garnet_blocks" : "Pink Garnet Blocks",
+
+  "itemgroup.adorablehamsterpets.hamster_items" : "Hamster Items",
+  "itemgroup.adorablehamsterpets.hamster_blocks" : "Hamster Blocks",
+
+
+
+
+
+
+  "tooltip.adorablehamsterpets.magic_block.tooltip" : "This block is very, very §9MAGICAL§r",
+  "tooltip.adorablehamsterpets.chisel.shift_down.tooltip" : "This item chisels blocks into bricks!",
+  "tooltip.adorablehamsterpets.chisel.tooltip" : "Press §eShift§r for more information",
+  "tooltip.adorablehamsterpets.cauliflower.tooltip" : "This is delicious!"
 }
