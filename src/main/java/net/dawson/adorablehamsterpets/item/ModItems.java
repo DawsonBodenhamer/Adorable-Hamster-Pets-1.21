@@ -32,7 +32,7 @@ public class ModItems {
 
 
     public static final Item SUNFLOWER_SEEDS = registerItem("sunflower_seeds",new Item(new Item.Settings()));
-    public static final Item CUCUMBER = registerItem("cauliflower", new Item(new Item.Settings().food(ModFoodComponents.CUCUMBER)));
+    public static final Item CUCUMBER = registerItem("cucumber", new Item(new Item.Settings().food(ModFoodComponents.CUCUMBER)));
     public static final Item SLICED_CUCUMBER = registerItem("sliced_cucumber",new Item(new Item.Settings().food(ModFoodComponents.SLICED_CUCUMBER)));
     public static final Item GREEN_BEANS = registerItem("green_beans",new Item(new Item.Settings().food(ModFoodComponents.GREEN_BEANS)));
     public static final Item STEAMED_GREEN_BEANS = registerItem("steamed_green_beans",new Item(new Item.Settings().food(ModFoodComponents.STEAMED_GREEN_BEANS)));

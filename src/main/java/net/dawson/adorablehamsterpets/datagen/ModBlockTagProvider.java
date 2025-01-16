@@ -3,6 +3,7 @@ package net.dawson.adorablehamsterpets.datagen;
 import net.dawson.adorablehamsterpets.block.ModBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.minecraft.block.Block;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
 
@@ -24,6 +25,12 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.PINK_GARNET_DEEPSLATE_ORE);
+
+        // without these tags, the fences and walls would not properly attach to each other.
+        // Currently, it will also connect to nether brick fences, but if you wanted it to connect to all wooden fences, .FENCES would need to be replaced with .WOODEN_FENCES
+        getOrCreateTagBuilder(BlockTags.FENCES).add(ModBlocks.PINK_GARNET_FENCE);
+        getOrCreateTagBuilder(BlockTags.FENCE_GATES).add(ModBlocks.PINK_GARNET_FENCE);
+        getOrCreateTagBuilder(BlockTags.WALLS).add(ModBlocks.PINK_GARNET_WALL);
 
     }
 }

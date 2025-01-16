@@ -17,11 +17,29 @@ public class ModModelProvider extends FabricModelProvider {
     //generates block_states.json file, block_model.json file, and the item_model.json file for all blocks
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_BLOCK);
+
+        //this top one is different because the pink garnet texture is being used to create all the other pink garnet block textures
+        BlockStateModelGenerator.BlockTexturePool pinkGarnetPool = blockStateModelGenerator.registerCubeAllModelTexturePool(ModBlocks.PINK_GARNET_BLOCK);
+
+        //these each have their own textures
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RAW_PINK_GARNET_BLOCK);
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_ORE);
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_DEEPSLATE_ORE);
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.MAGIC_BLOCK);
+
+        //these blocks are using the pink garnet block textures to create their own textures
+        pinkGarnetPool.stairs(ModBlocks.PINK_GARNET_STAIRS);
+        pinkGarnetPool.slab(ModBlocks.PINK_GARNET_SLAB);
+        pinkGarnetPool.button(ModBlocks.PINK_GARNET_BUTTON);
+        pinkGarnetPool.pressurePlate(ModBlocks.PINK_GARNET_PRESSURE_PLATE);
+        pinkGarnetPool.fence(ModBlocks.PINK_GARNET_FENCE);
+        pinkGarnetPool.fenceGate(ModBlocks.PINK_GARNET_FENCE_GATE);
+        pinkGarnetPool.wall(ModBlocks.PINK_GARNET_WALL);
+
+        //these require extra code since their textures have transparent areas, otherwise it would inadvertently create an x-ray mod
+        blockStateModelGenerator.registerDoor(ModBlocks.PINK_GARNET_DOOR);
+        blockStateModelGenerator.registerTrapdoor(ModBlocks.PINK_GARNET_TRAPDOOR);
+
 
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.CHEESE_BLOCK);
 
@@ -44,7 +62,6 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.register(ModItems.CHEESE, Models.GENERATED);
         itemModelGenerator.register(ModItems.HAMSTER_FOOD_MIX, Models.GENERATED);
         itemModelGenerator.register(ModItems.SUNFLOWER_SEEDS, Models.GENERATED);
-        itemModelGenerator.register(ModItems.PINK_GARNET, Models.GENERATED);
 
     }
 }

@@ -1,3 +1,4 @@
+
 package net.dawson.adorablehamsterpets.datagen;
 
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
@@ -8,7 +9,6 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -32,7 +32,10 @@ public class ModRecipeProvider extends FabricRecipeProvider {
         List<ItemConvertible> HAMSTER_SMELTABLES = List.of(ModItems.STEAMED_GREEN_BEANS, ModItems.GREEN_BEANS);
 
 
-        //creates json recipe files. This is a list of things that, when smelted or blasted, result in a pink_garnet or steamed green beans
+        //creates json recipe files.
+
+
+        // This is a list of things that, when smelted or blasted, result in a pink_garnet or steamed green beans
         offerSmelting(recipeExporter, PINK_GARNET_SMELTABLES, RecipeCategory.MISC, ModItems.PINK_GARNET, 0.25f, 200, "pink_garnet");
         offerBlasting(recipeExporter, PINK_GARNET_SMELTABLES, RecipeCategory.MISC, ModItems.PINK_GARNET, 0.25f, 100, "pink_garnet");
 
