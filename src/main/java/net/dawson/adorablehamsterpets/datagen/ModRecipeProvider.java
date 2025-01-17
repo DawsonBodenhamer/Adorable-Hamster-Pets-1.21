@@ -48,7 +48,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
         offerReversibleCompactingRecipes(recipeExporter, RecipeCategory.FOOD, ModItems.CHEESE, RecipeCategory.FOOD, ModBlocks.CHEESE_BLOCK);
 
 
-        //creates shaped json recipe files. this says that if you place R in this particular pattern, you get raw pink garnet block.
+        //creates shaped json recipe files.
+        //this says that if you place R in this particular pattern, you get raw pink garnet block.
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModBlocks.RAW_PINK_GARNET_BLOCK)
                 .pattern("RRR")
                 .pattern("RRR")
@@ -57,6 +58,54 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 //this says that the recipe will unlock once you've had a raw pink garnet in your inventory
                 .criterion(hasItem(ModItems.RAW_PINK_GARNET), conditionsFromItem(ModItems.RAW_PINK_GARNET))
                 .offerTo(recipeExporter);
+
+        //this recipe outputs a pink garnet sword
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.PINK_GARNET_SWORD)
+                .pattern(" R ")
+                .pattern(" R ")
+                .pattern(" S ")
+                .input('R', ModItems.RAW_PINK_GARNET)
+                .input('S', Items.STICK)
+                .criterion(hasItem(ModItems.RAW_PINK_GARNET), conditionsFromItem(ModItems.RAW_PINK_GARNET))
+                .offerTo(recipeExporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.PINK_GARNET_PICKAXE)
+                .pattern("RRR")
+                .pattern(" S ")
+                .pattern(" S ")
+                .input('R', ModItems.RAW_PINK_GARNET)
+                .input('S', Items.STICK)
+                .criterion(hasItem(ModItems.RAW_PINK_GARNET), conditionsFromItem(ModItems.RAW_PINK_GARNET))
+                .offerTo(recipeExporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.PINK_GARNET_SHOVEL)
+                .pattern(" R ")
+                .pattern(" S ")
+                .pattern(" S ")
+                .input('R', ModItems.RAW_PINK_GARNET)
+                .input('S', Items.STICK)
+                .criterion(hasItem(ModItems.RAW_PINK_GARNET), conditionsFromItem(ModItems.RAW_PINK_GARNET))
+                .offerTo(recipeExporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.PINK_GARNET_AXE)
+                .pattern(" RR")
+                .pattern(" SR")
+                .pattern(" S ")
+                .input('R', ModItems.RAW_PINK_GARNET)
+                .input('S', Items.STICK)
+                .criterion(hasItem(ModItems.RAW_PINK_GARNET), conditionsFromItem(ModItems.RAW_PINK_GARNET))
+                .offerTo(recipeExporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.PINK_GARNET_HOE)
+                .pattern("RR ")
+                .pattern(" S ")
+                .pattern(" S ")
+                .input('R', ModItems.RAW_PINK_GARNET)
+                .input('S', Items.STICK)
+                .criterion(hasItem(ModItems.RAW_PINK_GARNET), conditionsFromItem(ModItems.RAW_PINK_GARNET))
+                .offerTo(recipeExporter);
+
+
 
         //RESULT = 1 HAMSTER FOOD MIX
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, ModItems.HAMSTER_FOOD_MIX)
@@ -92,6 +141,8 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .criterion(hasItem(ModBlocks.MAGIC_BLOCK), conditionsFromItem(ModBlocks.MAGIC_BLOCK))
                 //additional identifier
                 .offerTo(recipeExporter, Identifier.of(AdorableHamsterPets.MOD_ID, "raw_pink_garnet_from_magic_block"));
+
+        offerSmithingTrimRecipe(recipeExporter, ModItems.DAWSON_SMITHING_TEMPLATE, Identifier.of(AdorableHamsterPets.MOD_ID, "dawson"));
 
     }
 }

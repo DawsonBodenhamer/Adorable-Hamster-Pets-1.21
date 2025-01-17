@@ -2,6 +2,7 @@ package net.dawson.adorablehamsterpets.block;
 
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.block.custom.MagicBlock;
+import net.dawson.adorablehamsterpets.block.custom.PinkGarnetLampBlock;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
@@ -106,6 +107,13 @@ public class ModBlocks {
                             .strength(2f)
                             .requiresTool()
                             .nonOpaque()));
+
+    public static final Block PINK_GARNET_LAMP = registerBlock("pink_garnet_lamp",
+            new PinkGarnetLampBlock(
+                    AbstractBlock.Settings.create()
+                            .strength(1f)
+                            .requiresTool()
+                            .luminance(state -> state.get(PinkGarnetLampBlock.CLICKED) ? 15 : 0)));
 
 
 

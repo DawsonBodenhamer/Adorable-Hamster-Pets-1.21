@@ -1,6 +1,7 @@
 package net.dawson.adorablehamsterpets.item.custom;
 
 import net.dawson.adorablehamsterpets.block.ModBlocks;
+import net.dawson.adorablehamsterpets.component.ModDataComponentTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
@@ -48,6 +49,8 @@ public static final Map<Block, Block> CHISEL_MAP =
 
                 world.playSound(null, context.getBlockPos(), SoundEvents.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS);
 
+                context.getStack().set(ModDataComponentTypes.COORDINATES, context.getBlockPos());
+
             }
         }
 
@@ -61,6 +64,10 @@ public static final Map<Block, Block> CHISEL_MAP =
             tooltip.add(Text.translatable("tooltip.adorablehamsterpets.chisel.shift_down.tooltip"));
         } else {
             tooltip.add(Text.translatable("tooltip.adorablehamsterpets.chisel.tooltip"));
+        }
+
+        if (stack.get(ModDataComponentTypes.COORDINATES) != null) {
+            tooltip.add(Text.literal("Last Block Changed at " + stack.get(ModDataComponentTypes.COORDINATES)));
         }
 
         super.appendTooltip(stack, context, tooltip, type);
