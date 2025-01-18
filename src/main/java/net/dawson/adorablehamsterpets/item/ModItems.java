@@ -5,6 +5,7 @@ import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.item.custom.ChiselItem;
 import net.dawson.adorablehamsterpets.item.custom.HammerItem;
 import net.dawson.adorablehamsterpets.item.custom.ModArmorItem;
+import net.dawson.adorablehamsterpets.sound.ModSounds;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.client.render.entity.FallingBlockEntityRenderer;
 import net.minecraft.item.*;
@@ -80,6 +81,9 @@ public class ModItems {
 
     public static final Item DAWSON_BOW = registerItem("dawson_bow",
             new BowItem(new Item.Settings().maxDamage(500)));
+
+    public static final Item BAR_BRAWL_MUSIC_DISC = registerItem("bar_brawl_music_disc",
+            new Item(new Item.Settings().jukeboxPlayable(ModSounds.BAR_BRAWL_KEY).maxCount(1)));
 
 
 

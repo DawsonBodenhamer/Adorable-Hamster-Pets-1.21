@@ -1,6 +1,7 @@
 package net.dawson.adorablehamsterpets;
 
 import net.dawson.adorablehamsterpets.datagen.*;
+import net.dawson.adorablehamsterpets.enchantment.ModEnchantments;
 import net.dawson.adorablehamsterpets.trim.ModTrimMaterials;
 import net.dawson.adorablehamsterpets.trim.ModTrimPatterns;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
@@ -25,5 +26,6 @@ public class AdorableHamsterPetsDataGenerator implements DataGeneratorEntrypoint
 	public void buildRegistry(RegistryBuilder registryBuilder) {
 		registryBuilder.addRegistry(RegistryKeys.TRIM_MATERIAL, ModTrimMaterials::bootstrap);
 		registryBuilder.addRegistry(RegistryKeys.TRIM_PATTERN, ModTrimPatterns::bootstrap);
+		registryBuilder.addRegistry(RegistryKeys.ENCHANTMENT, ModEnchantments::bootstrap);
 	}
 }

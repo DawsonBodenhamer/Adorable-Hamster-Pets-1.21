@@ -16,9 +16,28 @@
   "item.adorablehamsterpets.pink_garnet_boots": "Pink Garnet Boots",
   "item.adorablehamsterpets.pink_garnet_horse_armor": "Pink Garnet Horse Armor",
   "item.adorablehamsterpets.dawson_armor_trim_smithing_template": "Dawson Smithing Template",
+  "item.adorablehamsterpets.dawson_bow": "Dawson Bow",
+  "item.adorablehamsterpets.bar_brawl_music_disc": "Bar Brawl Music Disc",
+  "item.adorablehamsterpets.bar_brawl_music_disc.desc": "Bryan Tech - Bar Brawl (CC0)",
+  "item.minecraft.potion.effect.slimey_potion": "Slimey Potion",
+  "item.minecraft.splash_potion.effect.slimey_potion": "Slimey Splash Potion",
+  "item.minecraft.lingering_potion.effect.slimey_potion": "Slimey Lingering Potion",
+
   "trim_material.adorablehamsterpets.pink_garnet": "Pink Garnet Material",
   "trim_pattern.adorablehamsterpets.dawson": "Dawson Armor Pattern",
-  "item.adorablehamsterpets.dawson_bow": "Dawson Bow",
+
+  "effect.adorablehamsterpets.slimey": "Slimey",
+
+  "painting.adorablehamsterpets.world.title": "World",
+  "painting.adorablehamsterpets.world.author": "NanoAttack",
+  "painting.adorablehamsterpets.shrimp.title": "Shrimp",
+  "painting.adorablehamsterpets.shrimp.author": "NanoAttack",
+  "painting.adorablehamsterpets.saw_them.title": "Saw Them",
+  "painting.adorablehamsterpets.saw_them.author": "NanoAttack",
+
+  "enchantment.adorablehamsterpets.lighting_striker": "Lighting Striker",
+
+
 
   "item.adorablehamsterpets.cucumber": "Cucumber",
   "item.adorablehamsterpets.sliced_cucumber": "Sliced Cucumber",
@@ -46,6 +65,7 @@
   "block.adorablehamsterpets.pink_garnet_door": "Pink Garnet Door",
   "block.adorablehamsterpets.pink_garnet_trapdoor": "Pink Garnet Trapdoor",
   "block.adorablehamsterpets.pink_garnet_lamp": "Pink Garnet Lamp",
+
 
   "block.adorablehamsterpets.cheese_block": "Block of Cheese",
 

@@ -3,6 +3,7 @@ package net.dawson.adorablehamsterpets.block;
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.block.custom.MagicBlock;
 import net.dawson.adorablehamsterpets.block.custom.PinkGarnetLampBlock;
+import net.dawson.adorablehamsterpets.sound.ModSounds;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
@@ -50,7 +51,8 @@ public class ModBlocks {
     public static final Block MAGIC_BLOCK = registerBlock("magic_block",
             new MagicBlock(AbstractBlock.Settings.create()
                     .strength(1f)
-                    .requiresTool()));
+                    .requiresTool()
+                    .sounds(ModSounds.MAGIC_BLOCK_SOUNDS)));
 
     public static final Block PINK_GARNET_STAIRS = registerBlock("pink_garnet_stairs",
             new StairsBlock(ModBlocks.PINK_GARNET_BLOCK.getDefaultState(),

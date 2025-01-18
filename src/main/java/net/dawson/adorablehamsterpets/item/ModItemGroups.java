@@ -38,6 +38,7 @@ public class ModItemGroups {
                         entries.add(ModItems.PINK_GARNET_HORSE_ARMOR);
                         entries.add(ModItems.DAWSON_SMITHING_TEMPLATE);
                         entries.add(ModItems.DAWSON_BOW);
+                        entries.add(ModItems.BAR_BRAWL_MUSIC_DISC);
 
                     }).build());
 

@@ -1,0 +1,46 @@
+{
+  "chisel_use": {
+    "subtitle": "sounds.adorablehamsterpets.chisel_use",
+    "sounds": [
+      "adorablehamsterpets:chisel_use"
+    ]
+  },
+  "magic_block_break": {
+    "subtitle": "sounds.adorablehamsterpets.magic_block_break",
+    "sounds": [
+      "adorablehamsterpets:magic_block_break"
+    ]
+  },
+  "magic_block_step": {
+    "subtitle": "sounds.adorablehamsterpets.magic_block_step",
+    "sounds": [
+      "adorablehamsterpets:magic_block_step"
+    ]
+  },
+  "magic_block_place": {
+    "subtitle": "sounds.adorablehamsterpets.magic_block_place",
+    "sounds": [
+      "adorablehamsterpets:magic_block_place"
+    ]
+  },
+  "magic_block_hit": {
+    "subtitle": "sounds.adorablehamsterpets.magic_block_hit",
+    "sounds": [
+      "adorablehamsterpets:magic_block_hit"
+    ]
+  },
+  "magic_block_fall": {
+    "subtitle": "sounds.adorablehamsterpets.magic_block_fall",
+    "sounds": [
+      "adorablehamsterpets:magic_block_fall"
+    ]
+  },
+  "bar_brawl": {
+    "sounds": [
+      {
+        "name": "adorablehamsterpets:bar_brawl",
+        "stream": true
+      }
+    ]
+  }
+}
