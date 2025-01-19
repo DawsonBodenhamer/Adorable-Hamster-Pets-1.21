@@ -2,6 +2,7 @@ package net.dawson.adorablehamsterpets.item;
 
 
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
+import net.dawson.adorablehamsterpets.block.ModBlocks;
 import net.dawson.adorablehamsterpets.item.custom.ChiselItem;
 import net.dawson.adorablehamsterpets.item.custom.HammerItem;
 import net.dawson.adorablehamsterpets.item.custom.ModArmorItem;
@@ -85,7 +86,17 @@ public class ModItems {
     public static final Item BAR_BRAWL_MUSIC_DISC = registerItem("bar_brawl_music_disc",
             new Item(new Item.Settings().jukeboxPlayable(ModSounds.BAR_BRAWL_KEY).maxCount(1)));
 
+    public static final Item CAULIFLOWER_SEEDS = registerItem("cauliflower_seeds",
+            new AliasedBlockItem(ModBlocks.CAULIFLOWER_CROP, new Item.Settings()));
 
+
+
+
+
+    public static final Item GREEN_BEAN_SEEDS = registerItem("green_bean_seeds",
+            new AliasedBlockItem(ModBlocks.GREEN_BEANS_CROP, new Item.Settings()));
+    public static final Item CUCUMBER_SEEDS = registerItem("cucumber_seeds",
+            new AliasedBlockItem(ModBlocks.CUCUMBER_CROP, new Item.Settings()));
 
     public static final Item SUNFLOWER_SEEDS = registerItem("sunflower_seeds",new Item(new Item.Settings()));
     public static final Item CUCUMBER = registerItem("cucumber", new Item(new Item.Settings().food(ModFoodComponents.CUCUMBER)));

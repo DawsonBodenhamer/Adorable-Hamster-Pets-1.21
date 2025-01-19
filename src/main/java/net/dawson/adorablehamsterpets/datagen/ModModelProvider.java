@@ -1,6 +1,9 @@
 package net.dawson.adorablehamsterpets.datagen;
 
 import net.dawson.adorablehamsterpets.block.ModBlocks;
+import net.dawson.adorablehamsterpets.block.custom.CauliflowerCropBlock;
+import net.dawson.adorablehamsterpets.block.custom.CucumberCropBlock;
+import net.dawson.adorablehamsterpets.block.custom.GreenBeansCropBlock;
 import net.dawson.adorablehamsterpets.block.custom.PinkGarnetLampBlock;
 import net.dawson.adorablehamsterpets.item.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -47,6 +50,14 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(ModBlocks.PINK_GARNET_LAMP)
                 .coordinate(BlockStateModelGenerator.createBooleanModelMap(PinkGarnetLampBlock.CLICKED, lampOnIdentifier, lampOffIdentifier)));
 
+        blockStateModelGenerator.registerCrop(ModBlocks.CAULIFLOWER_CROP, CauliflowerCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6);
+
+
+
+
+
+        blockStateModelGenerator.registerCrop(ModBlocks.GREEN_BEANS_CROP, GreenBeansCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6);
+        blockStateModelGenerator.registerCrop(ModBlocks.CUCUMBER_CROP, CucumberCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6);
 
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.CHEESE_BLOCK);
 

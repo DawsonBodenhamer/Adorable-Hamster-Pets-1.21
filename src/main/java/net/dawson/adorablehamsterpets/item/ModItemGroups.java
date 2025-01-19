@@ -39,6 +39,7 @@ public class ModItemGroups {
                         entries.add(ModItems.DAWSON_SMITHING_TEMPLATE);
                         entries.add(ModItems.DAWSON_BOW);
                         entries.add(ModItems.BAR_BRAWL_MUSIC_DISC);
+                        entries.add(ModItems.CAULIFLOWER_SEEDS);
 
                     }).build());
 
@@ -74,8 +75,6 @@ public class ModItemGroups {
                     .displayName(Text.translatable("itemgroup.adorablehamsterpets.hamster_blocks"))
                     .entries((displayContext, entries) -> {
                         entries.add(ModBlocks.CHEESE_BLOCK);
-                        entries.add(ModBlocks.GREEN_BEANS_BLOCK);
-                        entries.add(ModBlocks.CUCUMBER_BLOCK);
                     }).build());
 
 
@@ -88,8 +87,10 @@ public class ModItemGroups {
                         entries.add(ModItems.CHEESE);
                         entries.add(ModItems.HAMSTER_FOOD_MIX);
                         entries.add(ModItems.CUCUMBER);
+                        entries.add(ModItems.CUCUMBER_SEEDS);
                         entries.add(ModItems.SLICED_CUCUMBER);
                         entries.add(ModItems.GREEN_BEANS);
+                        entries.add(ModItems.GREEN_BEAN_SEEDS);
                         entries.add(ModItems.STEAMED_GREEN_BEANS);
                         entries.add(ModItems.SUNFLOWER_SEEDS);
                     }).build());

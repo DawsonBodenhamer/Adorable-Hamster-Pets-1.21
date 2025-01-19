@@ -19,6 +19,8 @@
   "item.adorablehamsterpets.dawson_bow": "Dawson Bow",
   "item.adorablehamsterpets.bar_brawl_music_disc": "Bar Brawl Music Disc",
   "item.adorablehamsterpets.bar_brawl_music_disc.desc": "Bryan Tech - Bar Brawl (CC0)",
+  "item.adorablehamsterpets.cauliflower_seeds": "Cauliflower Seeds",
+
   "item.minecraft.potion.effect.slimey_potion": "Slimey Potion",
   "item.minecraft.splash_potion.effect.slimey_potion": "Slimey Splash Potion",
   "item.minecraft.lingering_potion.effect.slimey_potion": "Slimey Lingering Potion",
@@ -40,8 +42,12 @@
 
 
   "item.adorablehamsterpets.cucumber": "Cucumber",
+  "item.adorablehamsterpets.cucumber_seeds": "Cucumber Seeds",
+  "item.adorablehamsterpets.cucumber_crop": "Cucumber Crop",
   "item.adorablehamsterpets.sliced_cucumber": "Sliced Cucumber",
   "item.adorablehamsterpets.green_beans": "Green Beans",
+  "item.adorablehamsterpets.green_bean_crop": "Green Bean Crop",
+  "item.adorablehamsterpets.green_bean_seeds": "Green Bean Seeds",
   "item.adorablehamsterpets.steamed_green_beans": "Steamed Green Beans",
   "item.adorablehamsterpets.sunflower_seeds": "Sunflower Seeds",
   "item.adorablehamsterpets.cheese": "Cheese",
