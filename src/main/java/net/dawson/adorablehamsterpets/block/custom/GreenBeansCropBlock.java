@@ -25,7 +25,7 @@ public class GreenBeansCropBlock extends CropBlock {
 
     @Override
     protected IntProperty getAgeProperty() {
-        return super.getAgeProperty();
+        return AGE;
     }
 
     @Override

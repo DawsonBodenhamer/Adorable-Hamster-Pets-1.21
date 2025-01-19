@@ -1,0 +1,7 @@
+// 1.21	2025-01-19T12:09:42.7133988	Adorable Hamster Pets/Tags for minecraft:block
+32b13946c4cd1f944b029659ccce5fcb2adad4ff data\adorablehamsterpets\tags\block\needs_pink_garnet_tool.json
+9a0239539c1cba516a5b56c18026a5f8ab4c17dc data\minecraft\tags\block\fences.json
+c17550775df1b5900d9c47fb55e28d3f56b2b513 data\minecraft\tags\block\needs_iron_tool.json
+9a0239539c1cba516a5b56c18026a5f8ab4c17dc data\minecraft\tags\block\fence_gates.json
+12ed1a8897e4ec0ebead31932e7b4f73643f7598 data\minecraft\tags\block\walls.json
+3df00456fee28ca4865a520e85e2ce6c95621399 data\minecraft\tags\block\mineable\pickaxe.json

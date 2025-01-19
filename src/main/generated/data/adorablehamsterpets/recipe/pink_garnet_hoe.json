@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "item": "adorablehamsterpets:raw_pink_garnet"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "RR ",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "adorablehamsterpets:pink_garnet_hoe"
+  }
+}

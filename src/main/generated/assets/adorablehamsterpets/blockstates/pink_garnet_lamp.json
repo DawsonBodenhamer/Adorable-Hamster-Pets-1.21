@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "clicked=false": {
+      "model": "adorablehamsterpets:block/pink_garnet_lamp"
+    },
+    "clicked=true": {
+      "model": "adorablehamsterpets:block/pink_garnet_lamp_on"
+    }
+  }
+}

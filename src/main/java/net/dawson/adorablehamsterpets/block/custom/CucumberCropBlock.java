@@ -25,7 +25,7 @@ public class CucumberCropBlock extends CropBlock {
 
     @Override
     protected IntProperty getAgeProperty() {
-        return super.getAgeProperty();
+        return AGE;
     }
 
     @Override

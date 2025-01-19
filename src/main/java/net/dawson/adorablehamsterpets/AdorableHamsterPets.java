@@ -10,7 +10,6 @@ import net.dawson.adorablehamsterpets.potion.ModPotions;
 import net.dawson.adorablehamsterpets.sound.ModSounds;
 import net.dawson.adorablehamsterpets.util.HammerUsageEvent;
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;

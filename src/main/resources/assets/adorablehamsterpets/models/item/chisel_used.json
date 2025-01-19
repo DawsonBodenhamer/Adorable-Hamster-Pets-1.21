@@ -2,13 +2,5 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "adorablehamsterpets:item/chisel_used"
-  },
-  "overrides": [
-    {
-      "preducate": {
-        "adorablehamsterpets:used": 1
-      },
-      "model": "adorablehamsterpets:item/chisel_used"
-    }
-  ]
+  }
 }

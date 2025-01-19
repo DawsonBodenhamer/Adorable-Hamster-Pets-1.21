@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "adorablehamsterpets:block/pink_garnet_door_bottom",
+    "top": "adorablehamsterpets:block/pink_garnet_door_top"
+  }
+}
