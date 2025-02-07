@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "adorablehamsterpets:block/honey_berry_bush_stage0"
+  }
+}

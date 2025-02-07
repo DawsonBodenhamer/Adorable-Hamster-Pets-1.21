@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "adorablehamsterpets:block/driftwood_sapling"
+  }
+}
