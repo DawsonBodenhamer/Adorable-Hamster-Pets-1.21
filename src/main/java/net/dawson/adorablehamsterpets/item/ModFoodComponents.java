@@ -11,6 +11,12 @@ public class ModFoodComponents {
             .statusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 200), 0.15f)
             .build();
 
+    public static final FoodComponent HONEY_BERRY = new FoodComponent.Builder()
+            .nutrition(2)
+            .saturationModifier(0.15f)
+            .snack()
+            .build();
+
     public static final FoodComponent CUCUMBER = new FoodComponent.Builder()
             .nutrition(2)
             .saturationModifier(0.3F)

@@ -4,6 +4,8 @@ import net.dawson.adorablehamsterpets.datagen.*;
 import net.dawson.adorablehamsterpets.enchantment.ModEnchantments;
 import net.dawson.adorablehamsterpets.trim.ModTrimMaterials;
 import net.dawson.adorablehamsterpets.trim.ModTrimPatterns;
+import net.dawson.adorablehamsterpets.world.ModConfiguredFeatures;
+import net.dawson.adorablehamsterpets.world.ModPlacedFeatures;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.registry.RegistryBuilder;
@@ -27,5 +29,7 @@ public class AdorableHamsterPetsDataGenerator implements DataGeneratorEntrypoint
 		registryBuilder.addRegistry(RegistryKeys.TRIM_MATERIAL, ModTrimMaterials::bootstrap);
 		registryBuilder.addRegistry(RegistryKeys.TRIM_PATTERN, ModTrimPatterns::bootstrap);
 		registryBuilder.addRegistry(RegistryKeys.ENCHANTMENT, ModEnchantments::bootstrap);
+		registryBuilder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, ModConfiguredFeatures::bootstrap);
+		registryBuilder.addRegistry(RegistryKeys.PLACED_FEATURE, ModPlacedFeatures::bootstrap);
 	}
 }

@@ -28,6 +28,6 @@ public record LightningStrikerEnchantmentEffect() implements EnchantmentEntityEf
 
     @Override
     public MapCodec<? extends EnchantmentEntityEffect> getCodec() {
-        return null;
+        return CODEC;
     }
 }

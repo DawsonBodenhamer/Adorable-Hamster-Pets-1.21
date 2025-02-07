@@ -1,16 +1,15 @@
 package net.dawson.adorablehamsterpets.datagen;
 
 import net.dawson.adorablehamsterpets.block.ModBlocks;
-import net.dawson.adorablehamsterpets.block.custom.CauliflowerCropBlock;
-import net.dawson.adorablehamsterpets.block.custom.CucumberCropBlock;
-import net.dawson.adorablehamsterpets.block.custom.GreenBeansCropBlock;
-import net.dawson.adorablehamsterpets.block.custom.PinkGarnetLampBlock;
+import net.dawson.adorablehamsterpets.block.custom.*;
 import net.dawson.adorablehamsterpets.item.ModItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.data.client.*;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.util.Identifier;
+
+import java.util.Optional;
 
 public class ModModelProvider extends FabricModelProvider {
     public ModModelProvider(FabricDataOutput output) {
@@ -27,9 +26,11 @@ public class ModModelProvider extends FabricModelProvider {
 
         //these each have their own textures
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RAW_PINK_GARNET_BLOCK);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.MAGIC_BLOCK);
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_ORE);
         blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_DEEPSLATE_ORE);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.MAGIC_BLOCK);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_NETHER_ORE);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_END_ORE);
 
         //these blocks are using the pink garnet block textures to create their own textures
         pinkGarnetPool.stairs(ModBlocks.PINK_GARNET_STAIRS);
@@ -51,7 +52,14 @@ public class ModModelProvider extends FabricModelProvider {
                 .coordinate(BlockStateModelGenerator.createBooleanModelMap(PinkGarnetLampBlock.CLICKED, lampOnIdentifier, lampOffIdentifier)));
 
         blockStateModelGenerator.registerCrop(ModBlocks.CAULIFLOWER_CROP, CauliflowerCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6);
+        blockStateModelGenerator.registerTintableCrossBlockStateWithStages(ModBlocks.HONEY_BERRY_BUSH, BlockStateModelGenerator.TintType.NOT_TINTED,
+                HoneyBerryBushBlock.AGE, 0, 1, 2, 3);
 
+        blockStateModelGenerator.registerLog(ModBlocks.DRIFTWOOD_LOG).log(ModBlocks.DRIFTWOOD_LOG).wood(ModBlocks.DRIFTWOOD_WOOD);
+        blockStateModelGenerator.registerLog(ModBlocks.STRIPPED_DRIFTWOOD_LOG).log(ModBlocks.STRIPPED_DRIFTWOOD_LOG).wood(ModBlocks.STRIPPED_DRIFTWOOD_WOOD);
+        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.DRIFTWOOD_PLANKS);
+        blockStateModelGenerator.registerSingleton(ModBlocks.DRIFTWOOD_LEAVES, TexturedModel.LEAVES);
+        blockStateModelGenerator.registerTintableCrossBlockState(ModBlocks.DRIFTWOOD_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
 
 
 
@@ -86,6 +94,12 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.register(ModItems.PINK_GARNET_HORSE_ARMOR, Models.GENERATED);
         itemModelGenerator.register(ModItems.DAWSON_SMITHING_TEMPLATE, Models.GENERATED);
         itemModelGenerator.register(ModItems.BAR_BRAWL_MUSIC_DISC, Models.GENERATED);
+        itemModelGenerator.register(ModBlocks.DRIFTWOOD_SAPLING.asItem(), Models.GENERATED);
+        itemModelGenerator.register(ModItems.MANTIS_SPAWN_EGG,
+                new Model(Optional.of(Identifier.of("item/template_spawn_egg")), Optional.empty()));
+
+
+
 
         itemModelGenerator.register(ModItems.CUCUMBER, Models.GENERATED);
         itemModelGenerator.register(ModItems.SLICED_CUCUMBER, Models.GENERATED);
@@ -94,6 +108,8 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.register(ModItems.CHEESE, Models.GENERATED);
         itemModelGenerator.register(ModItems.HAMSTER_FOOD_MIX, Models.GENERATED);
         itemModelGenerator.register(ModItems.SUNFLOWER_SEEDS, Models.GENERATED);
+        itemModelGenerator.register(ModItems.HAMSTER_SPAWN_EGG,
+                new Model(Optional.of(Identifier.of("item/template_spawn_egg")), Optional.empty()));
 
     }
 }

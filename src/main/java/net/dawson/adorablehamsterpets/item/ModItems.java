@@ -3,6 +3,7 @@ package net.dawson.adorablehamsterpets.item;
 
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.block.ModBlocks;
+import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.dawson.adorablehamsterpets.item.custom.ChiselItem;
 import net.dawson.adorablehamsterpets.item.custom.HammerItem;
 import net.dawson.adorablehamsterpets.item.custom.ModArmorItem;
@@ -89,9 +90,19 @@ public class ModItems {
     public static final Item CAULIFLOWER_SEEDS = registerItem("cauliflower_seeds",
             new AliasedBlockItem(ModBlocks.CAULIFLOWER_CROP, new Item.Settings()));
 
+    public static final Item HONEY_BERRIES = registerItem("honey_berries",
+            new AliasedBlockItem(ModBlocks.HONEY_BERRY_BUSH, new Item.Settings().food(ModFoodComponents.HONEY_BERRY)));
+
+    public static final Item MANTIS_SPAWN_EGG = registerItem("mantis_spawn_egg",
+            new SpawnEggItem(ModEntities.MANTIS, 0x9dc783, 0xbfaf5f, new Item.Settings()));
 
 
 
+
+
+
+    public static final Item HAMSTER_SPAWN_EGG = registerItem("hamster_spawn_egg",
+            new SpawnEggItem(ModEntities.HAMSTER, 0x9c631f, 0xffffff, new Item.Settings()));
 
     public static final Item GREEN_BEAN_SEEDS = registerItem("green_bean_seeds",
             new AliasedBlockItem(ModBlocks.GREEN_BEANS_CROP, new Item.Settings()));

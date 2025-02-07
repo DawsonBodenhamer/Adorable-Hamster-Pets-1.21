@@ -3,6 +3,7 @@ package net.dawson.adorablehamsterpets.block;
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.block.custom.*;
 import net.dawson.adorablehamsterpets.sound.ModSounds;
+import net.dawson.adorablehamsterpets.world.tree.ModSaplingGenerators;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.NoteBlockInstrument;
@@ -46,6 +47,18 @@ public class ModBlocks {
                             .strength(4f)
                             .requiresTool()
                             .sounds(BlockSoundGroup.DEEPSLATE)));
+
+    public static final Block PINK_GARNET_END_ORE = registerBlock("pink_garnet_end_ore",
+            new ExperienceDroppingBlock(UniformIntProvider.create(4, 8),
+                    AbstractBlock.Settings.create()
+                            .strength(7f)
+                            .requiresTool()));
+
+    public static final Block PINK_GARNET_NETHER_ORE = registerBlock("pink_garnet_nether_ore",
+            new ExperienceDroppingBlock(UniformIntProvider.create(1, 5),
+                    AbstractBlock.Settings.create()
+                            .strength(3f)
+                            .requiresTool()));
 
     public static final Block MAGIC_BLOCK = registerBlock("magic_block",
             new MagicBlock(AbstractBlock.Settings.create()
@@ -123,6 +136,28 @@ public class ModBlocks {
                     .breakInstantly()
                     .sounds(BlockSoundGroup.CROP)
                     .pistonBehavior(PistonBehavior.DESTROY)));
+
+    public static final Block HONEY_BERRY_BUSH = registerBlockWithoutBlockItem("honey_berry_bush",
+            new HoneyBerryBushBlock(AbstractBlock.Settings.copy(Blocks.SWEET_BERRY_BUSH)));
+
+    public static final Block DRIFTWOOD_LOG = registerBlock("driftwood_log",
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.OAK_LOG)));
+    public static final Block DRIFTWOOD_WOOD = registerBlock("driftwood_wood",
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.OAK_WOOD)));
+    public static final Block STRIPPED_DRIFTWOOD_LOG = registerBlock("stripped_driftwood_log",
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STRIPPED_OAK_LOG)));
+    public static final Block STRIPPED_DRIFTWOOD_WOOD = registerBlock("stripped_driftwood_wood",
+            new PillarBlock(AbstractBlock.Settings.copy(Blocks.STRIPPED_OAK_WOOD)));
+
+    public static final Block DRIFTWOOD_PLANKS = registerBlock("driftwood_planks",
+            new Block(AbstractBlock.Settings.copy(Blocks.OAK_PLANKS)));
+    public static final Block DRIFTWOOD_LEAVES = registerBlock("driftwood_leaves",
+            new LeavesBlock(AbstractBlock.Settings.copy(Blocks.OAK_LEAVES)));
+
+    public static final Block DRIFTWOOD_SAPLING = registerBlock("driftwood_sapling",
+            new ModSaplingBlock(ModSaplingGenerators.DRIFTWOOD, AbstractBlock.Settings.copy(Blocks.OAK_SAPLING), Blocks.STONE));
+
+
 
 
 
