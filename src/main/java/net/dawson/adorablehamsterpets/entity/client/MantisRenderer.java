@@ -1,21 +1,34 @@
 package net.dawson.adorablehamsterpets.entity.client;
 
+import com.google.common.collect.Maps;
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.entity.custom.MantisEntity;
+import net.dawson.adorablehamsterpets.entity.custom.MantisVariant;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+
+import java.util.Map;
 
 public class MantisRenderer extends MobEntityRenderer<MantisEntity, MantisModel<MantisEntity>> {
+    private static final Map<MantisVariant, Identifier> LOCATION_BY_VARIANT =
+            Util.make(Maps.newEnumMap(MantisVariant.class), map -> {
+                map.put(MantisVariant.DEFAULT,
+                        Identifier.of(AdorableHamsterPets.MOD_ID, "textures/entity/mantis/mantis.png"));
+                map.put(MantisVariant.ORCHID,
+                        Identifier.of(AdorableHamsterPets.MOD_ID, "textures/entity/mantis/mantis_orchid.png"));
+            });
+
     public MantisRenderer(EntityRendererFactory.Context context) {
         super(context, new MantisModel<>(context.getPart(MantisModel.MANTIS)), 0.75f);
     }
 
     @Override
     public Identifier getTexture(MantisEntity entity) {
-        return Identifier.of(AdorableHamsterPets.MOD_ID, "textures/entity/mantis/mantis.png");
+        return LOCATION_BY_VARIANT.get(entity.getVariant());
     }
 
     @Override
