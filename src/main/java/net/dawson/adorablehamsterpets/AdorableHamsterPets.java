@@ -6,7 +6,6 @@ import net.dawson.adorablehamsterpets.effect.ModEffects;
 import net.dawson.adorablehamsterpets.enchantment.ModEnchantmentEffects;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.dawson.adorablehamsterpets.entity.custom.HamsterEntity;
-import net.dawson.adorablehamsterpets.entity.custom.MantisEntity;
 import net.dawson.adorablehamsterpets.item.ModItemGroups;
 import net.dawson.adorablehamsterpets.item.ModItems;
 import net.dawson.adorablehamsterpets.potion.ModPotions;
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
 public class AdorableHamsterPets implements ModInitializer {
 	public static final String MOD_ID = "adorablehamsterpets";
 
@@ -47,6 +45,7 @@ public class AdorableHamsterPets implements ModInitializer {
 		ModEnchantmentEffects.registerEnchantmentEffects();
 		ModWorldGeneration.generateModWorldGen();
 		ModEntities.registerModEntities();
+
 
 		FuelRegistry.INSTANCE.add(ModItems.STARLIGHT_ASHES, 600);
 
@@ -90,8 +89,6 @@ public class AdorableHamsterPets implements ModInitializer {
 		CompostingChanceRegistry.INSTANCE.add(ModItems.GREEN_BEAN_SEEDS, 0.25f);
 		CompostingChanceRegistry.INSTANCE.add(ModItems.CUCUMBER_SEEDS, 0.25f);
 
-
-		FabricDefaultAttributeRegistry.register(ModEntities.MANTIS, MantisEntity.createAttributes());
 
 		FabricDefaultAttributeRegistry.register(ModEntities.HAMSTER, HamsterEntity.createAttributes());
 	}

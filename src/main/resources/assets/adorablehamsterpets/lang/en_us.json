@@ -107,6 +107,32 @@
   "itemgroup.adorablehamsterpets.hamster_blocks" : "Hamster Blocks",
 
 
+  "sounds.adorablehamsterpets.hamster_beg1": "Hamster squeaks (Beg 1)",
+  "sounds.adorablehamsterpets.hamster_beg2": "Hamster squeaks (Beg 2)",
+  "sounds.adorablehamsterpets.hamster_beg3": "Hamster squeaks (Beg 3)",
+  "sounds.adorablehamsterpets.hamster_beg4": "Hamster squeaks (Beg 4)",
+  "sounds.adorablehamsterpets.hamster_death1": "Hamster squeaks (Death 1)",
+  "sounds.adorablehamsterpets.hamster_death2": "Hamster squeaks (Death 2)",
+  "sounds.adorablehamsterpets.hamster_death3": "Hamster squeaks (Death 3)",
+  "sounds.adorablehamsterpets.hamster_death4": "Hamster squeaks (Death 4)",
+  "sounds.adorablehamsterpets.hamster_death5": "Hamster squeaks (Death 5)",
+  "sounds.adorablehamsterpets.hamster_hurt1": "Hamster squeaks (Hurt 1)",
+  "sounds.adorablehamsterpets.hamster_hurt2": "Hamster squeaks (Hurt 2)",
+  "sounds.adorablehamsterpets.hamster_hurt3": "Hamster squeaks (Hurt 3)",
+  "sounds.adorablehamsterpets.hamster_hurt4": "Hamster squeaks (Hurt 4)",
+  "sounds.adorablehamsterpets.hamster_hurt5": "Hamster squeaks (Hurt 5)",
+  "sounds.adorablehamsterpets.hamster_idle1": "Hamster squeaks (Idle 1)",
+  "sounds.adorablehamsterpets.hamster_idle2": "Hamster squeaks (Idle 2)",
+  "sounds.adorablehamsterpets.hamster_idle3": "Hamster squeaks (Idle 3)",
+  "sounds.adorablehamsterpets.hamster_idle4": "Hamster squeaks (Idle 4)",
+  "sounds.adorablehamsterpets.hamster_idle5": "Hamster squeaks (Idle 5)",
+  "sounds.adorablehamsterpets.hamster_sleep1": "Hamster quietly squeaks (Sleep 1)",
+  "sounds.adorablehamsterpets.hamster_sleep2": "Hamster quietly squeaks (Sleep 2)",
+  "sounds.adorablehamsterpets.hamster_sleep3": "Hamster quietly squeaks (Sleep 3)",
+  "sounds.adorablehamsterpets.hamster_sleep4": "Hamster quietly squeaks (Sleep 4)",
+  "sounds.adorablehamsterpets.hamster_yay": "Hamster cheers (Yay)",
+
+
 
 
 
