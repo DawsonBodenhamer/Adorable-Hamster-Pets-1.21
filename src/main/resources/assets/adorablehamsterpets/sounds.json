@@ -1,56 +1,4 @@
 {
-  "chisel_use": {
-    "subtitle": "sounds.adorablehamsterpets.chisel_use",
-    "sounds": [
-      "adorablehamsterpets:chisel_use"
-    ]
-  },
-  "magic_block_break": {
-    "subtitle": "sounds.adorablehamsterpets.magic_block_break",
-    "sounds": [
-      "adorablehamsterpets:magic_block_break"
-    ]
-  },
-  "magic_block_step": {
-    "subtitle": "sounds.adorablehamsterpets.magic_block_step",
-    "sounds": [
-      "adorablehamsterpets:magic_block_step"
-    ]
-  },
-  "magic_block_place": {
-    "subtitle": "sounds.adorablehamsterpets.magic_block_place",
-    "sounds": [
-      "adorablehamsterpets:magic_block_place"
-    ]
-  },
-  "magic_block_hit": {
-    "subtitle": "sounds.adorablehamsterpets.magic_block_hit",
-    "sounds": [
-      "adorablehamsterpets:magic_block_hit"
-    ]
-  },
-  "magic_block_fall": {
-    "subtitle": "sounds.adorablehamsterpets.magic_block_fall",
-    "sounds": [
-      "adorablehamsterpets:magic_block_fall"
-    ]
-  },
-  "bar_brawl": {
-    "sounds": [
-      {
-        "name": "adorablehamsterpets:bar_brawl",
-        "stream": true
-      }
-    ]
-  },
-
-
-
-
-
-
-
-
   "hamster_beg1": {
     "subtitle": "sounds.adorablehamsterpets.hamster_beg1",
     "sounds": [
@@ -75,7 +23,6 @@
       "adorablehamsterpets:hamster_beg4"
     ]
   },
-
   "hamster_death1": {
     "subtitle": "sounds.adorablehamsterpets.hamster_death1",
     "sounds": [
@@ -106,7 +53,6 @@
       "adorablehamsterpets:hamster_death5"
     ]
   },
-
   "hamster_hurt1": {
     "subtitle": "sounds.adorablehamsterpets.hamster_hurt1",
     "sounds": [
@@ -137,7 +83,6 @@
       "adorablehamsterpets:hamster_hurt5"
     ]
   },
-
   "hamster_idle1": {
     "subtitle": "sounds.adorablehamsterpets.hamster_idle1",
     "sounds": [
@@ -168,7 +113,6 @@
       "adorablehamsterpets:hamster_idle5"
     ]
   },
-
   "hamster_sleep1": {
     "subtitle": "sounds.adorablehamsterpets.hamster_sleep1",
     "sounds": [
@@ -193,11 +137,55 @@
       "adorablehamsterpets:hamster_sleep4"
     ]
   },
-
-  "hamster_yay": {
-    "subtitle": "sounds.adorablehamsterpets.hamster_yay",
+  "hamster_sniff1": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_sniff1",
     "sounds": [
-      "adorablehamsterpets:hamster_yay"
+      "adorablehamsterpets:hamster_sniff1"
+    ]
+  },
+  "hamster_sniff2": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_sniff2",
+    "sounds": [
+      "adorablehamsterpets:hamster_sniff2"
+    ]
+  },
+  "hamster_creeper_detect1": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_creeper_detect1",
+    "sounds": [
+      "adorablehamsterpets:hamster_creeper_detect1"
+    ]
+  },
+  "hamster_creeper_detect2": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_creeper_detect2",
+    "sounds": [
+      "adorablehamsterpets:hamster_creeper_detect2"
+    ]
+  },
+  "hamster_creeper_detect3": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_creeper_detect3",
+    "sounds": [
+      "adorablehamsterpets:hamster_creeper_detect3"
+    ]
+  },
+  "hamster_celebrate1": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_celebrate1",
+    "sounds": [
+      "adorablehamsterpets:hamster_celebrate1"
+    ]
+  },
+  "hamster_celebrate2": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_celebrate2",
+    "sounds": [
+      "adorablehamsterpets:hamster_celebrate2"
+    ]
+  },
+  "hamster_celebrate3": {
+    "subtitle": "sounds.adorablehamsterpets.hamster_celebrate3",
+    "sounds": [
+      "adorablehamsterpets:hamster_celebrate3"
     ]
   }
+}
+
+
 }

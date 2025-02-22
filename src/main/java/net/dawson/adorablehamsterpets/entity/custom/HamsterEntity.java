@@ -1,10 +1,8 @@
 package net.dawson.adorablehamsterpets.entity.custom;
 
-import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.dawson.adorablehamsterpets.item.ModItems;
 import net.dawson.adorablehamsterpets.sound.ModSounds;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -14,352 +12,398 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.*;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoAnimatable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class HamsterEntity extends TameableEntity implements GeoAnimatable {
-    public final AnimationState idleAnimationState = new AnimationState();
-    private int idleAnimationTimeout = 0;
 
-    private static final TrackedData<Integer> DATA_ID_TYPE_VARIANT =
+public class HamsterEntity extends TameableEntity implements GeoEntity {
+    // DataTracker keys for additional states
+    // DataTracker keys for additional states
+    private static final TrackedData<Boolean> TAMED =
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> VARIANT =
             DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> MOOD =
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> IS_SLEEPING =
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
 
+    // Our mood levels can be conceptual. E.g., 0 = NEUTRAL, 1 = HAPPY, -1 = SAD, etc.
+    // Or you can use a bigger scale. For advanced usage, an enum + ordinal or a float can be used.
+    public static final int MOOD_HAPPY = 1;
+    public static final int MOOD_NEUTRAL = 0;
+    public static final int MOOD_SAD = -1;
+
+    // If you prefer a more fine-grained system, you might track mood as an integer from 0-100, for instance.
+    // We'll keep it simple here.
+
+    // We’ll store the last “food” fed, to detect repeated feedings => mood penalty, etc.
+    private ItemStack lastFoodItem = ItemStack.EMPTY;
+
+    // The geckolib instance cache
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // Simple constructor
     public HamsterEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
+        this.setTamed(false); // default to wild
+        this.experiencePoints = 3; // if you want them to drop XP
     }
 
 
-    @Override
-    protected void initGoals() {
-
-        // current functioning goals
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new AnimalMateGoal(this, 1.15D));
-        this.goalSelector.add(2, new TemptGoal(this, 2.25D, Ingredient.ofItems(ModItems.SLICED_CUCUMBER), false));
-        this.goalSelector.add(3, new FollowParentGoal(this, 1.1D));
-        this.goalSelector.add(4, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 4.0F));
-        this.goalSelector.add(6, new LookAroundGoal(this));
-
-/*  goals I might want to add (taken from a different hamster mod)
-
-        this.goalSelector.add(0, new FloatGoal(this));
-        this.goalSelector.add(1, new PanicGoal(this, 1.25D));
-        this.goalSelector.add(2, new AvoidEntityGoal<>(this, LivingEntity.class, 6.0F, 1.3D, 1.5D, livingEntity -> livingEntity instanceof Player player ? !this.isTame() && !player.isCrouching() : livingEntity.getType().is(HamstersTags.HAMSTER_AVOIDED)));
-        this.goalSelector.add(3, new SitGoal(this));
-        this.goalSelector.add(4, new BreedGoal(this, 1.0D));
-        this.goalSelector.add(5, new Hamster.HamsterTemptGoal(this, 1.0D, Ingredient.of(HamstersTags.HAMSTER_FOOD), true));
-        this.goalSelector.add(6, new FollowParentGoal(this, 1.0D));
-        this.goalSelector.add(7, new WaterAvoidingRandomStrollGoal(this, 1.0D));
-        this.goalSelector.add(8, new SleepGoal<>(this));
-        this.goalSelector.add(9, new LookAtPlayerGoal(this, Player.class, 6.0F) {
-            @Override
-            public void tick() {
-                if (Hamster.this.canUseMovementGoals()) super.tick();
-            }
-        });
-        this.goalSelector.add(10, new Hamster.HamsterLookAroundGoal(this));
-
-
-    other goals I want to look through and decide whether or not to add (taken from WolfEntity.java)
-
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(1, new TameableEntity.TameableEscapeDangerGoal(1.5, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
-        this.goalSelector.add(2, new SitGoal(this));
-        this.goalSelector.add(4, new PounceAtTargetGoal(this, 0.4F));
-        this.goalSelector.add(5, new MeleeAttackGoal(this, 1.0, true));
-        this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
-        this.goalSelector.add(7, new AnimalMateGoal(this, 1.0));
-        this.goalSelector.add(8, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(9, new WolfBegGoal(this, 8.0F));
-        this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(10, new LookAroundGoal(this));
-        this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
-        this.targetSelector.add(2, new AttackWithOwnerGoal(this));
-        this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
-        this.targetSelector.add(4, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-        this.targetSelector.add(5, new UntamedActiveTargetGoal(this, AnimalEntity.class, false, FOLLOW_TAMED_PREDICATE));
-        this.targetSelector.add(6, new UntamedActiveTargetGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
-        this.targetSelector.add(7, new ActiveTargetGoal(this, AbstractSkeletonEntity.class, false));
-        this.targetSelector.add(8, new UniversalAngerGoal<>(this, true));
- */
-    }
-
-    public static DefaultAttributeContainer.Builder createAttributes() {
+    // Register your attribute modifiers. This must be called from somewhere like ModEntities.
+    // Typically done via FabricDefaultAttributeRegistry.register(..., HamsterEntity.createHamsterAttributes());
+    public static DefaultAttributeContainer.Builder createHamsterAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 8)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20)
-                .add(EntityAttributes.GENERIC_FALL_DAMAGE_MULTIPLIER, 0);
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0D)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0D)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0D);
+        // You mentioned wanting 0 fall damage => can also override handleFallDamage or setNoGravity, etc.
     }
 
-
-    //this says "if idle animation timeout is zero or lower, please reset it to 40"
-    private void setupAnimationStates() {
-        if (this.idleAnimationTimeout <= 0) {
-            this.idleAnimationTimeout = 40;
-            this.idleAnimationState.start(this.age);
-        } else {
-            --this.idleAnimationTimeout;
-        }
-    }
-
-
-    //this just says hey if we are on the client, please call the setupAnimationStates method
+    // Prevent fall damage without removing gravity
     @Override
-    public void tick() {
-        super.tick();
-
-        if (this.getWorld().isClient()) {
-            this.setupAnimationStates();
-        }
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        return false; // no fall damage
     }
 
-    @Override
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.isOf(ModItems.SLICED_CUCUMBER);
-    }
 
-    @Nullable
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        HamsterEntity baby = ModEntities.HAMSTER.create(world);
-        HamsterVariant variant = Util.getRandom(HamsterVariant.values(), this.random);
-        baby.setVariant(variant);
-        return baby;
-    }
+    /* -------------------------------------------------------------------------
+     *                             Data Tracking Setup
+     * ------------------------------------------------------------------------- */
 
-    /* VARIANT */
+    // The new Yarn style data tracking
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(DATA_ID_TYPE_VARIANT, 0);
+        builder.add(TAMED, false);
+        builder.add(VARIANT, 0);
+        builder.add(MOOD, MOOD_NEUTRAL);
+        builder.add(IS_SLEEPING, false);
     }
 
-    public HamsterVariant getVariant() {
-        return HamsterVariant.byId(this.getTypeVariant() & 255);
+    /* -------------------------------------------------------------------------
+     *                       Getters / Setters for DataTracker
+     * ------------------------------------------------------------------------- */
+
+
+    public boolean isTamed() {
+        return this.dataTracker.get(TAMED);
     }
 
-    private int getTypeVariant() {
-        return this.dataTracker.get(DATA_ID_TYPE_VARIANT);
+    public void setTamed(boolean tamed) {
+        this.dataTracker.set(TAMED, tamed);
     }
 
-    private void setVariant(HamsterVariant variant) {
-        this.dataTracker.set(DATA_ID_TYPE_VARIANT, variant.getId() & 255);
+    public boolean isSleeping() {
+        return this.dataTracker.get(IS_SLEEPING);
+    }
+    public void setSleeping(boolean sleeping) {
+        this.dataTracker.set(IS_SLEEPING, sleeping);
     }
 
+    public int getVariant() {
+        return this.dataTracker.get(VARIANT);
+    }
+    public void setVariant(int variantId) {
+        this.dataTracker.set(VARIANT, variantId);
+    }
+
+    public int getMood() {
+        return this.dataTracker.get(MOOD);
+    }
+    public void setMood(int mood) {
+        this.dataTracker.set(MOOD, mood);
+    }
+
+    // For reading/writing extra data to NBT (so it persists between world loads)
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", this.getTypeVariant());
+        nbt.putInt("HamsterVariant", getVariant());
+        nbt.putInt("HamsterMood", getMood());
+        nbt.putBoolean("IsSleeping", isSleeping());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.dataTracker.set(DATA_ID_TYPE_VARIANT, nbt.getInt("Variant"));
+        setVariant(nbt.getInt("HamsterVariant"));
+        setMood(nbt.getInt("HamsterMood"));
+        setSleeping(nbt.getBoolean("IsSleeping"));
     }
+
+    /* -------------------------------------------------------------------------
+     *                         Spawning & Variant Logic
+     * ------------------------------------------------------------------------- */
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
-                                 @Nullable EntityData entityData) {
-        HamsterVariant variant = Util.getRandom(HamsterVariant.values(), this.random);
-        setVariant(variant);
-        return super.initialize(world, difficulty, spawnReason, entityData);
-    }
-
-    /**
-      Rabbit-like spawn check: Hamsters can spawn on grass, snow, sand, or red sand,
-      provided there's enough light (e.g. > 8). This mirrors vanilla Rabbit logic
-      and ensures they can spawn in deserts/badlands.
-     */
-
-    public static boolean canSpawnHamster(
-            EntityType<HamsterEntity> entityType,
+    public EntityData initialize(
             ServerWorldAccess world,
+            LocalDifficulty difficulty,
             SpawnReason spawnReason,
-            BlockPos pos,
-            Random random
+            @Nullable EntityData entityData
     ) {
-        Block blockBelow = world.getBlockState(pos.down()).getBlock();
+        entityData = super.initialize(world, difficulty, spawnReason, entityData);
 
-        boolean validBlock =
-                blockBelow == Blocks.GRASS_BLOCK
-                        || blockBelow == Blocks.RED_SAND
-                        || blockBelow == Blocks.TERRACOTTA
-                        || blockBelow == Blocks.WHITE_TERRACOTTA
-                        || blockBelow == Blocks.ORANGE_TERRACOTTA
-                        || blockBelow == Blocks.MAGENTA_TERRACOTTA
-                        || blockBelow == Blocks.LIGHT_BLUE_TERRACOTTA
-                        || blockBelow == Blocks.YELLOW_TERRACOTTA
-                        || blockBelow == Blocks.LIME_TERRACOTTA
-                        || blockBelow == Blocks.PINK_TERRACOTTA
-                        || blockBelow == Blocks.GRAY_TERRACOTTA
-                        || blockBelow == Blocks.LIGHT_GRAY_TERRACOTTA
-                        || blockBelow == Blocks.CYAN_TERRACOTTA
-                        || blockBelow == Blocks.PURPLE_TERRACOTTA
-                        || blockBelow == Blocks.BLUE_TERRACOTTA
-                        || blockBelow == Blocks.BROWN_TERRACOTTA
-                        || blockBelow == Blocks.GREEN_TERRACOTTA
-                        || blockBelow == Blocks.RED_TERRACOTTA
-                        || blockBelow == Blocks.BLACK_TERRACOTTA;
-
-        // Require a decent light level (like rabbits do).
-        // If you want them to spawn in darker areas, lower this check.
-        boolean enoughLight = world.getBaseLightLevel(pos, 0) > 6;
-
-        return validBlock && enoughLight;
+        // If variant not set, pick a random one
+        if (this.getVariant() == 0) {
+            int totalVariants = 32;
+            int chosen = this.random.nextInt(totalVariants) + 1;
+            this.setVariant(chosen);
+        }
+        return entityData;
     }
 
-    /**
+    /* -------------------------------------------------------------------------
+     *                              AI Goals
+     * ------------------------------------------------------------------------- */
+    @Override
+    protected void initGoals() {
+        // Basic example goals:
+        this.goalSelector.add(0, new SwimGoal(this));
 
-      SOUNDS
+        // Sleep in the daytime if wild or commanded to stay
+        this.goalSelector.add(1, new HamsterSleepGoal(this));
 
-      Here, we create arrays of SoundEvents for each category
-      (idle, hurt, death, etc.) so that we can randomly pick
-      which sound to play every time.
+        // If tamed, follow the owner
+        this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0D, 4.0F, 2.0F));
 
-     */
+        // Wander around
+        this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.75D));
 
-    // Idle (Ambient) sounds
-    private static final SoundEvent[] AMBIENT_SOUNDS = {
-            ModSounds.HAMSTER_IDLE1,
-            ModSounds.HAMSTER_IDLE2,
-            ModSounds.HAMSTER_IDLE3,
-            ModSounds.HAMSTER_IDLE4,
-            ModSounds.HAMSTER_IDLE5
-    };
+        // Tempt if the player is holding the taming food
+        this.goalSelector.add(4, new TemptGoal(this, 1.0D,
+                // The items that cause the hamster to be tempted:
+                stack -> stack.isOf(ModItems.SLICED_CUCUMBER), false));
 
-    // Hurt sounds
-    private static final SoundEvent[] HURT_SOUNDS = {
-            ModSounds.HAMSTER_HURT1,
-            ModSounds.HAMSTER_HURT2,
-            ModSounds.HAMSTER_HURT3,
-            ModSounds.HAMSTER_HURT4,
-            ModSounds.HAMSTER_HURT5
-    };
+        // Look at player occasionally
+        this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+        this.goalSelector.add(6, new LookAroundGoal(this));
 
-    // Death sounds
-    private static final SoundEvent[] DEATH_SOUNDS = {
-            ModSounds.HAMSTER_DEATH1,
-            ModSounds.HAMSTER_DEATH2,
-            ModSounds.HAMSTER_DEATH3,
-            ModSounds.HAMSTER_DEATH4,
-            ModSounds.HAMSTER_DEATH5
-    };
-
-    // Beg sounds
-    private static final SoundEvent[] BEG_SOUNDS = {
-            ModSounds.HAMSTER_BEG1,
-            ModSounds.HAMSTER_BEG2,
-            ModSounds.HAMSTER_BEG3,
-            ModSounds.HAMSTER_BEG4
-    };
-
-    // Sleep sounds
-    private static final SoundEvent[] SLEEP_SOUNDS = {
-            ModSounds.HAMSTER_SLEEP1,
-            ModSounds.HAMSTER_SLEEP2,
-            ModSounds.HAMSTER_SLEEP3,
-            ModSounds.HAMSTER_SLEEP4
-    };
-
-    // Single “Yay” sound
-    private static final SoundEvent YAY_SOUND = ModSounds.HAMSTER_YAY;
-
-    /**
-     * Helper method to pick a random sound from any given array.
-     *
-     * We use this.random to select the index.
-     * If your random field is different, adjust accordingly.
-     */
-    private SoundEvent getRandomSound(SoundEvent[] sounds) {
-        return sounds[this.random.nextInt(sounds.length)];
+        // (Optionally) some flee logic if not tamed
+        this.goalSelector.add(7, new FleeEntityGoal<>(this, PlayerEntity.class,
+                // 6 block radius
+                6.0F,
+                1.0D, // walk speed
+                1.2D, // sprint speed
+                living -> !this.isTamed() // condition: only flee if not tamed
+        ));
     }
 
-    /**
-     * Vanilla overrides.
-     * These methods are called by the game engine at the relevant times,
-     * and we supply a random sound from each array whenever needed.
-     */
+
+    /* -------------------------------------------------------------------------
+     *                        Taming & Interaction
+     * ------------------------------------------------------------------------- */
+
+    // This is called when a player right-clicks on the hamster with an item in hand.
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
+        if (!this.isTamed()) {
+            // Attempt to tame with SLICED_CUCUMBER
+            if (stack.isOf(ModItems.SLICED_CUCUMBER)) {
+                this.getWorld().playSound(null, this.getBlockPos(), ModSounds.HAMSTER_BEG1, // pick random or just one
+                        net.minecraft.sound.SoundCategory.NEUTRAL, 1.0F, 1.0F);
+                if (!player.getAbilities().creativeMode) {
+                    stack.decrement(1);
+                }
+                // 25% chance to tame per feed for example
+                if (this.random.nextInt(4) == 0) {
+                    this.setOwner(player);
+                    this.navigation.stop();
+                    this.getWorld().sendEntityStatus(this, (byte) 7); // heart particles
+                } else {
+                    this.getWorld().sendEntityStatus(this, (byte) 6); // smoke/fail particles
+                }
+                return ActionResult.SUCCESS;
+            }
+        } else {
+            // Already tamed => we can do other interactions
+            if (player.isSneaking()) {
+                // If sneaking => toggle "stay" = sleep
+                boolean newState = !this.isSleeping();
+                this.setSleeping(newState);
+                if (newState) {
+                    this.getWorld().playSound(null, this.getBlockPos(), ModSounds.HAMSTER_SLEEP1,
+                            net.minecraft.sound.SoundCategory.NEUTRAL, 1.0F, 1.0F);
+                }
+                return ActionResult.SUCCESS;
+            } else {
+                // Possibly some other tamed interaction, like opening cheek pouch inventory
+                // Or placing on shoulder, etc.
+            }
+        }
+        return super.interactMob(player, hand);
+    }
+
+    // TameableEntity helper
+    public void setOwner(PlayerEntity player) {
+        super.setOwner(player);
+        this.setTamed(true);
+        this.navigation.stop();
+    }
+
+    /* -------------------------------------------------------------------------
+     *                              Mood Logic
+     * ------------------------------------------------------------------------- */
+
+    // Example method: called whenever the hamster is fed
+    // You’d call this from wherever you handle feeding code
+    public void onFedBy(PlayerEntity feeder, ItemStack foodStack) {
+        // If it’s the same item as last time => lower mood
+        if (ItemStack.areItemsEqual(foodStack, lastFoodItem)) {
+            // degrade mood
+            this.setMood(Math.max(MOOD_SAD, getMood() - 1));
+        } else {
+            // otherwise raise or reset mood
+            this.setMood(MOOD_HAPPY);
+        }
+        this.lastFoodItem = foodStack.copy();
+    }
+
+    // You can then reference getMood() for AI or animation logic, or
+    // further expand to track mood timer, degrade over time, etc.
+
+    /* -------------------------------------------------------------------------
+     *                            Sleeping Logic
+     * ------------------------------------------------------------------------- */
+
+    // We'll handle the day sleeping for WILD hamsters via a simple check in the custom goal
+    // Tamed hamsters only sleep if commanded to "stay" (i.e. isSleeping=true).
+    // See the "HamsterSleepGoal" below.
+
+    /* -------------------------------------------------------------------------
+     *                    Example Diamond Sniff & Creeper Detect
+     * ------------------------------------------------------------------------- */
 
     @Override
-    @Nullable
+    public void tick() {
+        super.tick();
+
+        // 1. Diamond sniff while on player’s shoulder
+        if (this.hasPlayerRider()) {
+            // e.g. check if diamond ore is near
+            // if so => play squeaks every 30 seconds
+        }
+
+        // 2. Creeper detect if the hamster is on the player's shoulder
+        // or near the player: if a creeper is targeting the player, hamster squeaks, etc.
+    }
+
+    public boolean hasPlayerRider() {
+        // Quick check if the hamster is "riding" the player or on their shoulder
+        // For a parrot-like approach, you'd do a custom logic or replicate parrot mechanics
+        Entity vehicle = this.getVehicle();
+        return vehicle instanceof PlayerEntity;
+    }
+
+    /* -------------------------------------------------------------------------
+     *                    Sound Events (Ambient, Hurt, Death)
+     * ------------------------------------------------------------------------- */
+
+    @Override
     protected SoundEvent getAmbientSound() {
-        // Random idle sound
-        return getRandomSound(AMBIENT_SOUNDS);
+        if (this.isSleeping()) {
+            // pick a random SLEEP_SOUNDS array element
+            return ModSounds.HAMSTER_SLEEP1;
+        } else {
+            // pick a random from AMBIENT_SOUNDS
+            return ModSounds.HAMSTER_IDLE1;
+        }
     }
 
     @Override
-    @Nullable
     protected SoundEvent getHurtSound(DamageSource source) {
-        // Random hurt sound
-        return getRandomSound(HURT_SOUNDS);
+        // pick random from HURT_SOUNDS
+        return ModSounds.HAMSTER_HURT1;
     }
 
     @Override
-    @Nullable
     protected SoundEvent getDeathSound() {
-        // Random death sound
-        return getRandomSound(DEATH_SOUNDS);
+        // pick random from DEATH_SOUNDS
+        return ModSounds.HAMSTER_DEATH1;
     }
 
-    /**
-     * Optional custom methods to play extra sounds in your entity logic.
-     * For example, you might call these when certain conditions are met
-     * (like seeing food for "beg," or entering a sleep AI state for "sleep,"
-     * or celebrating something for "yay").
-     */
+    /* -------------------------------------------------------------------------
+     *                      Breeding & Offspring (optional)
+     * ------------------------------------------------------------------------- */
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity mate) {
+        // If you want hamsters to be breedable, define the child entity
+        HamsterEntity baby = ModEntities.HAMSTER.create(world);
+        if (baby != null && this.isTamed()) {
+            baby.setOwner((PlayerEntity) this.getOwner());
+            baby.setTamed(true);
+            baby.setVariant(this.getVariant());
+            // Or random
+        }
+        return baby;
+    }
 
-    public void playBegSound() {
-        this.getWorld().playSound(
-                null, // If there's no specific player to hear it, pass null
-                this.getBlockPos(),
-                getRandomSound(BEG_SOUNDS),
-                SoundCategory.NEUTRAL,  // Adjust the category as appropriate
-                1.0F,
-                1.0F
+    // If you want certain items to be recognized as "breeding food"
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        // e.g. cucumbers or seeds
+        return stack.isOf(ModItems.SLICED_CUCUMBER);
+    }
+
+    /* -------------------------------------------------------------------------
+     *                    Geckolib Animation & Controllers
+     * ------------------------------------------------------------------------- */
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(
+                new AnimationController<>(this, "movementController", 5, event -> {
+                    // Example logic. You can refine with your states
+                    if (this.isSleeping()) {
+                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_sleeping"));
+                    }
+                    // If moving quickly => run
+                    else if (this.getVelocity().horizontalLengthSquared() > 0.02) {
+                        // maybe decide walk vs. run threshold
+                        double speed = this.getVelocity().horizontalLength();
+                        if (speed > 0.25) {
+                            return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_running"));
+                        } else {
+                            return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_walking"));
+                        }
+                    }
+                    // If “begging” is flagged?
+                    // else if (someBegCondition) {
+                    //     return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_begging"));
+                    // }
+                    else {
+                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_idle"));
+                    }
+                })
         );
     }
 
-    public void playSleepSound() {
-        this.getWorld().playSound(
-                null,
-                this.getBlockPos(),
-                getRandomSound(SLEEP_SOUNDS),
-                SoundCategory.NEUTRAL,
-                1.0F,
-                1.0F
-        );
-    }
-
-    public void playYaySound() {
-        this.getWorld().playSound(
-                null,
-                this.getBlockPos(),
-                YAY_SOUND,
-                SoundCategory.NEUTRAL,
-                1.0F,
-                1.0F
-        );
+    // Required by GeoEntity
+    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenPlay("anim_hamster_idle");
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 }
-
-

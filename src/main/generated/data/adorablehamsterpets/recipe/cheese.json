@@ -3,11 +3,11 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "adorablehamsterpets:cheese_block"
+      "item": "minecraft:milk_bucket"
     }
   ],
   "result": {
-    "count": 9,
+    "count": 3,
     "id": "adorablehamsterpets:cheese"
   }
 }

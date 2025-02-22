@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "bottom": "adorablehamsterpets:block/pink_garnet_block",
-    "side": "adorablehamsterpets:block/pink_garnet_block",
-    "top": "adorablehamsterpets:block/pink_garnet_block"
-  }
-}

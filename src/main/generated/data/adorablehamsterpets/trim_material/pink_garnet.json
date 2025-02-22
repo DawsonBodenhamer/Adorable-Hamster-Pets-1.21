@@ -1,9 +1,0 @@
-{
-  "asset_name": "pink_garnet",
-  "description": {
-    "color": "#B03FE0",
-    "translate": "trim_material.adorablehamsterpets.pink_garnet"
-  },
-  "ingredient": "adorablehamsterpets:pink_garnet",
-  "item_model_index": 1.0
-}

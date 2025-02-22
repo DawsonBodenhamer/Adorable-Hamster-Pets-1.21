@@ -48,22 +48,6 @@ public class ModEntitySpawns {
 
     public static void addSpawns() {
 
-        // Spawn rules for the mantis entity
-        BiomeModifications.addSpawn(
-                BiomeSelectors.includeByKey(BiomeKeys.PLAINS, BiomeKeys.CHERRY_GROVE),
-                SpawnGroup.CREATURE,
-                ModEntities.MANTIS,
-                30, // spawn weight
-                1,  // minimum group size
-                2   // maximum group size
-        );
-        SpawnRestriction.register(
-                ModEntities.MANTIS,
-                SpawnLocationTypes.ON_GROUND,
-                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
-                AnimalEntity::isValidNaturalSpawn
-        );
-
         // Spawn rules for the hamster entity in the specified biomes
         BiomeModifications.addSpawn(
                 BiomeSelectors.includeByKey(
@@ -81,7 +65,7 @@ public class ModEntitySpawns {
                 ),
                 SpawnGroup.CREATURE,
                 ModEntities.HAMSTER,
-                30, // spawn weight (adjust as desired)
+                5000, // spawn weight (adjust as desired)
                 1,   // minimum group size (adjust as desired)
                 1    // maximum group size (adjust as desired)
         );

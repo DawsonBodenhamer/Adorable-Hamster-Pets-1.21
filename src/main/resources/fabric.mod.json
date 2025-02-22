@@ -3,7 +3,7 @@
 	"id": "adorablehamsterpets",
 	"version": "${version}",
 	"name": "Adorable Hamster Pets",
-	"description": "Sure, you’ve got dragons and machines, but let’s be honest— no respectable mod pack is complete without tiny fluffy freeloaders running around.",
+	"description": "Sure, you’ve got dragons and machines, but let’s be honest— no respectable mod pack is complete without tiny fluffy hamsters running around.",
 	"authors": [
 		"The Scarlet Fox"
 	],
@@ -25,9 +25,7 @@
 			"net.dawson.adorablehamsterpets.AdorableHamsterPetsClient"
 		]
 	},
-	"mixins": [
-		"adorablehamsterpets.mixins.json"
-	],
+
 	"depends": {
 		"fabricloader": ">=0.16.10",
 		"minecraft": "~1.21",

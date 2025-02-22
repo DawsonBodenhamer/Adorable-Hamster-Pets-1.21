@@ -1,39 +1,19 @@
 package net.dawson.adorablehamsterpets.sound;
 
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
-import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 public class ModSounds {
 
-    public static final SoundEvent CHISEL_USE = registerSoundEvent("chisel_use");
-    public static final SoundEvent MAGIC_BLOCK_BREAK = registerSoundEvent("magic_block_break");
-    public static final SoundEvent MAGIC_BLOCK_STEP = registerSoundEvent("magic_block_step");
-    public static final SoundEvent MAGIC_BLOCK_PLACE = registerSoundEvent("magic_block_place");
-    public static final SoundEvent MAGIC_BLOCK_HIT = registerSoundEvent("magic_block_hit");
-    public static final SoundEvent MAGIC_BLOCK_FALL = registerSoundEvent("magic_block_fall");
-
-    public static final BlockSoundGroup MAGIC_BLOCK_SOUNDS = new BlockSoundGroup(1f, 1f,
-            MAGIC_BLOCK_BREAK, MAGIC_BLOCK_STEP, MAGIC_BLOCK_PLACE, MAGIC_BLOCK_HIT, MAGIC_BLOCK_FALL);
-
-    public static final SoundEvent BAR_BRAWL = registerSoundEvent("bar_brawl");
-    public static final RegistryKey<JukeboxSong> BAR_BRAWL_KEY =
-            RegistryKey.of(RegistryKeys.JUKEBOX_SONG, Identifier.of(AdorableHamsterPets.MOD_ID, "bar_brawl"));
-
-
-
     /** Hamster Sounds */
 
-    public static final SoundEvent HAMSTER_BEG1  = registerSoundEvent("hamster_beg1");
-    public static final SoundEvent HAMSTER_BEG2  = registerSoundEvent("hamster_beg2");
-    public static final SoundEvent HAMSTER_BEG3  = registerSoundEvent("hamster_beg3");
-    public static final SoundEvent HAMSTER_BEG4  = registerSoundEvent("hamster_beg4");
+    public static final SoundEvent HAMSTER_BEG1 = registerSoundEvent("hamster_beg1");
+    public static final SoundEvent HAMSTER_BEG2 = registerSoundEvent("hamster_beg2");
+    public static final SoundEvent HAMSTER_BEG3 = registerSoundEvent("hamster_beg3");
+    public static final SoundEvent HAMSTER_BEG4 = registerSoundEvent("hamster_beg4");
 
     public static final SoundEvent HAMSTER_DEATH1 = registerSoundEvent("hamster_death1");
     public static final SoundEvent HAMSTER_DEATH2 = registerSoundEvent("hamster_death2");
@@ -58,7 +38,17 @@ public class ModSounds {
     public static final SoundEvent HAMSTER_SLEEP3 = registerSoundEvent("hamster_sleep3");
     public static final SoundEvent HAMSTER_SLEEP4 = registerSoundEvent("hamster_sleep4");
 
-    public static final SoundEvent HAMSTER_YAY = registerSoundEvent("hamster_yay");
+    public static final SoundEvent HAMSTER_SNIFF1 = registerSoundEvent("hamster_sniff1");
+    public static final SoundEvent HAMSTER_SNIFF2 = registerSoundEvent("hamster_sniff2");
+
+    public static final SoundEvent HAMSTER_CREEPER_DETECT1 = registerSoundEvent("hamster_creeper_detect1");
+    public static final SoundEvent HAMSTER_CREEPER_DETECT2 = registerSoundEvent("hamster_creeper_detect2");
+    public static final SoundEvent HAMSTER_CREEPER_DETECT3 = registerSoundEvent("hamster_creeper_detect3");
+
+    public static final SoundEvent HAMSTER_CELEBRATE1 = registerSoundEvent("hamster_celebrate1");
+    public static final SoundEvent HAMSTER_CELEBRATE2 = registerSoundEvent("hamster_celebrate2");
+    public static final SoundEvent HAMSTER_CELEBRATE3 = registerSoundEvent("hamster_celebrate3");
+
 
 
     private static SoundEvent registerSoundEvent(String name) {

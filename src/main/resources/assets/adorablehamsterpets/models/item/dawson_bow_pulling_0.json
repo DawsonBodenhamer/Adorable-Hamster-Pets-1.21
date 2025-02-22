@@ -1,6 +1,0 @@
-{
-    "parent": "adorablehamsterpets:item/dawson_bow",
-    "textures": {
-        "layer0": "adorablehamsterpets:item/dawson_bow_pulling_0"
-    }
-}
