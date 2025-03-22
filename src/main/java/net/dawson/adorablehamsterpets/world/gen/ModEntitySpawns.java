@@ -65,7 +65,7 @@ public class ModEntitySpawns {
                 ),
                 SpawnGroup.CREATURE,
                 ModEntities.HAMSTER,
-                5000, // spawn weight (adjust as desired)
+                30, // spawn weight (adjust as desired)
                 1,   // minimum group size (adjust as desired)
                 1    // maximum group size (adjust as desired)
         );

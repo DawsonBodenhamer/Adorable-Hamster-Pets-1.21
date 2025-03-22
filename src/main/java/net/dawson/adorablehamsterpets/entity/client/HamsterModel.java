@@ -70,6 +70,24 @@ public class HamsterModel extends GeoModel<HamsterEntity> {
         GeoBone sleepBone = this.getAnimationProcessor().getBone("sleep");
         if (sleepBone != null) {
             sleepBone.setHidden(!entity.isSleeping());
+
+        }
+
+        // Logic for cheek bones:
+
+        boolean cheeksEmpty = entity.isCheekPouchEmpty();
+
+        GeoBone leftCheekDef = this.getAnimationProcessor().getBone("left_cheek_deflated");
+        GeoBone rightCheekDef = this.getAnimationProcessor().getBone("right_cheek_deflated");
+        GeoBone leftCheekInf = this.getAnimationProcessor().getBone("left_cheek_inflated");
+        GeoBone rightCheekInf = this.getAnimationProcessor().getBone("right_cheek_inflated");
+
+        if (leftCheekDef != null && rightCheekDef != null && leftCheekInf != null && rightCheekInf != null) {
+            leftCheekDef.setHidden(!cheeksEmpty);
+            rightCheekDef.setHidden(!cheeksEmpty);
+
+            leftCheekInf.setHidden(cheeksEmpty);
+            rightCheekInf.setHidden(cheeksEmpty);
         }
     }
 }

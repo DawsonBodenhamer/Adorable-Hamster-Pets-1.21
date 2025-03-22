@@ -6,6 +6,7 @@ import net.dawson.adorablehamsterpets.entity.custom.HamsterEntity;
 import net.dawson.adorablehamsterpets.item.ModItemGroups;
 import net.dawson.adorablehamsterpets.item.ModItems;
 import net.dawson.adorablehamsterpets.sound.ModSounds;
+import net.dawson.adorablehamsterpets.world.gen.ModEntitySpawns;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.registry.*;
@@ -25,6 +26,7 @@ public class AdorableHamsterPets implements ModInitializer {
 		ModDataComponentTypes.registerDataComponentTypes();
 		ModSounds.registerSounds();
 		ModEntities.registerModEntities();
+		ModEntitySpawns.addSpawns();
 
 
 		CompostingChanceRegistry.INSTANCE.add(ModItems.GREEN_BEANS, 0.5f);

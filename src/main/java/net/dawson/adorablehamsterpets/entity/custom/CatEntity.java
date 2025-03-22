@@ -1,0 +1,608 @@
+////
+//// Source code recreated from a .class file by IntelliJ IDEA
+//// (powered by FernFlower decompiler)
+////
+//
+//package net.minecraft.entity.passive;
+//
+//import java.util.Objects;
+//import java.util.Optional;
+//import java.util.function.Predicate;
+//import net.minecraft.block.BedBlock;
+//import net.minecraft.block.BlockState;
+//import net.minecraft.component.DataComponentTypes;
+//import net.minecraft.component.type.FoodComponent;
+//import net.minecraft.entity.EntityData;
+//import net.minecraft.entity.EntityPose;
+//import net.minecraft.entity.EntityType;
+//import net.minecraft.entity.ItemEntity;
+//import net.minecraft.entity.LivingEntity;
+//import net.minecraft.entity.SpawnReason;
+//import net.minecraft.entity.VariantHolder;
+//import net.minecraft.entity.ai.goal.AnimalMateGoal;
+//import net.minecraft.entity.ai.goal.AttackGoal;
+//import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
+//import net.minecraft.entity.ai.goal.FleeEntityGoal;
+//import net.minecraft.entity.ai.goal.FollowOwnerGoal;
+//import net.minecraft.entity.ai.goal.GoToBedAndSleepGoal;
+//import net.minecraft.entity.ai.goal.Goal;
+//import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+//import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
+//import net.minecraft.entity.ai.goal.SitGoal;
+//import net.minecraft.entity.ai.goal.SwimGoal;
+//import net.minecraft.entity.ai.goal.UntamedActiveTargetGoal;
+//import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+//import net.minecraft.entity.attribute.DefaultAttributeContainer;
+//import net.minecraft.entity.attribute.EntityAttributes;
+//import net.minecraft.entity.damage.DamageSource;
+//import net.minecraft.entity.data.DataTracker;
+//import net.minecraft.entity.data.TrackedData;
+//import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+//import net.minecraft.entity.mob.MobEntity;
+//import net.minecraft.entity.player.PlayerEntity;
+//import net.minecraft.item.DyeItem;
+//import net.minecraft.item.Item;
+//import net.minecraft.item.ItemStack;
+//import net.minecraft.loot.LootTable;
+//import net.minecraft.loot.LootTables;
+//import net.minecraft.loot.context.LootContextParameterSet;
+//import net.minecraft.loot.context.LootContextParameters;
+//import net.minecraft.loot.context.LootContextTypes;
+//import net.minecraft.nbt.NbtCompound;
+//import net.minecraft.predicate.entity.EntityPredicates;
+//import net.minecraft.registry.Registries;
+//import net.minecraft.registry.Registry;
+//import net.minecraft.registry.RegistryKey;
+//import net.minecraft.registry.RegistryKeys;
+//import net.minecraft.registry.entry.RegistryEntry;
+//import net.minecraft.registry.tag.BlockTags;
+//import net.minecraft.registry.tag.CatVariantTags;
+//import net.minecraft.registry.tag.ItemTags;
+//import net.minecraft.registry.tag.StructureTags;
+//import net.minecraft.registry.tag.TagKey;
+//import net.minecraft.server.world.ServerWorld;
+//import net.minecraft.sound.SoundEvent;
+//import net.minecraft.sound.SoundEvents;
+//import net.minecraft.util.ActionResult;
+//import net.minecraft.util.DyeColor;
+//import net.minecraft.util.Hand;
+//import net.minecraft.util.Identifier;
+//import net.minecraft.util.math.BlockPos;
+//import net.minecraft.util.math.Box;
+//import net.minecraft.util.math.MathHelper;
+//import net.minecraft.util.math.random.Random;
+//import net.minecraft.world.LocalDifficulty;
+//import net.minecraft.world.ServerWorldAccess;
+//import net.minecraft.world.World;
+//import org.jetbrains.annotations.Nullable;
+//
+//public class CatEntity extends TameableEntity implements VariantHolder<RegistryEntry<CatVariant>> {
+//    public static final double CROUCHING_SPEED = 0.6;
+//    public static final double NORMAL_SPEED = 0.8;
+//    public static final double SPRINTING_SPEED = 1.33;
+//    private static final TrackedData<RegistryEntry<CatVariant>> CAT_VARIANT;
+//    private static final TrackedData<Boolean> IN_SLEEPING_POSE;
+//    private static final TrackedData<Boolean> HEAD_DOWN;
+//    private static final TrackedData<Integer> COLLAR_COLOR;
+//    private static final RegistryKey<CatVariant> DEFAULT_VARIANT;
+//    @Nullable
+//    private CatFleeGoal<PlayerEntity> fleeGoal;
+//    @Nullable
+//    private net.minecraft.entity.ai.goal.TemptGoal temptGoal;
+//    private float sleepAnimation;
+//    private float prevSleepAnimation;
+//    private float tailCurlAnimation;
+//    private float prevTailCurlAnimation;
+//    private float headDownAnimation;
+//    private float prevHeadDownAnimation;
+//
+//    public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
+//        super(entityType, world);
+//        this.onTamedChanged();
+//    }
+//
+//    public Identifier getTexture() {
+//        return ((CatVariant)this.getVariant().value()).texture();
+//    }
+//
+//    protected void initGoals() {
+//        this.temptGoal = new TemptGoal(this, 0.6, (stack) -> stack.isIn(ItemTags.CAT_FOOD), true);
+//        this.goalSelector.add(1, new SwimGoal(this));
+//        this.goalSelector.add(1, new TameableEntity.TameableEscapeDangerGoal(this, (double)1.5F));
+//        this.goalSelector.add(2, new SitGoal(this));
+//        this.goalSelector.add(3, new SleepWithOwnerGoal(this));
+//        this.goalSelector.add(4, this.temptGoal);
+//        this.goalSelector.add(5, new GoToBedAndSleepGoal(this, 1.1, 8));
+//        this.goalSelector.add(6, new FollowOwnerGoal(this, (double)1.0F, 10.0F, 5.0F));
+//        this.goalSelector.add(7, new CatSitOnBlockGoal(this, 0.8));
+//        this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3F));
+//        this.goalSelector.add(9, new AttackGoal(this));
+//        this.goalSelector.add(10, new AnimalMateGoal(this, 0.8));
+//        this.goalSelector.add(11, new WanderAroundFarGoal(this, 0.8, 1.0000001E-5F));
+//        this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
+//        this.targetSelector.add(1, new UntamedActiveTargetGoal(this, RabbitEntity.class, false, (Predicate)null));
+//        this.targetSelector.add(1, new UntamedActiveTargetGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
+//    }
+//
+//    public RegistryEntry<CatVariant> getVariant() {
+//        return (RegistryEntry)this.dataTracker.get(CAT_VARIANT);
+//    }
+//
+//    public void setVariant(RegistryEntry<CatVariant> registryEntry) {
+//        this.dataTracker.set(CAT_VARIANT, registryEntry);
+//    }
+//
+//    public void setInSleepingPose(boolean sleeping) {
+//        this.dataTracker.set(IN_SLEEPING_POSE, sleeping);
+//    }
+//
+//    public boolean isInSleepingPose() {
+//        return (Boolean)this.dataTracker.get(IN_SLEEPING_POSE);
+//    }
+//
+//    void setHeadDown(boolean headDown) {
+//        this.dataTracker.set(HEAD_DOWN, headDown);
+//    }
+//
+//    boolean isHeadDown() {
+//        return (Boolean)this.dataTracker.get(HEAD_DOWN);
+//    }
+//
+//    public DyeColor getCollarColor() {
+//        return DyeColor.byId((Integer)this.dataTracker.get(COLLAR_COLOR));
+//    }
+//
+//    private void setCollarColor(DyeColor color) {
+//        this.dataTracker.set(COLLAR_COLOR, color.getId());
+//    }
+//
+//    protected void initDataTracker(DataTracker.Builder builder) {
+//        super.initDataTracker(builder);
+//        builder.add(CAT_VARIANT, Registries.CAT_VARIANT.entryOf(DEFAULT_VARIANT));
+//        builder.add(IN_SLEEPING_POSE, false);
+//        builder.add(HEAD_DOWN, false);
+//        builder.add(COLLAR_COLOR, DyeColor.RED.getId());
+//    }
+//
+//    public void writeCustomDataToNbt(NbtCompound nbt) {
+//        super.writeCustomDataToNbt(nbt);
+//        nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(DEFAULT_VARIANT)).getValue().toString());
+//        nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
+//    }
+//
+//    public void readCustomDataFromNbt(NbtCompound nbt) {
+//        super.readCustomDataFromNbt(nbt);
+//        Optional var10000 = Optional.ofNullable(Identifier.tryParse(nbt.getString("variant"))).map((id) -> RegistryKey.of(RegistryKeys.CAT_VARIANT, id));
+//        Registry var10001 = Registries.CAT_VARIANT;
+//        Objects.requireNonNull(var10001);
+//        var10000.flatMap(var10001::getEntry).ifPresent(this::setVariant);
+//        if (nbt.contains("CollarColor", 99)) {
+//            this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
+//        }
+//
+//    }
+//
+//    public void mobTick() {
+//        if (this.getMoveControl().isMoving()) {
+//            double d = this.getMoveControl().getSpeed();
+//            if (d == 0.6) {
+//                this.setPose(EntityPose.CROUCHING);
+//                this.setSprinting(false);
+//            } else if (d == 1.33) {
+//                this.setPose(EntityPose.STANDING);
+//                this.setSprinting(true);
+//            } else {
+//                this.setPose(EntityPose.STANDING);
+//                this.setSprinting(false);
+//            }
+//        } else {
+//            this.setPose(EntityPose.STANDING);
+//            this.setSprinting(false);
+//        }
+//
+//    }
+//
+//    @Nullable
+//    protected SoundEvent getAmbientSound() {
+//        if (this.isTamed()) {
+//            if (this.isInLove()) {
+//                return SoundEvents.ENTITY_CAT_PURR;
+//            } else {
+//                return this.random.nextInt(4) == 0 ? SoundEvents.ENTITY_CAT_PURREOW : SoundEvents.ENTITY_CAT_AMBIENT;
+//            }
+//        } else {
+//            return SoundEvents.ENTITY_CAT_STRAY_AMBIENT;
+//        }
+//    }
+//
+//    public int getMinAmbientSoundDelay() {
+//        return 120;
+//    }
+//
+//    public void hiss() {
+//        this.playSound(SoundEvents.ENTITY_CAT_HISS);
+//    }
+//
+//    protected SoundEvent getHurtSound(DamageSource source) {
+//        return SoundEvents.ENTITY_CAT_HURT;
+//    }
+//
+//    protected SoundEvent getDeathSound() {
+//        return SoundEvents.ENTITY_CAT_DEATH;
+//    }
+//
+//    public static DefaultAttributeContainer.Builder createCatAttributes() {
+//        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, (double)10.0F).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, (double)0.3F).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, (double)3.0F);
+//    }
+//
+//    protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
+//        if (this.isBreedingItem(stack)) {
+//            this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0F, 1.0F);
+//        }
+//
+//        super.eat(player, hand, stack);
+//    }
+//
+//    public void tick() {
+//        super.tick();
+//        if (this.temptGoal != null && this.temptGoal.isActive() && !this.isTamed() && this.age % 100 == 0) {
+//            this.playSound(SoundEvents.ENTITY_CAT_BEG_FOR_FOOD, 1.0F, 1.0F);
+//        }
+//
+//        this.updateAnimations();
+//    }
+//
+//    private void updateAnimations() {
+//        if ((this.isInSleepingPose() || this.isHeadDown()) && this.age % 5 == 0) {
+//            this.playSound(SoundEvents.ENTITY_CAT_PURR, 0.6F + 0.4F * (this.random.nextFloat() - this.random.nextFloat()), 1.0F);
+//        }
+//
+//        this.updateSleepAnimation();
+//        this.updateHeadDownAnimation();
+//    }
+//
+//    private void updateSleepAnimation() {
+//        this.prevSleepAnimation = this.sleepAnimation;
+//        this.prevTailCurlAnimation = this.tailCurlAnimation;
+//        if (this.isInSleepingPose()) {
+//            this.sleepAnimation = Math.min(1.0F, this.sleepAnimation + 0.15F);
+//            this.tailCurlAnimation = Math.min(1.0F, this.tailCurlAnimation + 0.08F);
+//        } else {
+//            this.sleepAnimation = Math.max(0.0F, this.sleepAnimation - 0.22F);
+//            this.tailCurlAnimation = Math.max(0.0F, this.tailCurlAnimation - 0.13F);
+//        }
+//
+//    }
+//
+//    private void updateHeadDownAnimation() {
+//        this.prevHeadDownAnimation = this.headDownAnimation;
+//        if (this.isHeadDown()) {
+//            this.headDownAnimation = Math.min(1.0F, this.headDownAnimation + 0.1F);
+//        } else {
+//            this.headDownAnimation = Math.max(0.0F, this.headDownAnimation - 0.13F);
+//        }
+//
+//    }
+//
+//    public float getSleepAnimation(float tickDelta) {
+//        return MathHelper.lerp(tickDelta, this.prevSleepAnimation, this.sleepAnimation);
+//    }
+//
+//    public float getTailCurlAnimation(float tickDelta) {
+//        return MathHelper.lerp(tickDelta, this.prevTailCurlAnimation, this.tailCurlAnimation);
+//    }
+//
+//    public float getHeadDownAnimation(float tickDelta) {
+//        return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
+//    }
+//
+//    @Nullable
+//    public CatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+//        CatEntity catEntity = (CatEntity)EntityType.CAT.create(serverWorld);
+//        if (catEntity != null && passiveEntity instanceof CatEntity catEntity2) {
+//            if (this.random.nextBoolean()) {
+//                catEntity.setVariant(this.getVariant());
+//            } else {
+//                catEntity.setVariant(catEntity2.getVariant());
+//            }
+//
+//            if (this.isTamed()) {
+//                catEntity.setOwnerUuid(this.getOwnerUuid());
+//                catEntity.setTamed(true, true);
+//                if (this.random.nextBoolean()) {
+//                    catEntity.setCollarColor(this.getCollarColor());
+//                } else {
+//                    catEntity.setCollarColor(catEntity2.getCollarColor());
+//                }
+//            }
+//        }
+//
+//        return catEntity;
+//    }
+//
+//    public boolean canBreedWith(AnimalEntity other) {
+//        if (!this.isTamed()) {
+//            return false;
+//        } else if (!(other instanceof CatEntity)) {
+//            return false;
+//        } else {
+//            CatEntity catEntity = (CatEntity)other;
+//            return catEntity.isTamed() && super.canBreedWith(other);
+//        }
+//    }
+//
+//    @Nullable
+//    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
+//        entityData = super.initialize(world, difficulty, spawnReason, entityData);
+//        boolean bl = world.getMoonSize() > 0.9F;
+//        TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
+//        Registries.CAT_VARIANT.getRandomEntry(tagKey, world.getRandom()).ifPresent(this::setVariant);
+//        ServerWorld serverWorld = world.toServerWorld();
+//        if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
+//            this.setVariant(Registries.CAT_VARIANT.entryOf(CatVariant.ALL_BLACK));
+//            this.setPersistent();
+//        }
+//
+//        return entityData;
+//    }
+//
+//    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+//        ItemStack itemStack = player.getStackInHand(hand);
+//        Item item = itemStack.getItem();
+//        if (this.isTamed()) {
+//            if (this.isOwner(player)) {
+//                if (item instanceof DyeItem) {
+//                    DyeItem dyeItem = (DyeItem)item;
+//                    DyeColor dyeColor = dyeItem.getColor();
+//                    if (dyeColor != this.getCollarColor()) {
+//                        if (!this.getWorld().isClient()) {
+//                            this.setCollarColor(dyeColor);
+//                            itemStack.decrementUnlessCreative(1, player);
+//                            this.setPersistent();
+//                        }
+//
+//                        return ActionResult.success(this.getWorld().isClient());
+//                    }
+//                } else if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
+//                    if (!this.getWorld().isClient()) {
+//                        this.eat(player, hand, itemStack);
+//                        FoodComponent foodComponent = (FoodComponent)itemStack.get(DataComponentTypes.FOOD);
+//                        this.heal(foodComponent != null ? (float)foodComponent.nutrition() : 1.0F);
+//                    }
+//
+//                    return ActionResult.success(this.getWorld().isClient());
+//                }
+//
+//                ActionResult actionResult = super.interactMob(player, hand);
+//                if (!actionResult.isAccepted()) {
+//                    this.setSitting(!this.isSitting());
+//                    return ActionResult.success(this.getWorld().isClient());
+//                }
+//
+//                return actionResult;
+//            }
+//        } else if (this.isBreedingItem(itemStack)) {
+//            if (!this.getWorld().isClient()) {
+//                this.eat(player, hand, itemStack);
+//                this.tryTame(player);
+//                this.setPersistent();
+//            }
+//
+//            return ActionResult.success(this.getWorld().isClient());
+//        }
+//
+//        ActionResult actionResult = super.interactMob(player, hand);
+//        if (actionResult.isAccepted()) {
+//            this.setPersistent();
+//        }
+//
+//        return actionResult;
+//    }
+//
+//    public boolean isBreedingItem(ItemStack stack) {
+//        return stack.isIn(ItemTags.CAT_FOOD);
+//    }
+//
+//    public boolean canImmediatelyDespawn(double distanceSquared) {
+//        return !this.isTamed() && this.age > 2400;
+//    }
+//
+//    public void setTamed(boolean tamed, boolean updateAttributes) {
+//        super.setTamed(tamed, updateAttributes);
+//        this.onTamedChanged();
+//    }
+//
+//    protected void onTamedChanged() {
+//        if (this.fleeGoal == null) {
+//            this.fleeGoal = new CatFleeGoal<PlayerEntity>(this, PlayerEntity.class, 16.0F, 0.8, 1.33);
+//        }
+//
+//        this.goalSelector.remove(this.fleeGoal);
+//        if (!this.isTamed()) {
+//            this.goalSelector.add(4, this.fleeGoal);
+//        }
+//
+//    }
+//
+//    private void tryTame(PlayerEntity player) {
+//        if (this.random.nextInt(3) == 0) {
+//            this.setOwner(player);
+//            this.setSitting(true);
+//            this.getWorld().sendEntityStatus(this, (byte)7);
+//        } else {
+//            this.getWorld().sendEntityStatus(this, (byte)6);
+//        }
+//
+//    }
+//
+//    public boolean bypassesSteppingEffects() {
+//        return this.isInSneakingPose() || super.bypassesSteppingEffects();
+//    }
+//
+//    static {
+//        CAT_VARIANT = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.CAT_VARIANT);
+//        IN_SLEEPING_POSE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+//        HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+//        COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+//        DEFAULT_VARIANT = CatVariant.BLACK;
+//    }
+//
+//    static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
+//        private final CatEntity cat;
+//
+//        public CatFleeGoal(CatEntity cat, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+//            Predicate var10006 = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR;
+//            Objects.requireNonNull(var10006);
+//            super(cat, fleeFromType, distance, slowSpeed, fastSpeed, var10006::test);
+//            this.cat = cat;
+//        }
+//
+//        public boolean canStart() {
+//            return !this.cat.isTamed() && super.canStart();
+//        }
+//
+//        public boolean shouldContinue() {
+//            return !this.cat.isTamed() && super.shouldContinue();
+//        }
+//    }
+//
+//    static class TemptGoal extends net.minecraft.entity.ai.goal.TemptGoal {
+//        @Nullable
+//        private PlayerEntity player;
+//        private final CatEntity cat;
+//
+//        public TemptGoal(CatEntity cat, double speed, Predicate<ItemStack> foodPredicate, boolean canBeScared) {
+//            super(cat, speed, foodPredicate, canBeScared);
+//            this.cat = cat;
+//        }
+//
+//        public void tick() {
+//            super.tick();
+//            if (this.player == null && this.mob.getRandom().nextInt(this.getTickCount(600)) == 0) {
+//                this.player = this.closestPlayer;
+//            } else if (this.mob.getRandom().nextInt(this.getTickCount(500)) == 0) {
+//                this.player = null;
+//            }
+//
+//        }
+//
+//        protected boolean canBeScared() {
+//            return this.player != null && this.player.equals(this.closestPlayer) ? false : super.canBeScared();
+//        }
+//
+//        public boolean canStart() {
+//            return super.canStart() && !this.cat.isTamed();
+//        }
+//    }
+//
+//    static class SleepWithOwnerGoal extends Goal {
+//        private final CatEntity cat;
+//        @Nullable
+//        private PlayerEntity owner;
+//        @Nullable
+//        private BlockPos bedPos;
+//        private int ticksOnBed;
+//
+//        public SleepWithOwnerGoal(CatEntity cat) {
+//            this.cat = cat;
+//        }
+//
+//        public boolean canStart() {
+//            if (!this.cat.isTamed()) {
+//                return false;
+//            } else if (this.cat.isSitting()) {
+//                return false;
+//            } else {
+//                LivingEntity livingEntity = this.cat.getOwner();
+//                if (livingEntity instanceof PlayerEntity) {
+//                    this.owner = (PlayerEntity)livingEntity;
+//                    if (!livingEntity.isSleeping()) {
+//                        return false;
+//                    }
+//
+//                    if (this.cat.squaredDistanceTo(this.owner) > (double)100.0F) {
+//                        return false;
+//                    }
+//
+//                    BlockPos blockPos = this.owner.getBlockPos();
+//                    BlockState blockState = this.cat.getWorld().getBlockState(blockPos);
+//                    if (blockState.isIn(BlockTags.BEDS)) {
+//                        this.bedPos = (BlockPos)blockState.getOrEmpty(BedBlock.FACING).map((direction) -> blockPos.offset(direction.getOpposite())).orElseGet(() -> new BlockPos(blockPos));
+//                        return !this.cannotSleep();
+//                    }
+//                }
+//
+//                return false;
+//            }
+//        }
+//
+//        private boolean cannotSleep() {
+//            for(CatEntity catEntity : this.cat.getWorld().getNonSpectatingEntities(CatEntity.class, (new Box(this.bedPos)).expand((double)2.0F))) {
+//                if (catEntity != this.cat && (catEntity.isInSleepingPose() || catEntity.isHeadDown())) {
+//                    return true;
+//                }
+//            }
+//
+//            return false;
+//        }
+//
+//        public boolean shouldContinue() {
+//            return this.cat.isTamed() && !this.cat.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.cannotSleep();
+//        }
+//
+//        public void start() {
+//            if (this.bedPos != null) {
+//                this.cat.setInSittingPose(false);
+//                this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), (double)1.1F);
+//            }
+//
+//        }
+//
+//        public void stop() {
+//            this.cat.setInSleepingPose(false);
+//            float f = this.cat.getWorld().getSkyAngle(1.0F);
+//            if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.getWorld().getRandom().nextFloat() < 0.7) {
+//                this.dropMorningGifts();
+//            }
+//
+//            this.ticksOnBed = 0;
+//            this.cat.setHeadDown(false);
+//            this.cat.getNavigation().stop();
+//        }
+//
+//        private void dropMorningGifts() {
+//            Random random = this.cat.getRandom();
+//            BlockPos.Mutable mutable = new BlockPos.Mutable();
+//            mutable.set(this.cat.isLeashed() ? this.cat.getLeashHolder().getBlockPos() : this.cat.getBlockPos());
+//            this.cat.teleport((double)(mutable.getX() + random.nextInt(11) - 5), (double)(mutable.getY() + random.nextInt(5) - 2), (double)(mutable.getZ() + random.nextInt(11) - 5), false);
+//            mutable.set(this.cat.getBlockPos());
+//            LootTable lootTable = this.cat.getWorld().getServer().getReloadableRegistries().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+//            LootContextParameterSet lootContextParameterSet = (new LootContextParameterSet.Builder((ServerWorld)this.cat.getWorld())).add(LootContextParameters.ORIGIN, this.cat.getPos()).add(LootContextParameters.THIS_ENTITY, this.cat).build(LootContextTypes.GIFT);
+//
+//            for(ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
+//                this.cat.getWorld().spawnEntity(new ItemEntity(this.cat.getWorld(), (double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180F)), (double)mutable.getY(), (double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180F)), itemStack));
+//            }
+//
+//        }
+//
+//        public void tick() {
+//            if (this.owner != null && this.bedPos != null) {
+//                this.cat.setInSittingPose(false);
+//                this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), (double)1.1F);
+//                if (this.cat.squaredDistanceTo(this.owner) < (double)2.5F) {
+//                    ++this.ticksOnBed;
+//                    if (this.ticksOnBed > this.getTickCount(16)) {
+//                        this.cat.setInSleepingPose(true);
+//                        this.cat.setHeadDown(false);
+//                    } else {
+//                        this.cat.lookAtEntity(this.owner, 45.0F, 45.0F);
+//                        this.cat.setHeadDown(true);
+//                    }
+//                } else {
+//                    this.cat.setInSleepingPose(false);
+//                }
+//            }
+//
+//        }
+//    }
+//}

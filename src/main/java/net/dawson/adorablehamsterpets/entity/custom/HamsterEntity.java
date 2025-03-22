@@ -1,8 +1,13 @@
 package net.dawson.adorablehamsterpets.entity.custom;
 
-import net.dawson.adorablehamsterpets.item.ModItems;
-import net.dawson.adorablehamsterpets.sound.ModSounds;
+import net.dawson.adorablehamsterpets.AdorableHamsterPets;
+import net.dawson.adorablehamsterpets.entity.AI.*;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
+import net.dawson.adorablehamsterpets.item.ModItems;
+import net.dawson.adorablehamsterpets.sound.ModSounds; // CHANGED: referencing ModSounds
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -11,94 +16,129 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import static net.dawson.adorablehamsterpets.sound.ModSounds.*;
+
 
 public class HamsterEntity extends TameableEntity implements GeoEntity {
-    // DataTracker keys for additional states
-    // DataTracker keys for additional states
-    private static final TrackedData<Boolean> TAMED =
-            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Integer> VARIANT =
-            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Integer> MOOD =
-            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> IS_SLEEPING =
-            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-
-    // Our mood levels can be conceptual. E.g., 0 = NEUTRAL, 1 = HAPPY, -1 = SAD, etc.
-    // Or you can use a bigger scale. For advanced usage, an enum + ordinal or a float can be used.
-    public static final int MOOD_HAPPY = 1;
-    public static final int MOOD_NEUTRAL = 0;
-    public static final int MOOD_SAD = -1;
-
-    // If you prefer a more fine-grained system, you might track mood as an integer from 0-100, for instance.
-    // We'll keep it simple here.
-
-    // We’ll store the last “food” fed, to detect repeated feedings => mood penalty, etc.
-    private ItemStack lastFoodItem = ItemStack.EMPTY;
 
     // The geckolib instance cache
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    // Simple constructor
+    // A public field for the parrot-like "ShoulderMountRequested" logic
+    public boolean shoulderMountRequested = false;
+
     public HamsterEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
-        this.setTamed(false); // default to wild
         this.experiencePoints = 3; // if you want them to drop XP
     }
 
-
-    // Register your attribute modifiers. This must be called from somewhere like ModEntities.
-    // Typically done via FabricDefaultAttributeRegistry.register(..., HamsterEntity.createHamsterAttributes());
+    /**
+     * Register your attribute modifiers. Usually called in ModEntities.
+     */
     public static DefaultAttributeContainer.Builder createHamsterAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0D)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25D)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0D)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 20.0D);
-        // You mentioned wanting 0 fall damage => can also override handleFallDamage or setNoGravity, etc.
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0D);
     }
 
-    // Prevent fall damage without removing gravity
     @Override
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-        return false; // no fall damage
+        // No fall damage for these little guys
+        return false;
     }
-
 
     /* -------------------------------------------------------------------------
      *                             Data Tracking Setup
      * ------------------------------------------------------------------------- */
 
-    // The new Yarn style data tracking
+    public static final TrackedData<Boolean> IS_BEGGING =   // <---- MADE PUBLIC STATIC FINAL
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    public static final TrackedData<Boolean> IS_IN_LOVE =    // <---- MADE PUBLIC STATIC FINAL
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    public static final TrackedData<Boolean> IS_SLEEPING =   // <---- MADE PUBLIC STATIC FINAL
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    public static final TrackedData<Boolean> NEAR_DIAMOND =  // <---- MADE PUBLIC STATIC FINAL
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    public static final TrackedData<Boolean> IS_REFUSING_FOOD =  // <---- MADE PUBLIC STATIC FINAL
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    private int refuseTimer = 0;      // how many ticks remain for the “refuse” animation
+    private ItemStack lastFoodItem = ItemStack.EMPTY; // track last item fed
+
+
+    public static final TrackedData<Boolean> IS_SITTING =  // <---- MADE PUBLIC STATIC FINAL
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+
+
+    private static final TrackedData<Integer> VARIANT =
+            DataTracker.registerData(HamsterEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+
+    public int customLoveTimer;
+
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(TAMED, false);
         builder.add(VARIANT, 0);
-        builder.add(MOOD, MOOD_NEUTRAL);
         builder.add(IS_SLEEPING, false);
+        builder.add(IS_BEGGING, false);
+        builder.add(IS_IN_LOVE, false);
+        builder.add(NEAR_DIAMOND, false);
+        builder.add(IS_REFUSING_FOOD, false);
+        builder.add(IS_SITTING, false); // <---- ENSURE IS_SITTING IS REGISTERED HERE
+    }
+
+    public boolean isInCustomLove() {
+        return this.customLoveTimer > 0;
+    }
+
+    public void setCustomInLove(PlayerEntity player) {
+        this.customLoveTimer = 600; // e.g., 600 ticks = 30 seconds
+        this.getWorld().sendEntityStatus(this, (byte) 18); // hearts
     }
 
     /* -------------------------------------------------------------------------
@@ -106,17 +146,10 @@ public class HamsterEntity extends TameableEntity implements GeoEntity {
      * ------------------------------------------------------------------------- */
 
 
-    public boolean isTamed() {
-        return this.dataTracker.get(TAMED);
-    }
-
-    public void setTamed(boolean tamed) {
-        this.dataTracker.set(TAMED, tamed);
-    }
-
     public boolean isSleeping() {
         return this.dataTracker.get(IS_SLEEPING);
     }
+
     public void setSleeping(boolean sleeping) {
         this.dataTracker.set(IS_SLEEPING, sleeping);
     }
@@ -124,32 +157,88 @@ public class HamsterEntity extends TameableEntity implements GeoEntity {
     public int getVariant() {
         return this.dataTracker.get(VARIANT);
     }
+
     public void setVariant(int variantId) {
         this.dataTracker.set(VARIANT, variantId);
     }
 
-    public int getMood() {
-        return this.dataTracker.get(MOOD);
-    }
-    public void setMood(int mood) {
-        this.dataTracker.set(MOOD, mood);
+    public boolean isBegging() {
+        return this.dataTracker.get(IS_BEGGING);
     }
 
-    // For reading/writing extra data to NBT (so it persists between world loads)
+    public void setBegging(boolean value) {
+        this.dataTracker.set(IS_BEGGING, value);
+    }
+
+    public boolean isInLove() {
+        return this.dataTracker.get(IS_IN_LOVE);
+    }
+
+    public void setInLove(boolean value) {
+        this.dataTracker.set(IS_IN_LOVE, value);
+    }
+
+    public boolean isNearDiamond() {
+        return this.dataTracker.get(NEAR_DIAMOND);
+    }
+
+    public void setNearDiamond(boolean value) {
+        this.dataTracker.set(NEAR_DIAMOND, value);
+    }
+
+    public boolean isRefusingFood() {
+        return this.dataTracker.get(IS_REFUSING_FOOD);
+    }
+
+    public void setRefusingFood(boolean value) {
+        this.dataTracker.set(IS_REFUSING_FOOD, value);
+    }
+
+    /* -------------------------------------------------------------------------
+     *                       Tamed Status - NBT read/write
+     * ------------------------------------------------------------------------- */
+
+    @Override
+    public void setTamed(boolean tamed, boolean updateAttributes) {
+        // Call the vanilla method so the dataTracker is updated.
+        super.setTamed(tamed, updateAttributes);
+
+        // Then do your custom logic:
+        if (tamed) {
+            this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(16.0D);
+            this.setHealth(16.0F);
+        } else {
+            this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(8.0D);
+            this.setHealth(8.0F);
+        }
+    }
+
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
+        // --- Let TameableEntity store "tamed" and "owner" automatically ---
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("HamsterVariant", getVariant());
-        nbt.putInt("HamsterMood", getMood());
-        nbt.putBoolean("IsSleeping", isSleeping());
+
+        // --- Store only hamster-specific stuff ---
+        nbt.putInt("HamsterVariant", this.getVariant());
+        nbt.putBoolean("IsSleeping", this.isSleeping());
+
     }
+
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setVariant(nbt.getInt("HamsterVariant"));
-        setMood(nbt.getInt("HamsterMood"));
-        setSleeping(nbt.getBoolean("IsSleeping"));
+
+        this.setTamed(true, true);
+
+
+        if (nbt.contains("HamsterVariant")) {
+            this.setVariant(nbt.getInt("HamsterVariant"));
+        }
+        if (nbt.contains("IsSleeping")) {
+            this.setSleeping(nbt.getBoolean("IsSleeping"));
+        }
     }
 
     /* -------------------------------------------------------------------------
@@ -179,194 +268,452 @@ public class HamsterEntity extends TameableEntity implements GeoEntity {
      * ------------------------------------------------------------------------- */
     @Override
     protected void initGoals() {
-        // Basic example goals:
         this.goalSelector.add(0, new SwimGoal(this));
 
-        // Sleep in the daytime if wild or commanded to stay
-        this.goalSelector.add(1, new HamsterSleepGoal(this));
+        // If tamed, follow owner
+        this.goalSelector.add(1, new FollowOwnerGoal(this, 1.2D, 4.0F, 16.0F));
 
-        // If tamed, follow the owner
-        this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0D, 4.0F, 2.0F));
+        // FLEE from players (under certain conditions) or from hostile mobs:
+        this.goalSelector.add(2, new HamsterFleeGoal<>(
+                this,
+                LivingEntity.class, // We can pass LivingEntity to catch both players & hostiles
+                8.0F,               // max distance to start fleeing
+                1.0D,               // walk speed
+                1.5D                // sprint speed
+        ));
 
-        // Wander around
-        this.goalSelector.add(3, new WanderAroundFarGoal(this, 0.75D));
+        this.goalSelector.add(3, new HamsterMateGoal(this, 1.0D));
 
-        // Tempt if the player is holding the taming food
-        this.goalSelector.add(4, new TemptGoal(this, 1.0D,
-                // The items that cause the hamster to be tempted:
+        this.goalSelector.add(4, new HamsterBegGoal(this));
+
+        this.goalSelector.add(5, new HamsterTemptGoal(this, 1.4D,
                 stack -> stack.isOf(ModItems.SLICED_CUCUMBER), false));
 
-        // Look at player occasionally
-        this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-        this.goalSelector.add(6, new LookAroundGoal(this));
+        this.goalSelector.add(6, new SitGoal(this));
 
-        // (Optionally) some flee logic if not tamed
-        this.goalSelector.add(7, new FleeEntityGoal<>(this, PlayerEntity.class,
-                // 6 block radius
-                6.0F,
-                1.0D, // walk speed
-                1.2D, // sprint speed
-                living -> !this.isTamed() // condition: only flee if not tamed
-        ));
+        this.goalSelector.add(7, new HamsterSleepGoal(this)); // wild hamsters sleep in day
+        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.75D));
+
+        this.goalSelector.add(9, new HamsterShoulderRideGoal(this));
+        this.goalSelector.add(10, new DiamondSniffGoal(this));
+        this.goalSelector.add(11, new CreeperDetectGoal(this));
+
+        this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+        this.goalSelector.add(13, new LookAroundGoal(this));
+    }
+
+    /* -------------------------------------------------------------------------
+     *                       Prevent Rotation While Sleeping
+     * ------------------------------------------------------------------------- */
+
+    @Override
+    public void changeLookDirection(double cursorX, double cursorY) {
+        // --- ADDED: Prevent rotation while sleeping ---
+        if (this.isSleeping()) {
+            // Do NOTHING to prevent rotation
+            return;
+        }
+        // --- END Rotation Prevention ---
+
+        super.changeLookDirection(cursorX, cursorY); // Default behavior when not sleeping
+    }
+
+    /* -------------------------------------------------------------------------
+     *                             Modified Sitting Logic for Sleep
+     * ------------------------------------------------------------------------- */
+
+    @Override
+    public void setSitting(boolean sitting) {
+        // --- MODIFIED: Use "sitting" state to represent "sleeping" ---
+        super.setSitting(sitting); // Call super to handle vanilla sitting logic
+
+        // --- ADD CUSTOM LOGIC HERE WHEN SLEEPING/WAKING ---
+        AdorableHamsterPets.LOGGER.info("setSitting() called: sitting = " + sitting + ", Entity ID: " + this.getId()); // DEBUG LOGGING
+        if (sitting) {
+            AdorableHamsterPets.LOGGER.info("Hamster is now SLEEPING (sitting state: true)"); // Optional log
+            // Play sleep animation or sound HERE when sitting STARTS (going to sleep)
+            // --- ADDED SLEEP SOUND LOGIC ---
+            SoundEvent sleepSound = getRandomSoundFrom(ModSounds.HAMSTER_SLEEP_SOUNDS, this.random);
+            this.getWorld().playSound(null, this.getBlockPos(), sleepSound, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        } else {
+            AdorableHamsterPets.LOGGER.info("Hamster is now AWAKE (sitting state: false)"); // Optional log
+            // Play wake-up animation or sound if desired when sitting STOPS (waking up)
+            // (Optional) You could add a "wake up" sound here if you have one
+        }
+    }
+
+    @Override
+    public boolean isSitting() {
+        // --- MODIFIED: "isSitting" now means "isSleeping" for our hamster ---
+        return super.isSitting(); // Just return the vanilla sitting state
     }
 
 
     /* -------------------------------------------------------------------------
-     *                        Taming & Interaction
+     *                        Right-Click Interaction
      * ------------------------------------------------------------------------- */
-
-    // This is called when a player right-clicks on the hamster with an item in hand.
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
+
+        // --- 1. WILD HAMSTER INTERACTIONS ---
         if (!this.isTamed()) {
-            // Attempt to tame with SLICED_CUCUMBER
-            if (stack.isOf(ModItems.SLICED_CUCUMBER)) {
-                this.getWorld().playSound(null, this.getBlockPos(), ModSounds.HAMSTER_BEG1, // pick random or just one
-                        net.minecraft.sound.SoundCategory.NEUTRAL, 1.0F, 1.0F);
-                if (!player.getAbilities().creativeMode) {
-                    stack.decrement(1);
+            AdorableHamsterPets.LOGGER.info("interactMob: Wild hamster interaction check");
+            if (player.isSneaking() && stack.isOf(ModItems.SLICED_CUCUMBER)) {
+                AdorableHamsterPets.LOGGER.info("interactMob: Attempting taming");
+                if (tryTame(player, stack)) {
+                    return ActionResult.SUCCESS;
                 }
-                // 25% chance to tame per feed for example
-                if (this.random.nextInt(4) == 0) {
-                    this.setOwner(player);
-                    this.navigation.stop();
-                    this.getWorld().sendEntityStatus(this, (byte) 7); // heart particles
-                } else {
-                    this.getWorld().sendEntityStatus(this, (byte) 6); // smoke/fail particles
-                }
+            }
+            return ActionResult.PASS;
+        }
+
+        // --- 2. TAMED HAMSTER INTERACTIONS ---
+        if (isIsFood(stack)) {
+            AdorableHamsterPets.LOGGER.info("interactMob: Food item detected: " + stack.getItem().getName().getString());
+            if (checkRepeatFoodRefusal(stack, player)) {
+                AdorableHamsterPets.LOGGER.info("interactMob: Food refused (repeat)");
                 return ActionResult.SUCCESS;
             }
-        } else {
-            // Already tamed => we can do other interactions
-            if (player.isSneaking()) {
-                // If sneaking => toggle "stay" = sleep
-                boolean newState = !this.isSleeping();
-                this.setSleeping(newState);
-                if (newState) {
-                    this.getWorld().playSound(null, this.getBlockPos(), ModSounds.HAMSTER_SLEEP1,
-                            net.minecraft.sound.SoundCategory.NEUTRAL, 1.0F, 1.0F);
-                }
+
+            boolean feedingHappened = tryFeedingAsTamed(player, stack);
+            if (feedingHappened) {
+                AdorableHamsterPets.LOGGER.info("interactMob: Feeding action happened");
+                this.lastFoodItem = stack.copy();
                 return ActionResult.SUCCESS;
-            } else {
-                // Possibly some other tamed interaction, like opening cheek pouch inventory
-                // Or placing on shoulder, etc.
             }
+            // If no feeding action occurred, we continue to other interactions.
         }
-        return super.interactMob(player, hand);
+        // c. → If the player is sneaking:
+        else if (player.isSneaking()) {
+            AdorableHamsterPets.LOGGER.info("interactMob: Player sneaking - opening inventory");
+            openHamsterInventory(player);
+            return ActionResult.SUCCESS;
+        }
+        // Otherwise (if not wild, not feeding, not sneaking): => SIT TOGGLE REACHED!
+        else {
+            // a. → Toggle the sitting as the final action.
+            // --- DEBUG LOGGING BEFORE SIT TOGGLE ---
+            AdorableHamsterPets.LOGGER.info("interactMob: Sit toggle logic was reached unexpectedly during breeding.");
+            // --- END DEBUG LOGGING ---
+            // --- TRIGGER VANILLA SITTING ---
+            if (!this.getWorld().isClient) {
+                // Toggle sitting state using vanilla setSitting method
+                this.setSitting(!this.isSitting()); // Toggles sitting state (which looks like SLEEPING)
+                this.jumping = false; // Vanilla WolfEntity also does this
+                this.navigation.stop(); // Vanilla WolfEntity also does this
+                this.setTarget(null);  // Vanilla WolfEntity also does this
+            }
+            // c. → Stop.
+            // --- REMOVED RETURN FROM HERE ---
+        }
+
+        // === MOVED DEFAULT RETURN STATEMENT TO HERE ===
+        return ActionResult.SUCCESS; // Default return for sleep toggle and other cases
+        // =============================================
     }
 
-    // TameableEntity helper
-    public void setOwner(PlayerEntity player) {
-        super.setOwner(player);
-        this.setTamed(true);
-        this.navigation.stop();
-    }
 
     /* -------------------------------------------------------------------------
-     *                              Mood Logic
+     *                      Helper Methods for interactMob
      * ------------------------------------------------------------------------- */
 
-    // Example method: called whenever the hamster is fed
-    // You’d call this from wherever you handle feeding code
-    public void onFedBy(PlayerEntity feeder, ItemStack foodStack) {
-        // If it’s the same item as last time => lower mood
-        if (ItemStack.areItemsEqual(foodStack, lastFoodItem)) {
-            // degrade mood
-            this.setMood(Math.max(MOOD_SAD, getMood() - 1));
+    private boolean tryTame(PlayerEntity player, ItemStack itemStack) {
+        if (!itemStack.isOf(ModItems.SLICED_CUCUMBER)) {
+            return false; // Not the right item => no taming attempt
+        }
+
+        SoundEvent begSound = ModSounds.getRandomSoundFrom(ModSounds.HAMSTER_BEG_SOUNDS, this.random);
+        this.getWorld().playSound(null, this.getBlockPos(), begSound, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+
+        // Decrement the item if not in creative
+        if (!player.getAbilities().creativeMode) {
+            itemStack.decrement(1);
+        }
+
+        // Random chance to succeed
+        if (this.random.nextInt(3) == 0) {
+            // Success: set owner, set tamed, etc.
+            this.setOwnerUuid(player.getUuid());
+            this.setTamed(true, true);
+            this.getNavigation().stop();
+            this.setSleeping(false);
+            this.setTarget(null);
+            this.getWorld().sendEntityStatus(this, (byte)7);
+
+            // --- ACHIEVEMENT TRIGGER ---
+            if (!this.getWorld().isClient && player instanceof ServerPlayerEntity serverPlayer) { // Check server-side and player type
+                Criteria.TAME_ANIMAL.trigger(serverPlayer, this);
+            }
+
         } else {
-            // otherwise raise or reset mood
-            this.setMood(MOOD_HAPPY);
+            // Failure
+            this.getWorld().sendEntityStatus(this, (byte)6);
         }
-        this.lastFoodItem = foodStack.copy();
+
+        // We did attempt taming, so return true to indicate the logic was executed
+        return true;
     }
 
-    // You can then reference getMood() for AI or animation logic, or
-    // further expand to track mood timer, degrade over time, etc.
+    private boolean checkRepeatFoodRefusal(ItemStack currentStack, PlayerEntity player) {
+        // 1) If hamster has never been fed OR item is different => no refusal
+        if (this.lastFoodItem.isEmpty() ||
+                !ItemStack.areItemsEqual(this.lastFoodItem, currentStack)) {
+            return false;
+        }
+
+        // 2) Same item => hamster refuses
+        this.setRefusingFood(true);      // triggers your "anim_hamster_no"
+        this.refuseTimer = 40;          // 2 seconds of refusal
+
+        // 3) Send a message to the player
+        player.sendMessage(Text.literal("Hamster wants to try something different."), true);
+
+        return true;
+    }
+
+
+    // List of items that can feed or heal the hamster
+
+    private boolean tryFeedingAsTamed(PlayerEntity player, ItemStack stack) {
+        // Check if the item is considered food for hamsters (using the isIsFood helper method)
+        boolean isFood = isIsFood(stack);
+        // Check if the item is specifically STEAMED_GREEN_BEANS (for buffs)
+        boolean isBuffItem = (stack.isOf(ModItems.STEAMED_GREEN_BEANS));
+        // Check if the hamster's health is below maximum (can heal)
+        boolean canHeal = (this.getHealth() < this.getMaxHealth());
+        // Check if the item is SUNFLOWER_SEEDS (for breeding)
+        boolean isBreedingFood = stack.isOf(ModItems.SUNFLOWER_SEEDS);
+        // Check if the hamster is an adult and ready to breed (breeding age is 0 and not already in love)
+        boolean readyToBreed = (this.getBreedingAge() == 0 && !this.isInLove());
+
+        // If the item is NOT a food item and NOT a buff item, we can't feed, so return false
+        if (!isFood && !isBuffItem) {
+            return false; // Not a valid feeding item
+        }
+
+        // We only proceed with feeding if at least one condition is met:
+        // either the hamster can heal, or it's breeding food and ready to breed, or it's a buff item
+        if (!canHeal && !readyToBreed && !isBuffItem) {
+            return false; // No feeding needed or item not relevant for current state
+        }
+
+        boolean feedingOccurred = false; // Initialize a flag to track if any feeding action happened
+
+        // If not in creative mode, decrement the stack of the item being used
+        if (!player.getAbilities().creativeMode) {
+            stack.decrement(1);
+        }
+
+        // 1) Heal if needed
+        if (canHeal) {
+            this.heal(2.0F); // Heal the hamster by 2 health points
+            feedingOccurred = true; // Mark that a feeding action (healing) occurred
+        }
+
+        // 2) Breed if it's the special breeding food and hamster is ready to breed
+        if (isBreedingFood && readyToBreed) {
+            this.setSleeping(false); // --- ADDED: Force hamster to NOT sleep before breeding ---
+            this.setCustomInLove(player); // Set the hamster in "custom love" mode (for breeding animation/logic)
+            this.setInLove(true);          // Set the data tracker 'inLove' to true (for visual hearts)
+            feedingOccurred = true; // Mark that a feeding action (breeding setup) occurred
+        }
+
+        // 3) Buff logic for STEAMED_GREEN_BEANS
+        if (isBuffItem) {
+            // Apply buff effects (e.g., Speed, Jump Boost, etc.) - your buff logic here
+            // Example buffs are already in your original code
+            int duration = 3600; // 3 minutes in ticks
+            this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, duration, 1));
+            this.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, duration, 1));
+            this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, duration, 0));
+            this.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, duration, 0));
+            this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, duration, 0));
+
+            // Play a "celebrate" sound when buffed
+            SoundEvent buffSound = getRandomSoundFrom(ModSounds.HAMSTER_CELEBRATE_SOUNDS, this.random);
+            this.getWorld().playSound(null, this.getBlockPos(), buffSound, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+
+            feedingOccurred = true; // Mark that a feeding action (buffing) occurred
+        }
+
+        return feedingOccurred; // Return true if any feeding action (heal, breed, or buff) was executed, false otherwise
+    }
+
+    private static boolean isIsFood(ItemStack stack) {
+        final Set<Item> HAMSTER_FOODS = new HashSet<>(Arrays.asList(
+                ModItems.HAMSTER_FOOD_MIX,
+                ModItems.SUNFLOWER_SEEDS,
+                ModItems.GREEN_BEANS,
+                ModItems.CUCUMBER,
+                ModItems.GREEN_BEAN_SEEDS,
+                ModItems.CUCUMBER_SEEDS,
+                Items.APPLE,
+                Items.CARROT,
+                Items.MELON_SLICE,
+                Items.SWEET_BERRIES,
+                Items.BEETROOT,
+                Items.WHEAT,
+                Items.WHEAT_SEEDS
+        ));
+
+        boolean isFood = HAMSTER_FOODS.contains(stack.getItem());
+        return isFood;
+    }
+
+    public boolean isCheekPouchEmpty() {
+        // I haven’t yet implemented a real inventory, just returning true or false for now
+        // but once I do have one, it will be something like:
+        // return this.cheekInventory.isEmpty();
+        return true;
+    }
+
+
+    private void openHamsterInventory(PlayerEntity player) {
+        player.sendMessage(Text.literal("Opening hamster cheek pouch..."), true);
+    }
+
 
     /* -------------------------------------------------------------------------
-     *                            Sleeping Logic
+     *                           Food Refusal Logic
      * ------------------------------------------------------------------------- */
 
-    // We'll handle the day sleeping for WILD hamsters via a simple check in the custom goal
-    // Tamed hamsters only sleep if commanded to "stay" (i.e. isSleeping=true).
-    // See the "HamsterSleepGoal" below.
+
+
 
     /* -------------------------------------------------------------------------
-     *                    Example Diamond Sniff & Creeper Detect
+     *                            Tick Logic
      * ------------------------------------------------------------------------- */
+
+    private int tamingCooldown = 0;  // When > 0, do not allow sleep toggling
 
     @Override
     public void tick() {
         super.tick();
 
-        // 1. Diamond sniff while on player’s shoulder
-        if (this.hasPlayerRider()) {
-            // e.g. check if diamond ore is near
-            // if so => play squeaks every 30 seconds
+        if (this.isRefusingFood()) {
+            if (refuseTimer > 0) {
+                refuseTimer--;
+            } else {
+                // Timer finished => stop refusing
+                this.setRefusingFood(false);
+            }
         }
 
-        // 2. Creeper detect if the hamster is on the player's shoulder
-        // or near the player: if a creeper is targeting the player, hamster squeaks, etc.
+        // Decrease tamingCooldown each tick if it's above 0
+        if (tamingCooldown > 0) {
+            tamingCooldown--;
+        }
+
+        if (this.hasPlayerRider()) {
+            if (this.customLoveTimer > 0) {
+                this.customLoveTimer--;
+            }
+        }
     }
 
-    public boolean hasPlayerRider() {
-        // Quick check if the hamster is "riding" the player or on their shoulder
-        // For a parrot-like approach, you'd do a custom logic or replicate parrot mechanics
-        Entity vehicle = this.getVehicle();
-        return vehicle instanceof PlayerEntity;
-    }
 
     /* -------------------------------------------------------------------------
      *                    Sound Events (Ambient, Hurt, Death)
      * ------------------------------------------------------------------------- */
-
     @Override
     protected SoundEvent getAmbientSound() {
-        if (this.isSleeping()) {
-            // pick a random SLEEP_SOUNDS array element
-            return ModSounds.HAMSTER_SLEEP1;
-        } else {
-            // pick a random from AMBIENT_SOUNDS
-            return ModSounds.HAMSTER_IDLE1;
+
+//        if (this.creeperSeesPlayer()) {
+//            return getRandomSoundFrom(ModSounds.HAMSTER_CREEPER_DETECT_SOUNDS, this.random);
+//        }
+
+        if (this.isNearDiamond()) {
+            return getRandomSoundFrom(ModSounds.HAMSTER_DIAMOND_SNIFF_SOUNDS, this.random);
         }
+
+        if (this.isBegging()) {
+            return getRandomSoundFrom(ModSounds.HAMSTER_BEG_SOUNDS, this.random);
+        }
+
+        if (this.isSitting()) {
+            return getRandomSoundFrom(ModSounds.HAMSTER_SLEEP_SOUNDS, this.random);
+        }
+
+        return getRandomSoundFrom(ModSounds.HAMSTER_IDLE_SOUNDS, this.random);
     }
+
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        // pick random from HURT_SOUNDS
-        return ModSounds.HAMSTER_HURT1;
+        return getRandomSoundFrom(ModSounds.HAMSTER_HURT_SOUNDS, this.random);
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        // pick random from DEATH_SOUNDS
-        return ModSounds.HAMSTER_DEATH1;
+        return getRandomSoundFrom(ModSounds.HAMSTER_DEATH_SOUNDS, this.random);
     }
 
     /* -------------------------------------------------------------------------
-     *                      Breeding & Offspring (optional)
+     *                    Changing Footstep Volume and Pitch
+     * ------------------------------------------------------------------------- */
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        try {
+            java.lang.reflect.Method method = AbstractBlock.class.getDeclaredMethod("getSoundGroup", BlockState.class);
+            method.setAccessible(true);
+            BlockSoundGroup group = (BlockSoundGroup) method.invoke(state.getBlock(), state);
+            this.playSound(group.getStepSound(), 0.5F, 1.2F);
+        } catch (Exception ex) {
+            AdorableHamsterPets.LOGGER.error("Error obtaining block sound group for footstep", ex);
+            this.playSound(net.minecraft.sound.SoundEvents.BLOCK_NYLIUM_STEP, 0.5F, 1.2F);
+        }
+    }
+
+
+    /* -------------------------------------------------------------------------
+     *      Helper Methods to Play Diamond Sniff and Creeper Detect Sounds... not sure if we need these or not
+     * ------------------------------------------------------------------------- */
+
+    public void playDiamondSniffSound() {
+        // pick a random from DIAMOND_SNIFF_SOUNDS array
+        this.getWorld().playSound(null, this.getBlockPos(),
+                getRandomSoundFrom(HAMSTER_DIAMOND_SNIFF_SOUNDS, this.random),
+                net.minecraft.sound.SoundCategory.NEUTRAL,
+                1.0F, 1.0F);
+    }
+
+    public void playCreeperDetectSound() {
+        // pick a random from DIAMOND_SNIFF_SOUNDS array
+        this.getWorld().playSound(null, this.getBlockPos(),
+                getRandomSoundFrom(HAMSTER_CREEPER_DETECT_SOUNDS, this.random),
+                net.minecraft.sound.SoundCategory.NEUTRAL,
+                1.0F, 1.0F);
+    }
+
+
+    /* -------------------------------------------------------------------------
+     *                      Breeding & Offspring
      * ------------------------------------------------------------------------- */
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity mate) {
-        // If you want hamsters to be breedable, define the child entity
+        // --- ADDED DEBUG LOGGING - METHOD START ---
+        AdorableHamsterPets.LOGGER.info("HamsterEntity: createChild() - START, Parent 1 Class: " + this.getClass().getSimpleName() + ", Parent 2 Class: " + mate.getClass().getSimpleName());
+        // --- END DEBUG LOGGING ---
+
         HamsterEntity baby = ModEntities.HAMSTER.create(world);
         if (baby != null && this.isTamed()) {
             baby.setOwner((PlayerEntity) this.getOwner());
-            baby.setTamed(true);
             baby.setVariant(this.getVariant());
-            // Or random
         }
+
+        // --- ADDED DEBUG LOGGING - BEFORE RETURN ---
+        AdorableHamsterPets.LOGGER.info("HamsterEntity: createChild() - END, Baby ID: " + (baby != null ? baby.getId() : "null"));
+        // --- END DEBUG LOGGING ---
         return baby;
     }
 
-    // If you want certain items to be recognized as "breeding food"
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        // e.g. cucumbers or seeds
-        return stack.isOf(ModItems.SLICED_CUCUMBER);
+        return stack.isOf(ModItems.HAMSTER_FOOD_MIX);
     }
+
 
     /* -------------------------------------------------------------------------
      *                    Geckolib Animation & Controllers
@@ -375,33 +722,61 @@ public class HamsterEntity extends TameableEntity implements GeoEntity {
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
                 new AnimationController<>(this, "movementController", 5, event -> {
-                    // Example logic. You can refine with your states
-                    if (this.isSleeping()) {
-                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_sleeping"));
+                    AdorableHamsterPets.LOGGER.info("Animation Tick START - isSitting: " + this.isSitting() + ", isRefusingFood: " + this.isRefusingFood() + ", isMoving: " + (this.getVelocity().horizontalLengthSquared() > 0.0001) + ", isBegging: " + this.isBegging()); // <---- VERY DETAILED CONDITION LOGGING
+
+                    // 1) Check if refusing food => "anim_hamster_no"
+                    if (this.isRefusingFood()) {
+                        AdorableHamsterPets.LOGGER.info("Condition 1 (isRefusingFood) is TRUE"); // <---- LOGGING CONDITION CHECK
+                        AdorableHamsterPets.LOGGER.info("Playing anim_hamster_no");
+                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_no"));
+                    } else {
+                        AdorableHamsterPets.LOGGER.info("Condition 1 (isRefusingFood) is FALSE"); // <---- LOGGING CONDITION CHECK
                     }
-                    // If moving quickly => run
-                    else if (this.getVelocity().horizontalLengthSquared() > 0.02) {
-                        // maybe decide walk vs. run threshold
+
+
+                    // 2) Movement checks (evaluate movement first)
+                    if (this.getVelocity().horizontalLengthSquared() > 0.0001) {
+                        AdorableHamsterPets.LOGGER.info("Condition 2 (isMoving) is TRUE"); // <---- LOGGING CONDITION CHECK
                         double speed = this.getVelocity().horizontalLength();
-                        if (speed > 0.25) {
+                        if (speed > 0.05) {
+                            AdorableHamsterPets.LOGGER.info("Playing anim_hamster_running");
                             return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_running"));
                         } else {
+                            AdorableHamsterPets.LOGGER.info("Playing anim_hamster_walking");
                             return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_walking"));
                         }
+                    } else {
+                        AdorableHamsterPets.LOGGER.info("Condition 2 (isMoving) is FALSE"); // <---- LOGGING CONDITION CHECK
                     }
-                    // If “begging” is flagged?
-                    // else if (someBegCondition) {
-                    //     return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_begging"));
-                    // }
-                    else {
-                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_idle"));
+
+
+                    // 3) **CORRECTED ORDER: Check if sitting (sleeping) => "anim_hamster_sleeping"**
+                    if (this.isSitting()) {
+                        AdorableHamsterPets.LOGGER.info("Condition 3 (isSitting) is TRUE"); // <---- LOGGING CONDITION CHECK
+                        AdorableHamsterPets.LOGGER.info("Playing anim_hamster_sleeping");
+                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_sleeping"));
+                    } else {
+                        AdorableHamsterPets.LOGGER.info("Condition 3 (isSitting) is FALSE"); // <---- LOGGING CONDITION CHECK
                     }
+
+
+                    // 4) If begging => "anim_hamster_begging"
+                    if (this.isBegging()) {
+                        AdorableHamsterPets.LOGGER.info("Condition 4 (isBegging) is TRUE"); // <---- LOGGING CONDITION CHECK
+                        AdorableHamsterPets.LOGGER.info("Playing anim_hamster_begging");
+                        return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_begging"));
+                    } else {
+                        AdorableHamsterPets.LOGGER.info("Condition 4 (isBegging) is FALSE"); // <---- LOGGING CONDITION CHECK
+                    }
+
+
+                    // 5) Default => "anim_hamster_idle"
+                    AdorableHamsterPets.LOGGER.info("Condition 5 (Default) - Playing anim_hamster_idle"); // <---- LOGGING CONDITION REACHED
+                    return event.setAndContinue(RawAnimation.begin().thenPlay("anim_hamster_idle"));
                 })
         );
     }
 
-    // Required by GeoEntity
-    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenPlay("anim_hamster_idle");
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;

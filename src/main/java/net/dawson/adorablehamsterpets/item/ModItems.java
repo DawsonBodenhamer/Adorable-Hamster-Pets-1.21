@@ -4,6 +4,7 @@ package net.dawson.adorablehamsterpets.item;
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.block.ModBlocks;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
+import net.dawson.adorablehamsterpets.item.custom.CheeseItem;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
@@ -28,7 +29,7 @@ public class ModItems {
     public static final Item STEAMED_GREEN_BEANS = registerItem("steamed_green_beans",new Item(new Item.Settings().food(ModFoodComponents.STEAMED_GREEN_BEANS)));
     public static final Item HAMSTER_FOOD_MIX = registerItem("hamster_food_mix",new Item(new Item.Settings().food(ModFoodComponents.HAMSTER_FOOD_MIX)));
 
-    public static final Item CHEESE = registerItem("cheese", new Item(new Item.Settings()));
+    public static final Item CHEESE = registerItem("cheese", new CheeseItem(new Item.Settings()));
 
 
     private static Item registerItem(String name, Item item) {
