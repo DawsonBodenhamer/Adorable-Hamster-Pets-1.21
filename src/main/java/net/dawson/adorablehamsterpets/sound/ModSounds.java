@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
 /**
- * This class registers all your custom hamster SoundEvents
+ * This class registers all custom hamster SoundEvents
  * and also contains public arrays of hamster sounds, plus a helper
  * method for retrieving a random sound from an array.
  */
@@ -17,26 +17,34 @@ public class ModSounds {
     /**
      * =========== SoundEvent Registrations ===========
      */
+
+    public static final SoundEvent HAMSTER_THROW = registerSoundEvent("hamster_throw");
+    public static final SoundEvent HAMSTER_IMPACT = registerSoundEvent("hamster_impact");
+
+    public static final SoundEvent HAMSTER_ATTACK1 = registerSoundEvent("hamster_attack1");
+    public static final SoundEvent HAMSTER_ATTACK2 = registerSoundEvent("hamster_attack2");
+    public static final SoundEvent HAMSTER_ATTACK3 = registerSoundEvent("hamster_attack3");
+    public static final SoundEvent HAMSTER_ATTACK4 = registerSoundEvent("hamster_attack4");
+    public static final SoundEvent HAMSTER_ATTACK5 = registerSoundEvent("hamster_attack5");
+    public static final SoundEvent HAMSTER_ATTACK6 = registerSoundEvent("hamster_attack6");
+
     public static final SoundEvent HAMSTER_BEG1 = registerSoundEvent("hamster_beg1");
     public static final SoundEvent HAMSTER_BEG2 = registerSoundEvent("hamster_beg2");
+    public static final SoundEvent HAMSTER_BEG3 = registerSoundEvent("hamster_beg3");
 
     public static final SoundEvent HAMSTER_DEATH1 = registerSoundEvent("hamster_death1");
     public static final SoundEvent HAMSTER_DEATH2 = registerSoundEvent("hamster_death2");
     public static final SoundEvent HAMSTER_DEATH3 = registerSoundEvent("hamster_death3");
-    public static final SoundEvent HAMSTER_DEATH4 = registerSoundEvent("hamster_death4");
-    public static final SoundEvent HAMSTER_DEATH5 = registerSoundEvent("hamster_death5");
 
     public static final SoundEvent HAMSTER_HURT1 = registerSoundEvent("hamster_hurt1");
     public static final SoundEvent HAMSTER_HURT2 = registerSoundEvent("hamster_hurt2");
     public static final SoundEvent HAMSTER_HURT3 = registerSoundEvent("hamster_hurt3");
     public static final SoundEvent HAMSTER_HURT4 = registerSoundEvent("hamster_hurt4");
-    public static final SoundEvent HAMSTER_HURT5 = registerSoundEvent("hamster_hurt5");
 
     public static final SoundEvent HAMSTER_IDLE1 = registerSoundEvent("hamster_idle1");
     public static final SoundEvent HAMSTER_IDLE2 = registerSoundEvent("hamster_idle2");
     public static final SoundEvent HAMSTER_IDLE3 = registerSoundEvent("hamster_idle3");
     public static final SoundEvent HAMSTER_IDLE4 = registerSoundEvent("hamster_idle4");
-    public static final SoundEvent HAMSTER_IDLE5 = registerSoundEvent("hamster_idle5");
 
     public static final SoundEvent HAMSTER_SLEEP1 = registerSoundEvent("hamster_sleep1");
     public static final SoundEvent HAMSTER_SLEEP2 = registerSoundEvent("hamster_sleep2");
@@ -53,18 +61,34 @@ public class ModSounds {
     public static final SoundEvent HAMSTER_CELEBRATE2 = registerSoundEvent("hamster_celebrate2");
     public static final SoundEvent HAMSTER_CELEBRATE3 = registerSoundEvent("hamster_celebrate3");
 
+    public static final SoundEvent HAMSTER_AIRBORNE_CELEBRATION = registerSoundEvent("hamster_airborne_celebration");
+    public static final SoundEvent HAMSTER_WOW = registerSoundEvent("hamster_wow");
+
+    public static final SoundEvent HAMSTER_WAKE_UP1 = registerSoundEvent("hamster_wake_up1");
+    public static final SoundEvent HAMSTER_WAKE_UP2 = registerSoundEvent("hamster_wake_up2");
+    public static final SoundEvent HAMSTER_WAKE_UP3 = registerSoundEvent("hamster_wake_up3");
+
 
     /**
      * =========== Public Sound Arrays ===========
      * These can be accessed by any class (e.g. HamsterEntity, CheeseItem)
      * to easily pick random hamster sounds.
      */
+
+    public static final SoundEvent[] HAMSTER_ATTACK_SOUNDS = {
+            HAMSTER_ATTACK1,
+            HAMSTER_ATTACK2,
+            HAMSTER_ATTACK3,
+            HAMSTER_ATTACK4,
+            HAMSTER_ATTACK5,
+            HAMSTER_ATTACK6
+    };
+
     public static final SoundEvent[] HAMSTER_IDLE_SOUNDS = {
             HAMSTER_IDLE1,
             HAMSTER_IDLE2,
             HAMSTER_IDLE3,
-            HAMSTER_IDLE4,
-            HAMSTER_IDLE5
+            HAMSTER_IDLE4
     };
 
     public static final SoundEvent[] HAMSTER_SLEEP_SOUNDS = {
@@ -77,21 +101,19 @@ public class ModSounds {
             HAMSTER_HURT1,
             HAMSTER_HURT2,
             HAMSTER_HURT3,
-            HAMSTER_HURT4,
-            HAMSTER_HURT5
+            HAMSTER_HURT4
     };
 
     public static final SoundEvent[] HAMSTER_DEATH_SOUNDS = {
             HAMSTER_DEATH1,
             HAMSTER_DEATH2,
-            HAMSTER_DEATH3,
-            HAMSTER_DEATH4,
-            HAMSTER_DEATH5
+            HAMSTER_DEATH3
     };
 
     public static final SoundEvent[] HAMSTER_BEG_SOUNDS = {
             HAMSTER_BEG1,
-            HAMSTER_BEG2
+            HAMSTER_BEG2,
+            HAMSTER_BEG3
     };
 
     public static final SoundEvent[] HAMSTER_CREEPER_DETECT_SOUNDS = {
@@ -111,6 +133,17 @@ public class ModSounds {
             HAMSTER_CELEBRATE3
     };
 
+    public static final SoundEvent[] HAMSTER_FLYING_SOUNDS = {
+            HAMSTER_WOW,
+            HAMSTER_AIRBORNE_CELEBRATION
+    };
+
+    public static final SoundEvent[] HAMSTER_WAKE_UP_SOUNDS = {
+            HAMSTER_WAKE_UP1,
+            HAMSTER_WAKE_UP2,
+            HAMSTER_WAKE_UP3
+    };
+
 
     /**
      * =========== Helper Method ===========
@@ -122,6 +155,7 @@ public class ModSounds {
     public static SoundEvent getRandomSoundFrom(SoundEvent[] sounds, Random random) {
         if (sounds == null || sounds.length == 0) {
             // fallback to a known sound or null if you prefer
+            AdorableHamsterPets.LOGGER.warn("Attempted to get random sound from empty or null array!"); // Added warning
             return null;
         }
         int index = random.nextInt(sounds.length);

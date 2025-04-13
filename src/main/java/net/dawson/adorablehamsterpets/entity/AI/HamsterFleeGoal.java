@@ -8,11 +8,6 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-/**
- * This goal replicates CatEntity's logic:
- * - Flee from players if hamster is NOT tamed and the player is NOT crouching with SLICED_CUCUMBER.
- * - Flee from all hostile mobs if hamster is NOT tamed.
- */
 public class HamsterFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 
     private final HamsterEntity hamster;
@@ -24,56 +19,45 @@ public class HamsterFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
             double slowSpeed,
             double fastSpeed
     ) {
-        // We pass a custom 'fleeFromPredicate' in super(...).
-        // We'll fill that in below.
         super(
                 hamster,
                 fleeFromType,
                 distance,
                 slowSpeed,
                 fastSpeed,
-                living -> shouldFlee(hamster, living) // custom static method
+                living -> shouldFlee(hamster, living) // Use private helper
         );
         this.hamster = hamster;
     }
 
-    /**
-     * The main logic to decide if the hamster should flee from 'living'.
-     */
+    // Keep shouldFlee private as it uses instance field 'hamster'
     private static boolean shouldFlee(HamsterEntity hamster, LivingEntity living) {
-        // If hamster is tamed, no fleeing from players or mobs by default:
         if (hamster.isTamed()) {
-            return false;
+            return false; // Tamed hamsters don't flee this way
         }
 
-        // If hamster is NOT tamed, check:
-        // 1) Is it a hostile mob?
         if (living instanceof HostileEntity) {
-            return true; // Always flee from hostile if wild
+            return true; // Always flee hostiles
         }
 
-        // 2) Is it a player?
         if (living instanceof PlayerEntity player) {
-            // a) If the player is crouching with SLICED_CUCUMBER,
-            //    do NOT flee.
-            return !isCrouchingWithCucumber(player);
-            // otherwise, yes flee from this player
+            // Flee players unless they are safe (sneaking with cucumber)
+            return !isPlayerSafe(player);
         }
 
-        // If it’s any other entity (like a cow, sheep, etc.),
-        // we can choose not to flee them:
-        return false;
+        return false; // Don't flee other non-hostile entities
     }
 
-    private static boolean isCrouchingWithCucumber(PlayerEntity player) {
+    // --- Make this helper public static ---
+    public static boolean isPlayerSafe(PlayerEntity player) {
         if (!player.isSneaking()) {
             return false;
         }
-        // Check main-hand or off-hand for SLICED_CUCUMBER
         ItemStack main = player.getMainHandStack();
         ItemStack off = player.getOffHandStack();
         boolean mainIsCucumber = main.isOf(ModItems.SLICED_CUCUMBER);
         boolean offIsCucumber  = off.isOf(ModItems.SLICED_CUCUMBER);
         return (mainIsCucumber || offIsCucumber);
     }
+    // --- End Change ---
 }

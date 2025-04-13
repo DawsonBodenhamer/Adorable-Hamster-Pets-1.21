@@ -19,7 +19,7 @@
                   "block": "adorablehamsterpets:green_beans_crop",
                   "condition": "minecraft:block_state_property",
                   "properties": {
-                    "age": "6"
+                    "age": "3"
                   }
                 }
               ],
@@ -41,7 +41,7 @@
           "block": "adorablehamsterpets:green_beans_crop",
           "condition": "minecraft:block_state_property",
           "properties": {
-            "age": "6"
+            "age": "3"
           }
         }
       ],

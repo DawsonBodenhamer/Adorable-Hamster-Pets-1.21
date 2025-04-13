@@ -18,17 +18,19 @@
 		"main": [
 			"net.dawson.adorablehamsterpets.AdorableHamsterPets"
 		],
-		"fabric-datagen": [
-			"net.dawson.adorablehamsterpets.AdorableHamsterPetsDataGenerator"
-		],
 		"client": [
 			"net.dawson.adorablehamsterpets.AdorableHamsterPetsClient"
+		],
+		"fabric-datagen": [
+			"net.dawson.adorablehamsterpets.AdorableHamsterPetsDataGenerator"
 		]
 	},
-
+	"mixins": [
+		"adorablehamsterpets.mixins.json"
+	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21",
+		"minecraft": "~1.21.1",
 		"java": ">=21",
 		"fabric-api": "*"
 	},

@@ -16,34 +16,39 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "body",
+					"name": "body_parent",
 					"parent": "root",
+					"pivot": [0, 1.5, 3]
+				},
+				{
+					"name": "body_child",
+					"parent": "body_parent",
 					"pivot": [0, 1.5, 3],
 					"cubes": [
 						{"origin": [-3, 0.5, -2], "size": [6, 4, 6], "inflate": 0.01, "uv": [0, 0]}
 					]
 				},
 				{
-					"name": "crown_cape",
-					"parent": "body",
-					"pivot": [0, 4.5, -1],
+					"name": "head_parent",
+					"parent": "body_child",
+					"pivot": [-0.5, 3.5, 0]
+				},
+				{
+					"name": "head_child",
+					"parent": "head_parent",
+					"pivot": [-0.5, 3.5, 0]
+				},
+				{
+					"name": "nose",
+					"parent": "head_child",
+					"pivot": [0, 0, -1],
 					"cubes": [
-						{"origin": [-3, 0.5, -2], "size": [6, 4, 6], "inflate": 0.25, "uv": [0, 110]}
+						{"origin": [-0.5, 3, -4.1], "size": [1, 1, 1], "uv": [27, 8]}
 					]
 				},
 				{
-					"name": "head_rot",
-					"parent": "body",
-					"pivot": [-0.5, 3.5, 0]
-				},
-				{
-					"name": "head",
-					"parent": "head_rot",
-					"pivot": [-0.5, 3.5, 0]
-				},
-				{
-					"name": "armor_biped_head",
-					"parent": "head",
+					"name": "head_skull",
+					"parent": "head_child",
 					"pivot": [0, 2, -2],
 					"cubes": [
 						{"origin": [-2.5, 2, -4], "size": [5, 4, 4], "uv": [1, 11]}
@@ -51,28 +56,28 @@
 				},
 				{
 					"name": "ears",
-					"parent": "head",
+					"parent": "head_child",
 					"pivot": [1.5, 5, -2]
 				},
 				{
-					"name": "leftEar",
+					"name": "left_ear",
 					"parent": "ears",
 					"pivot": [1.5, 5, -2],
 					"cubes": [
-						{"origin": [1.5, 5, -2], "size": [2, 2, 0], "inflate": 0.01, "uv": [0, 11]}
+						{"origin": [1.5, 4, -1.9], "size": [2, 3, 1], "inflate": 0.01, "uv": [9, 25]}
 					]
 				},
 				{
-					"name": "rightEar",
+					"name": "right_ear",
 					"parent": "ears",
 					"pivot": [-1.5, 5, -2],
 					"cubes": [
-						{"origin": [-3.5, 5, -2], "size": [2, 2, 0], "inflate": 0.01, "uv": [0, 11], "mirror": true}
+						{"origin": [-3.5, 4, -1.9], "size": [2, 3, 1], "inflate": 0.01, "uv": [9, 25], "mirror": true}
 					]
 				},
 				{
 					"name": "cheeks",
-					"parent": "head",
+					"parent": "head_child",
 					"pivot": [-4.5, 3.5, -2]
 				},
 				{
@@ -88,7 +93,7 @@
 					"parent": "cheeks",
 					"pivot": [2.5, 3.5, -2.5],
 					"cubes": [
-						{"origin": [2.5, 2, -4], "size": [2, 3, 3], "uv": [20, 13]}
+						{"origin": [2.5, 2, -4.1], "size": [2, 3.1, 3.1], "uv": [20, 13]}
 					]
 				},
 				{
@@ -104,36 +109,29 @@
 					"parent": "cheeks",
 					"pivot": [-2.5, 3.5, -2.5],
 					"cubes": [
-						{"origin": [-4.5, 2, -4], "size": [2, 3, 3], "uv": [20, 13], "mirror": true}
+						{"origin": [-4.5, 2, -4.1], "size": [2, 3.1, 3.1], "uv": [20, 13], "mirror": true}
 					]
 				},
 				{
-					"name": "sleep",
-					"parent": "head",
+					"name": "closed_eyes",
+					"parent": "head_child",
 					"pivot": [0, 1, 0],
 					"cubes": [
-						{"origin": [-2.5, 4, -4.025], "size": [5, 1, 0], "inflate": 0.01, "uv": [5, 22]}
+						{"origin": [1.5, 3.9, -4.025], "size": [1, 1.2, 1], "inflate": 0.01, "uv": [9, 21]},
+						{"origin": [-2.5, 3.9, -4.025], "size": [1, 1.2, 1], "inflate": 0.01, "uv": [9, 21]}
 					]
 				},
 				{
 					"name": "tail",
-					"parent": "body",
+					"parent": "body_child",
 					"pivot": [0, 4.5, 4],
 					"cubes": [
-						{"origin": [-1, 3.5, 4], "size": [2, 1, 1], "uv": [19, 0]}
-					]
-				},
-				{
-					"name": "bunny_tail",
-					"parent": "tail",
-					"pivot": [0, 4.5, 4],
-					"cubes": [
-						{"origin": [-1, 3.5, 3], "size": [2, 2, 2], "inflate": 0.02, "uv": [56, 86]}
+						{"origin": [-1, 3.5, 3], "size": [2, 1, 2], "uv": [20, 23]}
 					]
 				},
 				{
 					"name": "right_hand",
-					"parent": "body",
+					"parent": "body_child",
 					"pivot": [-1.5, 1, -1],
 					"cubes": [
 						{"origin": [-2.5, 0, -2], "size": [2, 1, 2], "uv": [24, 2], "mirror": true}
@@ -141,7 +139,7 @@
 				},
 				{
 					"name": "left_hand",
-					"parent": "body",
+					"parent": "body_child",
 					"pivot": [1.5, 1, -1],
 					"cubes": [
 						{"origin": [0.5, 0, -2], "size": [2, 1, 2], "uv": [24, 2]}
@@ -149,7 +147,7 @@
 				},
 				{
 					"name": "legs",
-					"parent": "root",
+					"parent": "body_child",
 					"pivot": [1.5, 1, -1]
 				},
 				{

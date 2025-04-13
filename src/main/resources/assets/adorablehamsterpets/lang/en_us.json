@@ -1,12 +1,4 @@
 {
-  "painting.adorablehamsterpets.world.title": "World",
-  "painting.adorablehamsterpets.world.author": "NanoAttack",
-  "painting.adorablehamsterpets.shrimp.title": "Shrimp",
-  "painting.adorablehamsterpets.shrimp.author": "NanoAttack",
-  "painting.adorablehamsterpets.saw_them.title": "Saw Them",
-  "painting.adorablehamsterpets.saw_them.author": "NanoAttack",
-
-
   "item.adorablehamsterpets.cucumber": "Cucumber",
   "item.adorablehamsterpets.cucumber_seeds": "Cucumber Seeds",
   "item.adorablehamsterpets.cucumber_crop": "Cucumber Crop",
@@ -22,40 +14,68 @@
 
   "entity.adorablehamsterpets.hamster": "Hamster",
 
+  "itemgroup.adorablehamsterpets.main": "Adorable Hamster Pets",
 
-  "itemgroup.adorablehamsterpets.hamster_items" : "Hamster Items",
+  "entity.adorablehamsterpets.hamster.inventory_title": "Hamster Inventory",
 
+  "item.adorablehamsterpets.hamster_guide_book": "Hamster Tips: Guidebook to the Tiny, Furry Heart",
+  "tooltip.adorablehamsterpets.hamster_guide_book.hint1": "(One Time Item!)",
 
-  "sounds.adorablehamsterpets.hamster_beg1": "Hamster squeaks (Beg 1)",
-  "sounds.adorablehamsterpets.hamster_beg2": "Hamster squeaks (Beg 2)",
-  "sounds.adorablehamsterpets.hamster_beg3": "Hamster squeaks (Beg 3)",
-  "sounds.adorablehamsterpets.hamster_beg4": "Hamster squeaks (Beg 4)",
-  "sounds.adorablehamsterpets.hamster_death1": "Hamster squeaks (Death 1)",
-  "sounds.adorablehamsterpets.hamster_death2": "Hamster squeaks (Death 2)",
-  "sounds.adorablehamsterpets.hamster_death3": "Hamster squeaks (Death 3)",
-  "sounds.adorablehamsterpets.hamster_death4": "Hamster squeaks (Death 4)",
-  "sounds.adorablehamsterpets.hamster_death5": "Hamster squeaks (Death 5)",
-  "sounds.adorablehamsterpets.hamster_hurt1": "Hamster squeaks (Hurt 1)",
-  "sounds.adorablehamsterpets.hamster_hurt2": "Hamster squeaks (Hurt 2)",
-  "sounds.adorablehamsterpets.hamster_hurt3": "Hamster squeaks (Hurt 3)",
-  "sounds.adorablehamsterpets.hamster_hurt4": "Hamster squeaks (Hurt 4)",
-  "sounds.adorablehamsterpets.hamster_hurt5": "Hamster squeaks (Hurt 5)",
-  "sounds.adorablehamsterpets.hamster_idle1": "Hamster squeaks (Idle 1)",
-  "sounds.adorablehamsterpets.hamster_idle2": "Hamster squeaks (Idle 2)",
-  "sounds.adorablehamsterpets.hamster_idle3": "Hamster squeaks (Idle 3)",
-  "sounds.adorablehamsterpets.hamster_idle4": "Hamster squeaks (Idle 4)",
-  "sounds.adorablehamsterpets.hamster_idle5": "Hamster squeaks (Idle 5)",
-  "sounds.adorablehamsterpets.hamster_sleep1": "Hamster quietly squeaks (Sleep 1)",
-  "sounds.adorablehamsterpets.hamster_sleep2": "Hamster quietly squeaks (Sleep 2)",
-  "sounds.adorablehamsterpets.hamster_sleep3": "Hamster quietly squeaks (Sleep 3)",
-  "sounds.adorablehamsterpets.hamster_sleep4": "Hamster quietly squeaks (Sleep 4)",
-  "sounds.adorablehamsterpets.hamster_sniff1": "Hamster squeaks (Sniff 1)",
-  "sounds.adorablehamsterpets.hamster_sniff2": "Hamster squeaks (Sniff 2)",
-  "sounds.adorablehamsterpets.hamster_creeper_detect1": "Hamster squeaks (Creeper Detect 1)",
-  "sounds.adorablehamsterpets.hamster_creeper_detect2": "Hamster squeaks (Creeper Detect 2)",
-  "sounds.adorablehamsterpets.hamster_creeper_detect3": "Hamster squeaks (Creeper Detect 3)",
-  "sounds.adorablehamsterpets.hamster_celebrate1": "Hamster squeaks (Celebrate 1)",
-  "sounds.adorablehamsterpets.hamster_celebrate2": "Hamster squeaks (Celebrate 2)",
-  "sounds.adorablehamsterpets.hamster_celebrate3": "Hamster squeaks (Celebrate 3)"
+  "block.adorablehamsterpets.wild_green_bean_bush": "Wild Green Bean Bush",
+  "block.adorablehamsterpets.wild_cucumber_bush": "Wild Cucumber Bush",
+  "block.adorablehamsterpets.sunflower_block": "Sunflower",
 
+  "block.adorablehamsterpets.wild_green_bean_bush.hint1": "Yields seeds. Seeds for... enhancement of certain small mammals.",
+  "block.adorablehamsterpets.wild_green_bean_bush.hint2": "Right-click. Maybe. If it's ready.",
+
+  "block.adorablehamsterpets.wild_cucumber_bush.hint1": "Drops seeds. Seeds that might help you make small friends.",
+  "block.adorablehamsterpets.wild_cucumber_bush.hint2": "Interact with it. Gently. It's sensitive.",
+
+  "block.adorablehamsterpets.sunflower_block.hint1": "Sometimes yields seeds... key recipe ingredients?",
+  "block.adorablehamsterpets.sunflower_block.hint2": "Requires time to replenish its seedy bounty.",
+
+  "tooltip.adorablehamsterpets.green_bean_seeds.hint1": "Plant these to grow beans. Beans that empower...",
+  "tooltip.adorablehamsterpets.green_bean_seeds.hint2": "Requires commitment. And maybe some dirt.",
+
+  "tooltip.adorablehamsterpets.cucumber_seeds.hint1": "Grow cucumbers. Cucumbers that might... persuade?",
+  "tooltip.adorablehamsterpets.cucumber_seeds.hint2": "Just add water, soil, and existential dread.",
+
+  "tooltip.adorablehamsterpets.sunflower_seeds.hint1": "Apparently important for certain food mixes.",
+  "tooltip.adorablehamsterpets.sunflower_seeds.hint2": "Can also be used as a basic snack.",
+
+  "tooltip.adorablehamsterpets.cucumber.hint1": "Crunchy. Refreshing. Potentially influential.",
+  "tooltip.adorablehamsterpets.cucumber.hint2": "Try preparing it at a crafting table...",
+
+  "tooltip.adorablehamsterpets.sliced_cucumber.hint1": "The key to a tiny, furry heart. Or at least, their attention.",
+  "tooltip.adorablehamsterpets.sliced_cucumber.hint2": "A gentle, sneaky approach might be required.",
+
+  "tooltip.adorablehamsterpets.green_beans.hint1": "A simple veggie. Can be cooked for... interesting results.",
+  "tooltip.adorablehamsterpets.green_beans.hint2": "Eat them raw if you enjoy disappointment.",
+
+  "tooltip.adorablehamsterpets.steamed_green_beans.hint1": "Gives hamsters a sudden burst of... enthusiasm?",
+  "tooltip.adorablehamsterpets.steamed_green_beans.hint2": "The effect isn't permanent. Nothing ever is, except taxes.",
+
+  "tooltip.adorablehamsterpets.hamster_food_mix.hint1": "So good, even the pickiest hamster can't refuse.",
+  "tooltip.adorablehamsterpets.hamster_food_mix.hint2": "Use it when they're being difficult. Or just hungry.",
+
+  "tooltip.adorablehamsterpets.cheese.hint1": "Has a strangely alluring effect on your companion...",
+  "tooltip.adorablehamsterpets.cheese.hint2": "Use it to summon the nearest rodent to your shoulder.",
+
+  "key.category.adorablehamsterpets.main": "Adorable Hamster Pets",
+  "key.adorablehamsterpets.throw_hamster": "Throw Hamster",
+  "message.adorablehamsterpets.throw_cooldown": "Your hamster needs a break— try again in %d minutes and %d seconds.",
+
+  "subtitles.adorablehamsterpets.hamster_attack": "Hamster attacks",
+  "subtitles.adorablehamsterpets.hamster_beg": "Hamster begs",
+  "subtitles.adorablehamsterpets.hamster_death": "Hamster dies",
+  "subtitles.adorablehamsterpets.hamster_hurt": "Hamster hurts",
+  "subtitles.adorablehamsterpets.hamster_idle": "Hamster squeaks",
+  "subtitles.adorablehamsterpets.hamster_sleep": "Hamster sleeps",
+  "subtitles.adorablehamsterpets.hamster_sniff": "Hamster sniffs",
+  "subtitles.adorablehamsterpets.hamster_creeper_detect": "Hamster alerts",
+  "subtitles.adorablehamsterpets.hamster_celebrate": "Hamster celebrates",
+  "subtitles.adorablehamsterpets.hamster_throw": "Hamster Thrown",
+  "subtitles.adorablehamsterpets.hamster_impact": "Hamster Impacts",
+  "subtitles.adorablehamsterpets.hamster_flying": "Hamster Squeaks (Airborne)",
+  "subtitles.adorablehamsterpets.hamster_wake_up": "Hamster wakes up"
 }

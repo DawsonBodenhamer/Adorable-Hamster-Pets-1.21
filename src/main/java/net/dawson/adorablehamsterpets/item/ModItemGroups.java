@@ -16,12 +16,14 @@ import net.minecraft.util.Identifier;
 public class ModItemGroups {
 
 
-    public static final ItemGroup HAMSTER_ITEMS_GROUP = Registry.register(Registries.ITEM_GROUP,
-            Identifier.of(AdorableHamsterPets.MOD_ID, "hamster_items"),
+    public static final ItemGroup ADORABLE_HAMSTER_PETS_GROUP = Registry.register(Registries.ITEM_GROUP,
+            Identifier.of(AdorableHamsterPets.MOD_ID, "adorable_hamster_pets"), // Example Renamed ID
             FabricItemGroup.builder()
-                    .icon(() -> new ItemStack(ModItems.CHEESE))
-                    .displayName(Text.translatable("itemgroup.adorablehamsterpets.hamster_items"))
+                    .icon(() -> new ItemStack(ModItems.CHEESE)) // Keep or change icon
+                    .displayName(Text.translatable("itemgroup.adorablehamsterpets.main")) // Example Renamed Key
                     .entries((displayContext, entries) -> {
+
+                        // Items
                         entries.add(ModItems.CHEESE);
                         entries.add(ModItems.HAMSTER_FOOD_MIX);
                         entries.add(ModItems.CUCUMBER);
@@ -32,8 +34,13 @@ public class ModItemGroups {
                         entries.add(ModItems.STEAMED_GREEN_BEANS);
                         entries.add(ModItems.SUNFLOWER_SEEDS);
                         entries.add(ModItems.HAMSTER_SPAWN_EGG);
-                    }).build());
 
+                        // Blocks
+                        entries.add(ModBlocks.SUNFLOWER_BLOCK);
+                        entries.add(ModBlocks.WILD_GREEN_BEAN_BUSH);
+                        entries.add(ModBlocks.WILD_CUCUMBER_BUSH);
+
+                    }).build());
 
 
     public static void registerItemGroups(){

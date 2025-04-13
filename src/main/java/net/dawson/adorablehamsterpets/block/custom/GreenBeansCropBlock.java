@@ -9,8 +9,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 
 public class GreenBeansCropBlock extends CropBlock {
-    public static final int MAX_AGE = 6;
-    public static final IntProperty AGE = IntProperty.of("age", 0, 6);
+    // --- CORRECTED: Set MAX_AGE to 3 ---
+    public static final int MAX_AGE = 3;
+    // --- CORRECTED: Set IntProperty range to 0-3 ---
+    public static final IntProperty AGE = IntProperty.of("age", 0, 3);
 
 
     public GreenBeansCropBlock(Settings settings) {
@@ -30,6 +32,7 @@ public class GreenBeansCropBlock extends CropBlock {
 
     @Override
     public int getMaxAge() {
+        // --- CORRECTED: Return the updated MAX_AGE ---
         return MAX_AGE;
     }
 

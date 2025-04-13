@@ -2,64 +2,102 @@ package net.dawson.adorablehamsterpets.entity.custom;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import org.jetbrains.annotations.Nullable; // Import Nullable
 
 public enum HamsterVariant {
 
-    // main versions
-    DEFAULT(0),
-    BLACK(1),
-    CHOCOLATE(2),
-    CREAM(3),
-    DOVE(4),
-    SILVER_DOVE(5),
-    WHITE(6),
+    // Base Colors First
+    ORANGE(0, "orange", null),
+    BLACK(1, "black", null),
+    CHOCOLATE(2, "chocolate", null),
+    CREAM(3, "cream", null),
+    DARK_GRAY(4, "dark_gray", null), // Renamed from DOVE
+    LIGHT_GRAY(5, "light_gray", null), // Renamed from SILVER_DOVE
+    WHITE(6, "white", null), // White has no overlay
 
-    // Additional Variants
-    DEFAULT_BANDED(7),
-    DEFAULT_ROAN(8),
-    DEFAULT_SPOTTED(9),
-    DEFAULT_WHITEBELLY(10),
+    // Overlays for Orange
+    ORANGE_WHITE_SPLIT(7, "orange", "overlay_white_split"),
+    ORANGE_MOSTLY_WHITE(8, "orange", "overlay_mostly_white"),
+    ORANGE_WHITE_SPOTS(9, "orange", "overlay_white_spots"),
+    ORANGE_WHITE_CHEST(10, "orange", "overlay_white_chest"),
 
-    BLACK_BANDED(11),
-    BLACK_ROAN(12),
-    BLACK_SPOTTED(13),
-    BLACK_WHITEBELLY(14),
+    // Overlays for Black
+    BLACK_WHITE_SPLIT(11, "black", "overlay_white_split"),
+    BLACK_MOSTLY_WHITE(12, "black", "overlay_mostly_white"),
+    BLACK_WHITE_SPOTS(13, "black", "overlay_white_spots"),
+    BLACK_WHITE_CHEST(14, "black", "overlay_white_chest"),
 
-    CHOCOLATE_BANDED(15),
-    CHOCOLATE_ROAN(16),
-    CHOCOLATE_SPOTTED(17),
-    CHOCOLATE_WHITEBELLY(18),
+    // Overlays for Chocolate
+    CHOCOLATE_WHITE_SPLIT(15, "chocolate", "overlay_white_split"),
+    CHOCOLATE_MOSTLY_WHITE(16, "chocolate", "overlay_mostly_white"),
+    CHOCOLATE_WHITE_SPOTS(17, "chocolate", "overlay_white_spots"),
+    CHOCOLATE_WHITE_CHEST(18, "chocolate", "overlay_white_chest"),
 
-    CREAM_BANDED(19),
-    CREAM_ROAN(20),
-    CREAM_SPOTTED(21),
-    CREAM_WHITEBELLY(22),
+    // Overlays for Cream
+    CREAM_WHITE_SPLIT(19, "cream", "overlay_white_split"),
+    CREAM_MOSTLY_WHITE(20, "cream", "overlay_mostly_white"),
+    CREAM_WHITE_SPOTS(21, "cream", "overlay_white_spots"),
+    CREAM_WHITE_CHEST(22, "cream", "overlay_white_chest"),
 
-    DOVE_BANDED(23),
-    DOVE_ROAN(24),
-    DOVE_SPOTTED(25),
-    DOVE_WHITEBELLY(26),
+    // Overlays for Dark Gray
+    DARK_GRAY_WHITE_SPLIT(23, "dark_gray", "overlay_white_split"),
+    DARK_GRAY_MOSTLY_WHITE(24, "dark_gray", "overlay_mostly_white"),
+    DARK_GRAY_WHITE_SPOTS(25, "dark_gray", "overlay_white_spots"),
+    DARK_GRAY_WHITE_CHEST(26, "dark_gray", "overlay_white_chest"),
 
-    SILVER_DOVE_BANDED(27),
-    SILVER_DOVE_ROAN(28),
-    SILVER_DOVE_SPOTTED(29),
-    SILVER_DOVE_WHITEBELLY(30);
+    // Overlays for Light Gray
+    LIGHT_GRAY_WHITE_SPLIT(27, "light_gray", "overlay_white_split"),
+    LIGHT_GRAY_MOSTLY_WHITE(28, "light_gray", "overlay_mostly_white"),
+    LIGHT_GRAY_WHITE_SPOTS(29, "light_gray", "overlay_white_spots"),
+    LIGHT_GRAY_WHITE_CHEST(30, "light_gray", "overlay_white_chest");
 
     private static final HamsterVariant[] BY_ID = Arrays.stream(values()).sorted(Comparator.
             comparingInt(HamsterVariant::getId)).toArray(HamsterVariant[]::new);
     private final int id;
+    private final String baseTextureName;
+    @Nullable // Mark overlay as potentially null
+    private final String overlayTextureName;
 
-    HamsterVariant(int id) {
+    HamsterVariant(int id, String baseTextureName, @Nullable String overlayTextureName) {
         this.id = id;
+        this.baseTextureName = baseTextureName;
+        this.overlayTextureName = overlayTextureName;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public static HamsterVariant byId(int id) {
-        return BY_ID[id % BY_ID.length];
+    public String getBaseTextureName() {
+        return this.baseTextureName;
     }
 
+    @Nullable
+    public String getOverlayTextureName() {
+        // White variant never has an overlay
+        if (this == WHITE) return null;
+        return this.overlayTextureName;
+    }
 
+    // Helper to get the base color variant (e.g., CHOCOLATE_WHITE_SPOTS -> CHOCOLATE)
+    public HamsterVariant getBaseVariant() {
+        return switch (this.baseTextureName) {
+            case "orange" -> ORANGE;
+            case "black" -> BLACK;
+            case "chocolate" -> CHOCOLATE;
+            case "cream" -> CREAM;
+            case "dark_gray" -> DARK_GRAY;
+            case "light_gray" -> LIGHT_GRAY;
+            case "white" -> WHITE;
+            default -> ORANGE; // Fallback
+        };
+    }
+
+    public static HamsterVariant byId(int id) {
+        if (id < 0 || id >= BY_ID.length) {
+            // Handle invalid ID, maybe return a default or log an error
+            return ORANGE; // Default fallback
+        }
+        return BY_ID[id];
+    }
 }
