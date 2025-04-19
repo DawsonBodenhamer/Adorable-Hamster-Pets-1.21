@@ -1152,27 +1152,32 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     private boolean wasKnockedOutLastTick = false;
     @Unique private int attackAnimTimer = 0;
 
+    @Unique
+    public boolean isAttackSwinging = false;
 
-    // --- Override getHandSwingDuration ---
+
+    // --- Override getHandSwingDuration with Logging ---
     @Override // <-- IDE will likely show an error here, ignore it if AW is correct.
     protected int getHandSwingDuration() {
-        final int HAMSTER_ATTACK_ANIM_TICKS = 21; // ~1.0417 seconds
+        final int HAMSTER_ATTACK_ANIM_TICKS = 21;
+        long worldTime = this.getWorld().isClient ? 0 : this.getWorld().getTime(); // Get time safely
 
-        // Check if the attack animation is actually playing to return the longer duration
-        AnimatableManager<HamsterEntity> manager = this.getAnimatableInstanceCache().getManagerForId(this.getId());
-        AnimationController<?> controller = manager.getAnimationControllers().get("mainController"); // Use the correct controller name
-
-        if (controller != null && controller.getCurrentAnimation() != null && controller.getCurrentAnimation().animation().name().equals("anim_hamster_attack")) {
-            // AdorableHamsterPets.LOGGER.debug("Attack anim playing, returning {} ticks for swing duration.", HAMSTER_ATTACK_ANIM_TICKS); // Optional debug
+        // --- Check and consume the flag ---
+        if (this.isAttackSwinging) {
+            this.isAttackSwinging = false; // Consume the flag immediately
+            AdorableHamsterPets.LOGGER.info("[GetHandSwingDuration {} Tick {}] Attack swing triggered, returning {} ticks.", this.getId(), worldTime, HAMSTER_ATTACK_ANIM_TICKS);
             return HAMSTER_ATTACK_ANIM_TICKS;
         }
+        // --- End Check ---
 
-        // Default vanilla duration logic (important for non-attack swings if they occur)
+        // Default vanilla duration logic
+        int vanillaDuration;
         if (StatusEffectUtil.hasHaste(this)) {
-            return 6 - (1 + StatusEffectUtil.getHasteAmplifier(this));
+            vanillaDuration = 6 - (1 + StatusEffectUtil.getHasteAmplifier(this));
         } else {
-            return this.hasStatusEffect(StatusEffects.MINING_FATIGUE) ? 6 + (1 + this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6;
+            vanillaDuration = this.hasStatusEffect(StatusEffects.MINING_FATIGUE) ? 6 + (1 + this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6;
         }
+        return vanillaDuration;
     }
     // --- End Override ---
 
@@ -1181,14 +1186,22 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         final int instanceId = this.getId();
 
-        // --- Controller: Uses handSwinging ---
-        controllers.add(new AnimationController<>(this, "mainController", 5, event -> { // 5 tick transition default
+        controllers.add(new AnimationController<>(this, "mainController", 5, event -> {
             AnimationController<HamsterEntity> controller = event.getController();
+            // Get the name of the animation currently queued/playing on this controller
             String currentAnimName = controller.getCurrentAnimation() != null ?
                     controller.getCurrentAnimation().animation().name() : "null";
-            // AdorableHamsterPets.LOGGER.info("[MainController Tick {}] CurrentAnim: {}, handSwinging: {}", instanceId, currentAnimName, this.handSwinging); // Optional debug
 
-            // --- Knocked out logic FIRST ---
+            // --- 1. Reset Check ---
+            if (currentAnimName.equals("anim_hamster_attack") && controller.hasAnimationFinished()) {
+                controller.forceAnimationReset();
+                this.handSwinging = false;
+                this.handSwingTicks = 0;
+                currentAnimName = "null"; // Update local variable after reset
+            }
+            // --- End Reset Check ---
+
+            // --- 2. Knocked out logic ---
             boolean isCurrentlyKnockedOut = this.isKnockedOut();
             boolean justWokeUp = wasKnockedOutLastTick && !isCurrentlyKnockedOut;
             if (justWokeUp) {
@@ -1196,65 +1209,86 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                 return event.setAndContinue(WAKE_UP_ANIM);
             } else if (isCurrentlyKnockedOut) {
                 wasKnockedOutLastTick = true;
-                // Use local currentAnimNameKO variable if needed, or just currentAnimName if defined early enough
-                if (!currentAnimName.equals("anim_hamster_ko") && !currentAnimName.equals("anim_hamster_crash")) {
-                    return event.setAndContinue(CRASH_ANIM);
-                } else if (currentAnimName.equals("anim_hamster_crash") && controller.hasAnimationFinished()) {
-                    return event.setAndContinue(KNOCKED_OUT_ANIM);
-                } else if (currentAnimName.equals("anim_hamster_ko")) {
-                    return event.setAndContinue(KNOCKED_OUT_ANIM);
-                } else {
-                    return event.setAndContinue(CRASH_ANIM); // Continue crash
-                }
+                // Use currentAnimName directly here
+                if (!currentAnimName.equals("anim_hamster_ko") && !currentAnimName.equals("anim_hamster_crash")) return event.setAndContinue(CRASH_ANIM);
+                else if (currentAnimName.equals("anim_hamster_crash") && controller.hasAnimationFinished()) return event.setAndContinue(KNOCKED_OUT_ANIM);
+                else if (currentAnimName.equals("anim_hamster_ko")) return event.setAndContinue(KNOCKED_OUT_ANIM);
+                else return event.setAndContinue(CRASH_ANIM);
             }
             wasKnockedOutLastTick = false;
             // --- End knocked out ---
 
-            // --- Check handSwinging SECOND ---
+            // --- 3. Check handSwinging (Attack Trigger) ---
             if (this.handSwinging) {
-                // Play the attack animation (relies on loop=false in JSON and overridden duration)
-                return event.setAndContinue(ATTACK_ANIM);
+                if (!currentAnimName.equals("anim_hamster_attack")) {
+                    return event.setAndContinue(ATTACK_ANIM);
+                } else {
+                    return PlayState.CONTINUE; // Already playing attack
+                }
             }
             // --- End handSwinging check ---
 
-
-            // --- If NOT swinging or KO, play other states ---
-
-            // Other base states...
-            if (this.isThrown()) return event.setAndContinue(FLYING_ANIM);
-            if (this.isRefusingFood()) return event.setAndContinue(NO_ANIM);
-            if (this.isSleeping()) return event.setAndContinue(SLEEPING_ANIM);
+            // --- 4. If NOT swinging or KO, play other states ---
+            if (this.isThrown()) {
+                // Check if already playing to avoid unnecessary setAndContinue
+                if (!currentAnimName.equals("anim_hamster_flying")) return event.setAndContinue(FLYING_ANIM);
+                return PlayState.CONTINUE;
+            }
+            if (this.isRefusingFood()) {
+                if (!currentAnimName.equals("anim_hamster_no")) return event.setAndContinue(NO_ANIM);
+                return PlayState.CONTINUE;
+            }
+            if (this.isSleeping()) {
+                if (!currentAnimName.equals("anim_hamster_sleeping")) return event.setAndContinue(SLEEPING_ANIM);
+                return PlayState.CONTINUE;
+            }
+            // Sitting / Cleaning Logic
             if (this.dataTracker.get(IS_SITTING)) {
-                if (this.cleaningTimer > 0) return event.setAndContinue(CLEANING_ANIM);
-                else {
+                if (this.cleaningTimer > 0) {
+                    if (!currentAnimName.equals("anim_hamster_cleaning")) return event.setAndContinue(CLEANING_ANIM);
+                    return PlayState.CONTINUE;
+                } else {
                     if (this.cleaningCooldownTimer <= 0 && this.random.nextInt(600) == 0) {
                         this.cleaningTimer = this.random.nextBetween(30, 60);
-                        return event.setAndContinue(CLEANING_ANIM);
-                    } else return event.setAndContinue(SITTING_ANIM);
+                        return event.setAndContinue(CLEANING_ANIM); // Start cleaning
+                    } else {
+                        if (!currentAnimName.equals("anim_hamster_sitting")) return event.setAndContinue(SITTING_ANIM); // Start sitting
+                        return PlayState.CONTINUE; // Already sitting
+                    }
                 }
             }
-            // Movement
+            // Movement Logic
             double horizontalSpeedSquared = this.getVelocity().horizontalLengthSquared();
             double runThresholdSquared = 0.002;
             if (horizontalSpeedSquared > 1.0E-6) {
-                return event.setAndContinue(horizontalSpeedSquared > runThresholdSquared ? RUNNING_ANIM : WALKING_ANIM);
+                RawAnimation targetMoveAnim = horizontalSpeedSquared > runThresholdSquared ? RUNNING_ANIM : WALKING_ANIM;
+                // --- FIX: Compare currentAnimName to the STRING name ---
+                String targetMoveAnimName = horizontalSpeedSquared > runThresholdSquared ? "anim_hamster_running" : "anim_hamster_walking";
+                if (!currentAnimName.equals(targetMoveAnimName)) {
+                    // --- End FIX ---
+                    return event.setAndContinue(targetMoveAnim);
+                }
+                return PlayState.CONTINUE; // Already moving correctly
             }
-            // Begging
+            // Begging Logic
             if (this.isBegging()) {
-                return event.setAndContinue(BEGGING_ANIM);
+                // --- FIX: Compare currentAnimName to the STRING name ---
+                if (!currentAnimName.equals("anim_hamster_begging")) {
+                    // --- End FIX ---
+                    return event.setAndContinue(BEGGING_ANIM);
+                }
+                return PlayState.CONTINUE;
             }
 
-            // --- Default Idle ---
-            // Prevent interrupting the attack animation if it's somehow still playing
-            if (!currentAnimName.equals("anim_hamster_attack")) {
+            // --- 5. Default Idle ---
+            if (!currentAnimName.equals("anim_hamster_idle") && !currentAnimName.equals("anim_hamster_attack")) {
                 return event.setAndContinue(IDLE_ANIM);
             } else {
-                // Let attack finish playing (overridden duration should handle this)
+                // Already idle or attack just finished/reset
                 return PlayState.CONTINUE;
             }
         }));
     }
-
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

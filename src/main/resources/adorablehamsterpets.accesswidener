@@ -1,2 +1,3 @@
 accessWidener v1 named
-accessible method net/minecraft/class_1309 getHandSwingDuration ()I
+extendable method net/minecraft/entity/LivingEntity getHandSwingDuration ()I
+accessible field net/minecraft/entity/ai/goal/MeleeAttackGoal cooldown I
