@@ -46,6 +46,10 @@ dependencies {
 	modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/adorablehamsterpets.accesswidener")
+}
+
 processResources {
 	inputs.property "version", project.version
 
