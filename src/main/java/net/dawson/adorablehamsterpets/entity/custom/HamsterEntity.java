@@ -1780,7 +1780,6 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        // --- Description: Define animation controllers and their logic ---
         controllers.add(new AnimationController<>(this, "mainController", 5, event -> {
                     // --- Animation State Logic ---
                     // Determine the primary looping animation based on the hamster's current state.
@@ -1853,12 +1852,10 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                         // --- Particle Keyframe Handler ---
                         // Handles events defined in the animation JSON (e.g., spawning particles at a specific time/bone)
                         .setParticleKeyframeHandler(event -> {
-                            // --- Description: Handle particle keyframes, calculate bone position via renderer, and send packet ---
 
-                            // --- ADDED: Log Entity ID at start ---
+                            // --- Log Entity ID at start ---
                             final int currentEntityId = this.getId();
                             AdorableHamsterPets.LOGGER.info("[ParticleHandler {} Tick {}] Particle keyframe handler triggered.", currentEntityId, this.getWorld().getTime());
-                            // --- End Added ---
 
                             AdorableHamsterPets.LOGGER.info("[ParticleHandler {} Tick {}] Particle keyframe handler triggered.", this.getId(), this.getWorld().getTime());
                             String effect = event.getKeyframeData().getEffect();
@@ -1877,7 +1874,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                                 if (world.isClient()) {
                                     // Validate the locator string from the animation file
                                     if (locator == null || locator.isEmpty()) {
-                                        AdorableHamsterPets.LOGGER.warn("[ParticleHandler {}] Locator is null or empty for effect '{}'. Cannot calculate bone position.", this.getId(), effect);
+                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Locator is null or empty for effect '{}'. Cannot calculate bone position.", this.getId(), effect);
                                         return;
                                     }
 
@@ -1885,7 +1882,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                                     // Get the entity's renderer on the client
                                     EntityRenderer<?> renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(this);
                                     if (!(renderer instanceof GeoEntityRenderer<?> geoRenderer)) {
-                                        AdorableHamsterPets.LOGGER.error("[ParticleHandler {}] Could not get GeoEntityRenderer instance for entity.", this.getId());
+                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Could not get GeoEntityRenderer instance for entity.", this.getId());
                                         return;
                                     }
 
@@ -1893,7 +1890,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                                     // Get the model associated with the renderer
                                     GeoModel<?> model = geoRenderer.getGeoModel();
                                     if (model == null) {
-                                        AdorableHamsterPets.LOGGER.error("[ParticleHandler {}] Could not get model from GeoRenderer.", this.getId());
+                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Could not get model from GeoRenderer.", this.getId());
                                         return;
                                     }
 
@@ -1907,9 +1904,8 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                                         double boneY = boneWorldPos.y();
                                         double boneZ = boneWorldPos.z();
 
-                                        // --- ADDED: Log coordinates BEFORE sending ---
+                                        // --- Log coordinates BEFORE sending ---
                                         AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Found bone '{}'. Calculated World Pos via Renderer: ({}, {}, {}). Sending payload.", currentEntityId, locator, boneX, boneY, boneZ);
-                                        // --- End Added ---
 
 
                                         // Send the calculated coordinates to the server via network packet
@@ -1917,7 +1913,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
 
                                     } else {
-                                        AdorableHamsterPets.LOGGER.error("[ParticleHandler {}] Could not find bone with locator '{}' for effect '{}'.", this.getId(), locator, effect);
+                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Could not find bone with locator '{}' for effect '{}'.", this.getId(), locator, effect);
                                     }
                                 }
                             }

@@ -156,7 +156,7 @@ public class AdorableHamsterPets implements ModInitializer {
 			);
 		} else {
 			// Corrected log message for clarity
-			LOGGER.error("[ServerPacketHandler] Could not get server world for player {}", player.getName().getString());
+			LOGGER.info("[ServerPacketHandler] Could not get server world for player {}", player.getName().getString());
 		}
 		// --- End Description ---
 	}
