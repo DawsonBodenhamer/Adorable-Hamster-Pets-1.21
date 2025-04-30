@@ -552,6 +552,12 @@
 						}
 					}
 				}
+			},
+			"particle_effects": {
+				"0.4167": {
+					"effect": "attack_poof",
+					"locator": "left_foot"
+				}
 			}
 		},
 		"anim_hamster_walking": {
@@ -1711,7 +1717,7 @@
 		},
 		"anim_hamster_cleaning": {
 			"loop": true,
-			"animation_length": 1.625,
+			"animation_length": 1,
 			"bones": {
 				"body_parent": {
 					"rotation": {

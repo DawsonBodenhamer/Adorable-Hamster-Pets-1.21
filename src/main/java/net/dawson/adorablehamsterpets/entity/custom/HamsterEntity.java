@@ -7,14 +7,18 @@ import net.dawson.adorablehamsterpets.entity.AI.*;
 import net.dawson.adorablehamsterpets.entity.ImplementedInventory;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.dawson.adorablehamsterpets.item.ModItems;
+import net.dawson.adorablehamsterpets.networking.payload.SpawnAttackParticlesPayload;
 import net.dawson.adorablehamsterpets.networking.payload.StartHamsterFlightSoundPayload;
 import net.dawson.adorablehamsterpets.networking.payload.StartHamsterThrowSoundPayload;
 import net.dawson.adorablehamsterpets.screen.HamsterEntityScreenHandlerFactory;
 import net.dawson.adorablehamsterpets.sound.ModSounds;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
@@ -67,13 +71,20 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Unique;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.keyframe.event.ParticleKeyframeEvent;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.animation.Animation.LoopType;
+import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
@@ -1766,106 +1777,156 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     private static final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("anim_hamster_attack");
 
 
-//    private boolean wasKnockedOutLastTick = false;
-//    @Unique private int attackAnimTimer = 0;
-
-
-    // --- Add back getHandSwingDuration override ---
-//    @Override // <-- IDE might show error, ignore if AW is correct.
-//    protected int getHandSwingDuration() {
-//        final int HAMSTER_ATTACK_ANIM_TICKS = 35;
-//        long worldTime = this.getWorld().isClient ? 0 : this.getWorld().getTime(); // Get time safely
-//
-//
-//        // --- Check and consume the flag ---
-//        if (this.isAttackSwinging) {
-//            this.isAttackSwinging = false; // Consume the flag immediately
-//            AdorableHamsterPets.LOGGER.info("[GetHandSwingDuration {} Tick {}] Attack swing triggered, returning {} ticks.", this.getId(), worldTime, HAMSTER_ATTACK_ANIM_TICKS);
-//            return HAMSTER_ATTACK_ANIM_TICKS;
-//        }
-//        // --- End Check ---
-//
-//
-//        // Default vanilla duration logic
-//        int vanillaDuration;
-//        if (StatusEffectUtil.hasHaste(this)) {
-//            vanillaDuration = 6 - (1 + StatusEffectUtil.getHasteAmplifier(this));
-//        } else {
-//            vanillaDuration = this.hasStatusEffect(StatusEffects.MINING_FATIGUE) ? 6 + (1 + this.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) * 2 : 6;
-//        }
-//        return vanillaDuration;
-//    }
-    // --- End Override ---
-
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        // --- Description: Define animation controllers and their logic ---
         controllers.add(new AnimationController<>(this, "mainController", 5, event -> {
-                    // --- Triggerable Animations will override this state machine ---
-                    // --- Handle Looping/Continuous States ---
+                    // --- Animation State Logic ---
+                    // Determine the primary looping animation based on the hamster's current state.
+                    // Triggerable animations (attack, crash, wakeup, no) will override this base state when fired.
 
-                    // 1. Knocked Out (Looping)
+
+                    // 1. Knocked Out State (Highest Priority Loop)
                     if (this.isKnockedOut()) {
-                        // Play the KO loop while knocked out. Triggered 'crash' and 'wakeup' will interrupt this.
-                        return event.setAndContinue(KNOCKED_OUT_ANIM);
+                        return event.setAndContinue(KNOCKED_OUT_ANIM); // Loop KO animation
                     }
 
-                    // 2. Thrown (Flying Loop)
+
+                    // 2. Thrown State
                     if (this.isThrown()) {
-                        return event.setAndContinue(FLYING_ANIM);
+                        return event.setAndContinue(FLYING_ANIM); // Loop flying animation
                     }
 
-                    // 3. Sleeping (Looping)
+
+                    // 3. Sleeping State
                     if (this.isSleeping()) {
-                        return event.setAndContinue(SLEEPING_ANIM);
+                        return event.setAndContinue(SLEEPING_ANIM); // Loop sleeping animation
                     }
 
-                    // 4. Sitting / Cleaning (Looping/Conditional)
-                    if (this.dataTracker.get(IS_SITTING)) { // Check the raw sitting tracker, not overridden isSitting()
+
+                    // 4. Sitting State (Includes potential cleaning)
+                    if (this.dataTracker.get(IS_SITTING)) { // Check raw sitting tracker
                         if (this.cleaningTimer > 0) {
-                            return event.setAndContinue(CLEANING_ANIM); // Loop cleaning while timer active
+                            return event.setAndContinue(CLEANING_ANIM); // Loop cleaning animation if timer active
                         } else {
                             // Check if cooldown is over and randomly start cleaning
-                            if (this.cleaningCooldownTimer <= 0 && this.random.nextInt(600) == 0) {
-                                this.cleaningTimer = this.random.nextBetween(30, 60);
-                                // Don't return here, let it fall through to SITTING_ANIM this tick,
-                                // cleaning will start next tick. Or trigger it? Let's try triggering.
-                                // this.triggerAnimOnServer("mainController", "cleaning"); // If cleaning was triggerable
-                                // For now, just let it loop SITTING_ANIM until cleaningTimer > 0 next tick.
-                                return event.setAndContinue(SITTING_ANIM);
-                            } else {
-                                // Default sitting animation
-                                return event.setAndContinue(SITTING_ANIM);
+                            // MODIFIED: Changed 600 to 1200 for less frequent cleaning checks
+                            if (this.cleaningCooldownTimer <= 0 && this.random.nextInt(1200) == 0) {
+                                this.cleaningTimer = this.random.nextBetween(30, 60); // Start cleaning timer
+                                // Fall through to SITTING_ANIM this tick; CLEANING_ANIM will start next tick
                             }
+                            return event.setAndContinue(SITTING_ANIM); // Default to sitting animation loop
                         }
                     }
 
-                    // 5. Movement (Looping)
+
+                    // 5. Movement State (Walking/Running)
                     double horizontalSpeedSquared = this.getVelocity().horizontalLengthSquared();
-                    double runThresholdSquared = 0.002; // Adjust threshold as needed
-                    if (horizontalSpeedSquared > 1.0E-6) { // Check if moving at all
+                    double runThresholdSquared = 0.002; // Threshold to differentiate walk/run
+                    if (horizontalSpeedSquared > 1.0E-6) { // Check if moving significantly
                         RawAnimation targetMoveAnim = horizontalSpeedSquared > runThresholdSquared ? RUNNING_ANIM : WALKING_ANIM;
-                        return event.setAndContinue(targetMoveAnim);
+                        return event.setAndContinue(targetMoveAnim); // Loop appropriate movement animation
                     }
 
-                    // 6. Begging (Looping)
+
+                    // 6. Begging State
                     if (this.isBegging()) {
-                        return event.setAndContinue(BEGGING_ANIM);
+                        return event.setAndContinue(BEGGING_ANIM); // Loop begging animation
                     }
 
-                    // 7. Default Idle (Looping)
-                    return event.setAndContinue(IDLE_ANIM);
+
+                    // 7. Default Idle State (Lowest Priority Loop)
+                    return event.setAndContinue(IDLE_ANIM); // Loop idle animation
+
 
                 })
                         // --- Register Triggerable Animations ---
+                        // These animations play once when triggered via triggerAnimOnServer()
                         .triggerableAnim("crash", CRASH_ANIM)
                         .triggerableAnim("wakeup", WAKE_UP_ANIM)
                         .triggerableAnim("no", NO_ANIM)
                         .triggerableAnim("attack", ATTACK_ANIM)
-                // --- End Register ---
+                        // --- End Register ---
+
+
+                        // --- Particle Keyframe Handler ---
+                        // Handles events defined in the animation JSON (e.g., spawning particles at a specific time/bone)
+                        .setParticleKeyframeHandler(event -> {
+                            // --- Description: Handle particle keyframes, calculate bone position via renderer, and send packet ---
+
+                            // --- ADDED: Log Entity ID at start ---
+                            final int currentEntityId = this.getId();
+                            AdorableHamsterPets.LOGGER.info("[ParticleHandler {} Tick {}] Particle keyframe handler triggered.", currentEntityId, this.getWorld().getTime());
+                            // --- End Added ---
+
+                            AdorableHamsterPets.LOGGER.info("[ParticleHandler {} Tick {}] Particle keyframe handler triggered.", this.getId(), this.getWorld().getTime());
+                            String effect = event.getKeyframeData().getEffect();
+                            String locator = event.getKeyframeData().getLocator(); // Get the locator string from the keyframe
+                            AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Received effect string: '{}', Locator: '{}'", this.getId(), effect, locator);
+
+
+                            // Check if this is the specific effect we want to handle
+                            if ("attack_poof".equals(effect)) {
+                                AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Effect string matches 'attack_poof'.", this.getId());
+                                World world = this.getWorld();
+
+
+                                // Particle spawning needs bone position, which is calculated client-side during rendering
+                                AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Checking world side. Is client? {}", this.getId(), world.isClient());
+                                if (world.isClient()) {
+                                    // Validate the locator string from the animation file
+                                    if (locator == null || locator.isEmpty()) {
+                                        AdorableHamsterPets.LOGGER.warn("[ParticleHandler {}] Locator is null or empty for effect '{}'. Cannot calculate bone position.", this.getId(), effect);
+                                        return;
+                                    }
+
+
+                                    // Get the entity's renderer on the client
+                                    EntityRenderer<?> renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(this);
+                                    if (!(renderer instanceof GeoEntityRenderer<?> geoRenderer)) {
+                                        AdorableHamsterPets.LOGGER.error("[ParticleHandler {}] Could not get GeoEntityRenderer instance for entity.", this.getId());
+                                        return;
+                                    }
+
+
+                                    // Get the model associated with the renderer
+                                    GeoModel<?> model = geoRenderer.getGeoModel();
+                                    if (model == null) {
+                                        AdorableHamsterPets.LOGGER.error("[ParticleHandler {}] Could not get model from GeoRenderer.", this.getId());
+                                        return;
+                                    }
+
+
+                                    // Find the specific bone using the locator string
+                                    GeoBone bone = model.getBone(locator).orElse(null);
+                                    if (bone != null) {
+                                        // Get the bone's calculated world position for this frame
+                                        Vector3d boneWorldPos = bone.getWorldPosition();
+                                        double boneX = boneWorldPos.x();
+                                        double boneY = boneWorldPos.y();
+                                        double boneZ = boneWorldPos.z();
+
+                                        // --- ADDED: Log coordinates BEFORE sending ---
+                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Found bone '{}'. Calculated World Pos via Renderer: ({}, {}, {}). Sending payload.", currentEntityId, locator, boneX, boneY, boneZ);
+                                        // --- End Added ---
+
+
+                                        // Send the calculated coordinates to the server via network packet
+                                        ClientPlayNetworking.send(new SpawnAttackParticlesPayload(boneX, boneY, boneZ));
+
+
+                                    } else {
+                                        AdorableHamsterPets.LOGGER.error("[ParticleHandler {}] Could not find bone with locator '{}' for effect '{}'.", this.getId(), locator, effect);
+                                    }
+                                }
+                            }
+                            // --- End Description ---
+                        })
+                // --- End Particle Keyframe Handler ---
         );
+        // --- End Description ---
     }
-    // --- End registerControllers ---
 
 
     @Override
