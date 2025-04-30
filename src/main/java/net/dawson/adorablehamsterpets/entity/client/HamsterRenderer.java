@@ -10,7 +10,9 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class HamsterRenderer extends GeoEntityRenderer<HamsterEntity> {
@@ -34,22 +36,27 @@ public class HamsterRenderer extends GeoEntityRenderer<HamsterEntity> {
                 "textures/entity/hamster/" + baseTextureName + ".png"
         );
     }
-    // --- Override preRender ---
+    // --- MODIFIED: Override preRender ---
     @Override
     public void preRender(MatrixStack poseStack, HamsterEntity animatable, BakedGeoModel model, @Nullable VertexConsumerProvider bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
-        // --- Call before model rendering. Access the target bone here as requested. ---
+        // --- Description: Called before model rendering. Access the target bone AND its position here. ---
 
-        // 1. Call the superclass method FIRST to ensure base functionality runs
+        // 1. Call the superclass method FIRST
         super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
 
-        // 2. Access the 'left_foot' bone from the provided model instance
-        // Not storing it or doing anything with it, just accessing it.
-        // Added logging to confirm this happens for the correct entity.
+        // 2. Access the 'left_foot' bone AND call getWorldPosition() on it
         try {
-            model.getBone("left_foot"); // Attempt to get the bone
+            // Get the bone instance from the model provided to this render call
+            GeoBone bone = model.getBone("left_foot").orElse(null);
+            if (bone != null) {
+                Vector3d ignoredPosition = bone.getWorldPosition();
+
+            } else {
+                AdorableHamsterPets.LOGGER.info("[HamsterRenderer PreRender] Could not find 'left_foot' bone for entity {} in preRender!", animatable.getId());
+            }
         } catch (Exception e) {
-            // Log if the bone couldn't be found, which would indicate a model/locator name issue
-            AdorableHamsterPets.LOGGER.info("[HamsterRenderer PreRender] Failed to get 'left_foot' bone for entity {} in preRender!", animatable.getId(), e);
+            // Catch potential exceptions during bone access/position calculation
+            AdorableHamsterPets.LOGGER.info("[HamsterRenderer PreRender] Exception while accessing bone/position for entity {} in preRender!", animatable.getId(), e);
         }
     }
 }
