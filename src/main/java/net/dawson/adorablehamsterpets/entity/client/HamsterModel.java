@@ -101,22 +101,26 @@ public class HamsterModel extends GeoModel<HamsterEntity> {
         // --- END CHEEK BONE LOGIC ---
 
 
-        // --- BABY SCALING LOGIC ---
+        // --- BABY SCALING LOGIC (REVISED) ---
         GeoBone rootBone = this.getAnimationProcessor().getBone("root");
         if (rootBone != null) {
+            final float adultScale = 1.0f; // Define adult scale constant for clarity
+            final float babyScale = 0.5f;  // Define baby scale constant
+
+
             if (entity.isBaby()) {
                 // Apply baby scale ONLY if it's a baby
-                rootBone.setScaleX(0.5f);
-                rootBone.setScaleY(0.5f);
-                rootBone.setScaleZ(0.5f);
-            } else if (!entity.isKnockedOut() && entity.wakingUpTicks <= 0) {
-                // Apply adult scale ONLY if it's an adult AND NOT knocked out AND NOT waking up
-                rootBone.setScaleX(1f);
-                rootBone.setScaleY(1f);
-                rootBone.setScaleZ(1f);
+                rootBone.setScaleX(babyScale);
+                rootBone.setScaleY(babyScale);
+                rootBone.setScaleZ(babyScale);
+            } else {
+                // Apply adult scale if it's NOT a baby, regardless of KO/waking state
+                rootBone.setScaleX(adultScale); // Explicitly set adult scale
+                rootBone.setScaleY(adultScale);
+                rootBone.setScaleZ(adultScale);
+                // The crash/ko/wakeup animations will still scale the body_parent relative to this root scale.
             }
-            // If it's an adult AND (knocked out OR waking up), do nothing here - let animations control the scale.
         }
-        // --- END BABY SCALING LOGIC ---
+        // --- END BABY SCALING LOGIC (REVISED) ---
     }
 }

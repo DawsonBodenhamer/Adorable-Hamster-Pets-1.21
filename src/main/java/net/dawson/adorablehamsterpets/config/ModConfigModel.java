@@ -1,83 +1,152 @@
 package net.dawson.adorablehamsterpets.config;
 
-/*  ────────────────────────────────────────────────────────────────────────────────
-    GENERIC CONFIGURATION TEMPLATE
-    --------------------------------
-      • This file is **NOT** intended to ship with the finished mod.
-      • Every field, range, and nested group is a placeholder so IDE-autocomplete
-        works and other contributors (or AI assistants) can copy / adapt quickly.
-      • Replace the dummy fields with REAL settings that actually matter to the
-        mod once you know what those are.
-      • Keep the annotations themselves (@Config, @Modmenu, @Nest, @RangeConstraint).
-        They power code-generation and Mod Menu integration.
-  ──────────────────────────────────────────────────────────────────────────────── */
-
-/*  ── Required OWO-Config annotations ────────────────────────────────────────────
-    @Config      – Declares this class as an owo-config model.
-                   • name        → file name on disk (name.json)
-                   • wrapperName → generated helper class ( <wrapperName>.java )
-    @Modmenu     – Adds a “Config” button in Mod Menu for the specified mod id.
-    @Nest        – Marks an inner class as a grouped block of settings.
-    @RangeConstraint – Adds min / max validation on numeric fields.
-*/
-
 import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Modmenu;
 import io.wispforest.owo.config.annotation.Nest;
 import io.wispforest.owo.config.annotation.RangeConstraint;
+import io.wispforest.owo.config.annotation.SectionHeader; // Corrected import
+import blue.endless.jankson.Comment;
+import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 
-@Modmenu(modId = "adorablehamsterpets")          // ← Your mod id goes here
-@Config(
-        name        = "adorablehamsterpets",     // ← Output file: adorablehamsterpets.json
-        wrapperName = "ModConfig"                // ← Generated helper: ModConfig.java
-)
+@Modmenu(modId = AdorableHamsterPets.MOD_ID)
+@Config(name = AdorableHamsterPets.MOD_ID, wrapperName = "ModConfig")
 public class ModConfigModel {
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // BASIC EXAMPLE FLAGS  —  DELETE OR REPLACE WITH REAL ONES
-    // ──────────────────────────────────────────────────────────────────────────
-
-    /** Example boolean toggle (rename & re-document) */
-    public boolean exampleBoolean = true;
-
-    /** Example integer with no constraints (rename or add @RangeConstraint) */
-    public int exampleInteger = 42;
-
-    // ──────────────────────────────────────────────────────────────────────────
-    // GROUPED OPTIONS (showing how to nest)
-    // ──────────────────────────────────────────────────────────────────────────
-
+    @SectionHeader("Spawning") // Config section for hamster spawning
     @Nest
-    public GroupOne groupOne = new GroupOne();
+    public Spawning spawning = new Spawning();
 
+    @SectionHeader("Behavior") // Config section for hamster behavior
     @Nest
-    public GroupTwo groupTwo = new GroupTwo();
+    public Behavior behavior = new Behavior();
 
-    // ── NESTED CLASS #1  —  Placeholder options for “Group One” ──────────────
-    public static class GroupOne {
+    @SectionHeader("Cooldowns") // Config section for various cooldowns
+    @Nest
+    public Cooldowns cooldowns = new Cooldowns();
 
-        /** Placeholder text value */
-        public String exampleText = "replace-me";
+    @SectionHeader("Features") // Config section for enabling/disabling features
+    @Nest
+    public Features features = new Features();
 
-        /** Range-constrained double */
-        @RangeConstraint(min = 0, max = 1)
-        public double exampleRatio = 0.5;
+    @SectionHeader("World Generation") // Config section for world generation tweaks
+    @Nest
+    public WorldGen worldGen = new WorldGen();
+
+    // --- Spawning Settings ---
+    public static class Spawning {
+        @RangeConstraint(min = 0, max = 100)
+        @Comment("Adjusts hamster spawn frequency. Higher = more chaos. 0 = blissful silence.")
+        public int hamsterSpawnWeight = 30;
+
+        @RangeConstraint(min = 1, max = 10)
+        @Comment("Maximum hamsters per spawn group. Because sometimes one just isn't cute enough.")
+        public int hamsterMaxGroupSize = 2;
     }
 
-    // ── NESTED CLASS #2  —  Placeholder options for “Group Two” ──────────────
-    public static class GroupTwo {
+    // --- Behavior Settings ---
+    public static class Behavior {
+        @RangeConstraint(min = 0.0, max = 40.0)
+        @Comment("Tamed hamster melee damage. Mostly for show, let's be honest.")
+        public double hamsterMeleeDamage = 2.0;
 
-        /** Another boolean flag */
-        public boolean enableFeatureX = false;
+        @RangeConstraint(min = 1, max = 20)
+        @Comment("Taming difficulty (1 in X chance). Higher means more cucumbers sacrificed to the RNG gods.")
+        public int tamingChanceDenominator = 3;
 
-        /** An enum example (replace with your own enum) */
-        public DemoMode demoMode = DemoMode.OFF;
+        @RangeConstraint(min = 0.0f, max = 10.0f)
+        @Comment("Healing amount from Hamster Food Mix. The good stuff.")
+        public float hamsterFoodMixHealing = 4.0f;
 
-        // Dummy enum to illustrate enum config support
-        public enum DemoMode {
-            OFF,
-            PARTIAL,
-            FULL
-        }
+        @RangeConstraint(min = 0.0f, max = 5.0f)
+        @Comment("Healing from basic seeds/crops. Better than nothing... probably.")
+        public float standardFoodHealing = 2.0f;
+    }
+
+    // --- Cooldown Settings ---
+    public static class Cooldowns {
+        @RangeConstraint(min = 20, max = 20 * 60 * 10) // 1 sec to 10 mins
+        @Comment("Cooldown (ticks) after using a hamster as a projectile. Give it a moment. (20 ticks = 1s)")
+        public int hamsterThrowCooldown = 2400; // Default to 2 minutes (2 * 60 * 20)
+
+        @RangeConstraint(min = 20, max = 20 * 60 * 10)
+        @Comment("Cooldown (ticks) before Steamed Green Bean buffs can be reapplied. Patience.")
+        public int steamedGreenBeansBuffCooldown = 6000;
+
+        @RangeConstraint(min = 600, max = 24000) // 30 seconds to 20 minutes
+        @Comment("Breeding cooldown (ticks) for hamsters. They need their space.")
+        public int breedingCooldownTicks = 6000;
+    }
+
+    // --- Feature Settings ---
+    public static class Features {
+        @Comment("Enable the 'Sweet Potato' name tag easter egg? Sure, why not.")
+        public boolean enableSweetPotatoEasterEgg = true;
+
+        @Comment("Allow shoulder hamsters to detect Creepers? Might save your inventory.")
+        public boolean enableShoulderCreeperDetection = true;
+
+        @Comment("Allow shoulder hamsters to detect Diamonds? Or do you enjoy the surprise?")
+        public boolean enableShoulderDiamondDetection = true;
+
+        @RangeConstraint(min = 1.0, max = 32.0)
+        @Comment("Shoulder Diamond detection radius (blocks). How close do you need to be?")
+        public double shoulderDiamondDetectionRadius = 10.0;
+
+        @RangeConstraint(min = 1.0, max = 64.0)
+        @Comment("Shoulder Creeper detection radius (blocks). Adjust paranoia levels.")
+        public double shoulderCreeperDetectionRadius = 16.0;
+
+        @RangeConstraint(min = 0.0, max = 40.0)
+        @Comment("Damage dealt by thrown hamster. Surprisingly, the default value is exactly enough to kill a creeper. What a coincidence.")
+        public float hamsterThrowDamage = 20.0f;
+
+        @Comment("Enable hamster throwing? ('G' key default). Use responsibly. Or don't.")
+        public boolean enableHamsterThrowing = true;
+    }
+
+    // --- World Generation Settings ---
+    public static class WorldGen {
+        @RangeConstraint(min = 0.1, max = 5.0)
+        @Comment("Sunflower seed regrowth speed. Higher values make it slower; lower values make it faster. Makes perfect sense.")
+        public double sunflowerRegrowthModifier = 1.0;
+
+        @RangeConstraint(min = 0.1, max = 5.0)
+        @Comment("Wild bush seed regrowth speed. Higher values make it slower; lower values make it faster. Makes perfect sense.")
+        public double wildBushRegrowthModifier = 1.0;
+
+        @RangeConstraint(min = 1, max = 100)
+        @Comment("Wild green bean bush rarity (1 in X chunks). WARNING: Low values (1-5) might cause... bush spam.")
+        public int wildGreenBeanBushRarity = 24;
+
+        @RangeConstraint(min = 1, max = 100)
+        @Comment("Wild cucumber bush rarity (1 in X chunks). WARNING: Ditto on the bush incidents.")
+        public int wildCucumberBushRarity = 24;
+    }
+
+    // --- Buff Settings ---
+    @SectionHeader("Buffs") // Config section for buff effects
+    @Nest
+    public Buffs buffs = new Buffs();
+
+    public static class Buffs {
+        @RangeConstraint(min = 20, max = 20 * 60 * 10)
+        @Comment("Duration (ticks) of the Steamed Green Bean buff. Fleeting power.")
+        public int greenBeanBuffDuration = 3600;
+
+        @RangeConstraint(min = 0, max = 4) // Level I to V
+        @Comment("Speed boost level (0=I, 1=II...) from beans. Gotta go fast?")
+        public int greenBeanBuffAmplifierSpeed = 1;
+
+        @RangeConstraint(min = 0, max = 4)
+        @Comment("Strength boost level (0=I, 1=II...) from beans. For slightly mightier nibbles.")
+        public int greenBeanBuffAmplifierStrength = 1;
+
+        @RangeConstraint(min = 0, max = 4)
+        @Comment("Absorption boost level (0=I, 1=II...) from beans. Extra fluff padding.")
+        public int greenBeanBuffAmplifierAbsorption = 1;
+
+        @RangeConstraint(min = 0, max = 4)
+        @Comment("Regeneration boost level (0=I, 1=II...) from beans. Heals minor paper-cuts.")
+        public int greenBeanBuffAmplifierRegen = 0;
     }
 }

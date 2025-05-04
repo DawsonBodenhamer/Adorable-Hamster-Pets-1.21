@@ -36,7 +36,7 @@ public class HamsterRenderer extends GeoEntityRenderer<HamsterEntity> {
                 "textures/entity/hamster/" + baseTextureName + ".png"
         );
     }
-    // --- MODIFIED: Override preRender ---
+    // --- Override preRender ---
     @Override
     public void preRender(MatrixStack poseStack, HamsterEntity animatable, BakedGeoModel model, @Nullable VertexConsumerProvider bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
         // --- Description: Called before model rendering. Access the target bone AND its position here. ---

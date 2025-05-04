@@ -5,7 +5,6 @@ import net.dawson.adorablehamsterpets.block.ModBlocks;
 import net.dawson.adorablehamsterpets.component.ModDataComponentTypes;
 import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.dawson.adorablehamsterpets.networking.payload.SpawnAttackParticlesPayload;
-import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
@@ -36,7 +35,12 @@ public class AdorableHamsterPets implements ModInitializer {
 	public static final String MOD_ID = "adorablehamsterpets";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final int HAMSTER_THROW_COOLDOWN_TICKS = 2 * 60 * 20;
+	/**
+	 * Stores the loaded configuration instance for easy access throughout the mod.
+	 * Initialized once in onInitialize.
+	 */
+	public static ModConfig CONFIG;
+
 
 
 	// --- 1. Define Packet ID ---
@@ -46,7 +50,10 @@ public class AdorableHamsterPets implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// --- Description: Main initialization logic ---
+
+		// Config
+		CONFIG = ModConfig.createAndLoad();
+
 		// Registrations (Sounds, Blocks, Items, etc.)
 		ModDataComponentTypes.registerDataComponentTypes();
 		ModSounds.registerSounds();
@@ -65,9 +72,8 @@ public class AdorableHamsterPets implements ModInitializer {
 		PayloadTypeRegistry.playC2S().register(ThrowHamsterPayload.ID, ThrowHamsterPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(StartHamsterFlightSoundPayload.ID, StartHamsterFlightSoundPayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(StartHamsterThrowSoundPayload.ID, StartHamsterThrowSoundPayload.CODEC);
-		// --- MODIFIED: Register payload with coordinates ---
+		// ---  Register payload with coordinates ---
 		PayloadTypeRegistry.playC2S().register(SpawnAttackParticlesPayload.ID, SpawnAttackParticlesPayload.CODEC);
-		// --- END MODIFIED ---
 
 		// Register Packet Handlers
 		registerC2SPackets();
@@ -87,7 +93,6 @@ public class AdorableHamsterPets implements ModInitializer {
 
 	// --- 2. Register Server-Side Packet Receiver ---
 	public static void registerC2SPackets() {
-		// --- Description: Register server-side handlers for client-to-server packets ---
 
 		// --- Throw Hamster Packet Receiver ---
 		ServerPlayNetworking.registerGlobalReceiver(ThrowHamsterPayload.ID, // Use the Payload ID here
@@ -116,18 +121,12 @@ public class AdorableHamsterPets implements ModInitializer {
 				});
 		LOGGER.info("Registered C2S Packet Receiver for Payload: {}", SpawnAttackParticlesPayload.ID.id());
 		// --- END Spawn Attack Particles ---
-
-		// --- End Description ---
 	}
 	// --- End Receiver Registration ---
 
 	// --- 3. Handle the Received Packet ---
 	private static void handleThrowHamsterPacket(ServerPlayerEntity player) {
-		// --- Description: Handle the request to throw a hamster ---
-		// This method is called when the server receives the THROW_HAMSTER_PACKET_ID
-		// It calls the actual throw logic which we'll put in HamsterEntity
 		HamsterEntity.tryThrowFromShoulder(player);
-		// --- End Description ---
 	}
 	// --- End Packet Handler ---
 
@@ -158,7 +157,6 @@ public class AdorableHamsterPets implements ModInitializer {
 			// Corrected log message for clarity
 			LOGGER.info("[ServerPacketHandler] Could not get server world for player {}", player.getName().getString());
 		}
-		// --- End Description ---
 	}
 	// --- END Handler ---
 

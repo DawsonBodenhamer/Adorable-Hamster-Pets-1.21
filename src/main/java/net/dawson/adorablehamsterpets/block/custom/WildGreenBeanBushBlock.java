@@ -1,6 +1,8 @@
 package net.dawson.adorablehamsterpets.block.custom;
 
 import com.mojang.serialization.MapCodec;
+import net.dawson.adorablehamsterpets.AdorableHamsterPets;
+import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.dawson.adorablehamsterpets.item.ModItems;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -68,15 +70,19 @@ public class WildGreenBeanBushBlock extends PlantBlock {
     // Handle the random tick logic (for regrowing seeds)
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        // Only proceed if the block is currently seedless
         if (!state.get(SEEDED)) {
-            // Check light level and add randomness (e.g., 1 in 5 chance like Sweet Berries)
-            // You can adjust the random.nextInt() value for different regrowth speeds
-            if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextInt(5) == 0) {
-                // Set the state back to seeded
+            // --- Use Config Value for Regrowth Chance ---
+            final ModConfig config = AdorableHamsterPets.CONFIG; // Access static config
+            double modifier = config.worldGen.wildBushRegrowthModifier();
+            modifier = Math.max(0.1, modifier); // Ensure positive modifier
+
+            int baseRegrowthChanceDenominator = 5; // Default 1 in 5 chance
+            int effectiveDenominator = (int) Math.round(baseRegrowthChanceDenominator * modifier);
+            effectiveDenominator = Math.max(1, effectiveDenominator); // Ensure at least 1
+
+            if (world.getBaseLightLevel(pos.up(), 0) >= 9 && random.nextInt(effectiveDenominator) == 0) {
                 BlockState newState = state.with(SEEDED, true);
                 world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS);
-                // Emit a game event to notify listeners (like sculk sensors)
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(newState));
             }
         }

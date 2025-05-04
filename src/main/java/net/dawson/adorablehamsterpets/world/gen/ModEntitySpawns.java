@@ -1,5 +1,7 @@
 package net.dawson.adorablehamsterpets.world.gen;
 
+import net.dawson.adorablehamsterpets.AdorableHamsterPets;
+import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
@@ -53,7 +55,7 @@ public class ModEntitySpawns {
         VALID_SPAWN_BLOCKS.add(Blocks.DIRT);
         VALID_SPAWN_BLOCKS.add(Blocks.COARSE_DIRT);
         VALID_SPAWN_BLOCKS.add(Blocks.PODZOL);
-        VALID_SPAWN_BLOCKS.add(Blocks.SNOW_BLOCK); // For snowy biomes
+        VALID_SPAWN_BLOCKS.add(Blocks.SNOW_BLOCK);
     }
 
     // Helper method to create a predicate for specific biome keys
@@ -124,7 +126,20 @@ public class ModEntitySpawns {
                 2   // Max Group Size
         );
 
-        // Spawn Restriction remains the same
+        // --- Use Config Values ---
+        final ModConfig config = AdorableHamsterPets.CONFIG; // Access static config
+
+        BiomeModifications.addSpawn(
+                combinedSelector,
+                SpawnGroup.CREATURE,
+                ModEntities.HAMSTER,
+                config.spawning.hamsterSpawnWeight(),
+                1, // Set Min Group Size to 1 explicitly
+                config.spawning.hamsterMaxGroupSize() // Use config value for Max
+        );
+        // --- End Use Config ---
+
+        // Spawn Restriction
         SpawnRestriction.register(
                 ModEntities.HAMSTER,
                 SpawnLocationTypes.ON_GROUND,

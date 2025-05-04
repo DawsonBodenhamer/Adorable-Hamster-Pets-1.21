@@ -1,5 +1,6 @@
 package net.dawson.adorablehamsterpets.attachment;
 
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -8,6 +9,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+
+
+import java.util.Optional;
+
 
 public record HamsterShoulderData(
         int variantId,
@@ -19,10 +24,12 @@ public record HamsterShoulderData(
         long throwCooldownEndTick,
         long steamedBeansCooldownEndTick,
         NbtList activeEffectsNbt,
-        int autoEatCooldownTicks
+        int autoEatCooldownTicks,
+        Optional<String> customName
 ) {
 
-    // Codec for NbtCompound
+
+    // Codec for NbtCompound 
     public static final Codec<NbtCompound> NBT_COMPOUND_CODEC = Codec.PASSTHROUGH.comapFlatMap(
             (dynamic) -> {
                 NbtElement element = dynamic.convert(NbtOps.INSTANCE).getValue();
@@ -34,7 +41,8 @@ public record HamsterShoulderData(
             (nbt) -> new Dynamic<>(NbtOps.INSTANCE, nbt)
     );
 
-    // --- Codec for NbtList ---
+
+    // Codec for NbtList 
     public static final Codec<NbtList> NBT_LIST_CODEC = Codec.PASSTHROUGH.comapFlatMap(
             (dynamic) -> {
                 NbtElement element = dynamic.convert(NbtOps.INSTANCE).getValue();
@@ -45,7 +53,6 @@ public record HamsterShoulderData(
             },
             (nbt) -> new Dynamic<>(NbtOps.INSTANCE, nbt)
     );
-    // --- END CODEC ---
 
 
     public static final Codec<HamsterShoulderData> CODEC = RecordCodecBuilder.create(instance ->
@@ -59,13 +66,14 @@ public record HamsterShoulderData(
                     Codec.LONG.fieldOf("throwCooldownEndTick").forGetter(HamsterShoulderData::throwCooldownEndTick),
                     Codec.LONG.fieldOf("steamedBeansCooldownEndTick").forGetter(HamsterShoulderData::steamedBeansCooldownEndTick),
                     NBT_LIST_CODEC.fieldOf("activeEffectsNbt").forGetter(HamsterShoulderData::activeEffectsNbt),
-                    Codec.INT.fieldOf("autoEatCooldownTicks").forGetter(HamsterShoulderData::autoEatCooldownTicks)
+                    Codec.INT.fieldOf("autoEatCooldownTicks").forGetter(HamsterShoulderData::autoEatCooldownTicks),
+                    Codec.STRING.optionalFieldOf("customName").forGetter(HamsterShoulderData::customName)
             ).apply(instance, HamsterShoulderData::new)
     );
 
+
     @Override
     public String toString() {
-        // Add new field for logging clarity
         return "HamsterShoulderData[variantId=" + variantId +
                 ", health=" + health +
                 ", inventoryNbt=" + inventoryNbt.toString().substring(0, Math.min(inventoryNbt.toString().length(), 50)) + "..." +
@@ -76,11 +84,13 @@ public record HamsterShoulderData(
                 ", beansCooldownEnd=" + steamedBeansCooldownEndTick +
                 ", effectsNbtCount=" + activeEffectsNbt.size() +
                 ", autoEatCooldown=" + autoEatCooldownTicks +
+                ", customName=" + customName.orElse("None") +
                 "]";
     }
 
+
+    // Updated empty() method
     public static HamsterShoulderData empty() {
-        // Add default value for new field
-        return new HamsterShoulderData(0, 8.0f, new NbtCompound(), false, false, 0, 0L, 0L, new NbtList(), 0);
+        return new HamsterShoulderData(0, 8.0f, new NbtCompound(), false, false, 0, 0L, 0L, new NbtList(), 0, Optional.empty());
     }
 }

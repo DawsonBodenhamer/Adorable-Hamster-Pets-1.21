@@ -1,6 +1,7 @@
 package net.dawson.adorablehamsterpets.world.gen.feature;
 
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
+import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -23,11 +24,12 @@ public class ModPlacedFeatures {
 
     public static void bootstrap(Registerable<PlacedFeature> context) {
         var configuredFeatureRegistryEntryLookup = context.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
+        final ModConfig config = AdorableHamsterPets.CONFIG; // Access static config
 
-        // Sunflower (Existing)
+        // Sunflower
         register(context, CUSTOM_SUNFLOWER_PLACED_KEY,
-                configuredFeatureRegistryEntryLookup.getOrThrow(ModConfiguredFeatures.CUSTOM_SUNFLOWER_PATCH_KEY), // Corrected reference
-                RarityFilterPlacementModifier.of(3), // Sunflower rarity
+                configuredFeatureRegistryEntryLookup.getOrThrow(ModConfiguredFeatures.CUSTOM_SUNFLOWER_PATCH_KEY),
+                RarityFilterPlacementModifier.of(3),
                 SquarePlacementModifier.of(),
                 PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
                 BiomePlacementModifier.of()
@@ -37,10 +39,10 @@ public class ModPlacedFeatures {
         register(context, WILD_GREEN_BEAN_BUSH_PLACED_KEY,
                 configuredFeatureRegistryEntryLookup.getOrThrow(ModConfiguredFeatures.WILD_GREEN_BEAN_BUSH_KEY),
                 // Placement Modifiers:
-                RarityFilterPlacementModifier.of(24), // Chance: 1/24 chunks attempt placement. Adjust for desired rarity.
-                SquarePlacementModifier.of(), // Spread attempts horizontally.
-                PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, // Place on the surface.
-                BiomePlacementModifier.of() // Required final modifier.
+                RarityFilterPlacementModifier.of(config.worldGen.wildGreenBeanBushRarity()), // Use config value
+                SquarePlacementModifier.of(),
+                PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
+                BiomePlacementModifier.of()
         );
         // --- End Register Placed Green Bean ---
 
@@ -48,7 +50,7 @@ public class ModPlacedFeatures {
         register(context, WILD_CUCUMBER_BUSH_PLACED_KEY,
                 configuredFeatureRegistryEntryLookup.getOrThrow(ModConfiguredFeatures.WILD_CUCUMBER_BUSH_KEY),
                 // Placement Modifiers:
-                RarityFilterPlacementModifier.of(24), // Same rarity as green beans for now. Adjust as needed.
+                RarityFilterPlacementModifier.of(config.worldGen.wildCucumberBushRarity()), // Use config value
                 SquarePlacementModifier.of(),
                 PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
                 BiomePlacementModifier.of()

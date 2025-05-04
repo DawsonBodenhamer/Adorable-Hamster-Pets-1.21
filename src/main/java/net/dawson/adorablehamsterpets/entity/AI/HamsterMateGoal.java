@@ -1,10 +1,13 @@
 package net.dawson.adorablehamsterpets.entity.AI;
 
+import net.dawson.adorablehamsterpets.AdorableHamsterPets;
+import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.dawson.adorablehamsterpets.entity.custom.HamsterEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.EnumSet;
+import java.util.List;
 
 public class HamsterMateGoal extends Goal {
     private final HamsterEntity hamster;
@@ -20,10 +23,16 @@ public class HamsterMateGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        // Must be an adult, in custom love, etc.
-        if (this.hamster.isInCustomLove()) {
-            // Find a mate
+        // --- Add Logging ---
+        boolean inLove = this.hamster.isInCustomLove();
+        AdorableHamsterPets.LOGGER.trace("[MateGoal {} Tick {}] canStart() check. isInCustomLove() = {}", this.hamster.getId(), this.hamster.getWorld().getTime(), inLove);
+        // --- End Logging ---
+
+        if (inLove) {
             this.targetMate = this.getNearbyMate();
+            // --- Add Logging ---
+            AdorableHamsterPets.LOGGER.info("[MateGoal {} Tick {}] Found potential mate: {}", this.hamster.getId(), this.hamster.getWorld().getTime(), this.targetMate != null ? this.targetMate.getId() : "null");
+            // --- End Logging ---
             return this.targetMate != null;
         }
         return false;
@@ -60,19 +69,38 @@ public class HamsterMateGoal extends Goal {
     }
 
     private HamsterEntity getNearbyMate() {
-        // Find another HamsterEntity that is also in love
-        return this.hamster.getWorld().getEntitiesByClass(
+        AdorableHamsterPets.LOGGER.info("[MateGoal {} Tick {}] getNearbyMate() searching...", this.hamster.getId(), this.hamster.getWorld().getTime());
+        List<HamsterEntity> candidates = this.hamster.getWorld().getEntitiesByClass(
                 HamsterEntity.class,
                 this.hamster.getBoundingBox().expand(8.0D),
-                h -> h != this.hamster && h.isInCustomLove() && h.getBreedingAge() == 0
-        ).stream().findAny().orElse(null);
+                // --- Start of Predicate Lambda ---
+                h -> { // Check each potential mate 'h'
+                    boolean potential = h != this.hamster && h.isInCustomLove() && h.getBreedingAge() == 0;
+                    // Log check for each candidate inside the lambda
+                    AdorableHamsterPets.LOGGER.info("  - Checking candidate {}: isInCustomLove={}, getBreedingAge={}, isSelf={}, Result={}", h.getId(), h.isInCustomLove(), h.getBreedingAge(), h == this.hamster, potential);
+                    return potential; // Return the result of the check for this candidate
+                }
+        );
+
+        // Find any candidate from the filtered list
+        HamsterEntity found = candidates.stream().findAny().orElse(null);
+
+        // Log the final result after checking all candidates
+        AdorableHamsterPets.LOGGER.info("[MateGoal {} Tick {}] getNearbyMate() found: {}", this.hamster.getId(), this.hamster.getWorld().getTime(), found != null ? found.getId() : "null");
+
+        return found;
     }
 
     private void breed() {
-        this.hamster.setBreedingAge(6000);  // 5 min cooldown
-        this.targetMate.setBreedingAge(6000);
 
-        this.hamster.customLoveTimer = 0;   // reset
+        // --- Use Config Value for Breeding Cooldown ---
+        final ModConfig config = AdorableHamsterPets.CONFIG;
+        int cooldown = config.cooldowns.breedingCooldownTicks();
+        this.hamster.setBreedingAge(cooldown);
+        this.targetMate.setBreedingAge(cooldown);
+        // --- End Use Config Value ---
+
+        this.hamster.customLoveTimer = 0;
         this.targetMate.customLoveTimer = 0;
 
         // Create baby

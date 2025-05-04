@@ -3,6 +3,7 @@ package net.dawson.adorablehamsterpets;
 import net.dawson.adorablehamsterpets.block.ModBlocks;
 import net.dawson.adorablehamsterpets.client.option.ModKeyBindings;
 import net.dawson.adorablehamsterpets.client.sound.HamsterThrowSoundInstance;
+import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.dawson.adorablehamsterpets.entity.ModEntities;
 import net.dawson.adorablehamsterpets.entity.client.HamsterRenderer;
 import net.dawson.adorablehamsterpets.entity.client.ModModelLayers;
@@ -33,6 +34,7 @@ import net.dawson.adorablehamsterpets.attachment.ModEntityAttachments; // Import
 import net.dawson.adorablehamsterpets.networking.payload.ThrowHamsterPayload; // Import C2S payload
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents; // Import tick event
 import net.minecraft.client.option.GameOptions; // Import GameOptions
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.HitResult;
 
 public class AdorableHamsterPetsClient implements ClientModInitializer {
@@ -62,14 +64,24 @@ public class AdorableHamsterPetsClient implements ClientModInitializer {
 
     // --- Client Tick Handler Method ---
     private void handleClientTick(MinecraftClient client) {
-        // ... (cooldown decrement, initial checks) ...
+        // Cooldown logic (if any) would go here first...
+        // if (throwInputCooldown > 0) { throwInputCooldown--; return; }
 
-        // Use the new keybind check
+        // Check if the throw key was pressed
         if (ModKeyBindings.THROW_HAMSTER_KEY.wasPressed()) {
             ClientPlayerEntity player = client.player;
-            GameOptions options = client.options; // Get options instance
+            if (player == null) return; // Ensure player exists
 
-            // Check other conditions: looking at block, has shoulder data
+            // --- Check Config Setting ---
+            final ModConfig config = AdorableHamsterPets.CONFIG;
+            if (!config.features.enableHamsterThrowing()) {
+                // Send a message to the player explaining why it's disabled
+                player.sendMessage(Text.literal("Hamster throwing is disabled in config."), true);
+                return; // Stop if throwing is disabled
+            }
+            // --- End Check Config Setting ---
+
+            // Check other conditions: not looking at block, has shoulder data
             boolean lookingAtReachableBlock = client.crosshairTarget != null && client.crosshairTarget.getType() == HitResult.Type.BLOCK;
             boolean hasShoulderHamsterClient = player.getAttached(ModEntityAttachments.HAMSTER_SHOULDER_DATA) != null;
 
@@ -79,7 +91,6 @@ public class AdorableHamsterPetsClient implements ClientModInitializer {
             }
         }
     }
-    // --- End Client Tick Handler ---
 
 
 

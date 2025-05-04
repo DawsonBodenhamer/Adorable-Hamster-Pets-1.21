@@ -3,6 +3,7 @@ package net.dawson.adorablehamsterpets.mixin.server;
 import net.dawson.adorablehamsterpets.AdorableHamsterPets;
 import net.dawson.adorablehamsterpets.attachment.HamsterShoulderData;
 import net.dawson.adorablehamsterpets.attachment.ModEntityAttachments;
+import net.dawson.adorablehamsterpets.config.ModConfig;
 import net.dawson.adorablehamsterpets.entity.custom.HamsterEntity; // Import HamsterEntity
 import net.dawson.adorablehamsterpets.sound.ModSounds;
 import net.minecraft.block.BlockState;
@@ -54,6 +55,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         PlayerEntity self = (PlayerEntity)(Object)this;
         World world = self.getWorld(); // Get world instance
         Random random = world.getRandom(); // Get the world's random instance
+        final ModConfig config = AdorableHamsterPets.CONFIG; // Access static config
 
 
         if (!world.isClient()) {
@@ -61,12 +63,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 
             // --- Decrement Sound Cooldowns ---
-            if (adorablehamsterpets$diamondSoundCooldownTicks > 0) {
-                adorablehamsterpets$diamondSoundCooldownTicks--;
-            }
-            if (adorablehamsterpets$creeperSoundCooldownTicks > 0) {
-                adorablehamsterpets$creeperSoundCooldownTicks--;
-            }
+            if (adorablehamsterpets$diamondSoundCooldownTicks > 0) adorablehamsterpets$diamondSoundCooldownTicks--;
+            if (adorablehamsterpets$creeperSoundCooldownTicks > 0) adorablehamsterpets$creeperSoundCooldownTicks--;
             // --- End Decrement ---
 
 
@@ -93,7 +91,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 adorablehamsterpets$diamondCheckTimer++;
                 if (adorablehamsterpets$diamondCheckTimer >= CHECK_INTERVAL_TICKS) {
                     adorablehamsterpets$diamondCheckTimer = 0;
-                    if (isDiamondNearby(self)) {
+                    if (config.features.enableShoulderDiamondDetection() && isDiamondNearby(self, config.features.shoulderDiamondDetectionRadius())) {
                         if (adorablehamsterpets$diamondSoundCooldownTicks == 0) {
                             
                             world.playSound(null, self.getBlockPos(),
@@ -118,7 +116,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 adorablehamsterpets$creeperCheckTimer++;
                 if (adorablehamsterpets$creeperCheckTimer >= CHECK_INTERVAL_TICKS) {
                     adorablehamsterpets$creeperCheckTimer = 0;
-                    if (creeperSeesPlayer(self)) {
+                    if (config.features.enableShoulderCreeperDetection() && creeperSeesPlayer(self, config.features.shoulderCreeperDetectionRadius())) {
                         if (adorablehamsterpets$creeperSoundCooldownTicks == 0) {
                             
                             world.playSound(null, self.getBlockPos(),
@@ -164,15 +162,16 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     // --- isDiamondNearby Method ---
     @Unique
-    private boolean isDiamondNearby(PlayerEntity player) {
-        int radius = 10; // 10-block radius check
+    private boolean isDiamondNearby(PlayerEntity player, double radius) {
         World world = player.getWorld();
         BlockPos center = player.getBlockPos();
-        // Iterate in a cube around the player
-        for (BlockPos checkPos : BlockPos.iterate(center.add(-radius, -radius, -radius), center.add(radius, radius, radius))) {
-            BlockState state = world.getBlockState(checkPos);
-            if (state.isOf(Blocks.DIAMOND_ORE) || state.isOf(Blocks.DEEPSLATE_DIAMOND_ORE)) {
-                return true; // Found one
+        int intRadius = (int) Math.ceil(radius);
+        for (BlockPos checkPos : BlockPos.iterate(center.add(-intRadius, -intRadius, -intRadius), center.add(intRadius, intRadius, intRadius))) {
+            if (checkPos.getSquaredDistance(center) <= radius * radius) {
+                BlockState state = world.getBlockState(checkPos);
+                if (state.isOf(Blocks.DIAMOND_ORE) || state.isOf(Blocks.DEEPSLATE_DIAMOND_ORE)) {
+                    return true; // Found one
+                }
             }
         }
         return false; // None found
@@ -182,21 +181,19 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     // --- creeperSeesPlayer Method (Keep As Is) ---
     @Unique
-    private boolean creeperSeesPlayer(PlayerEntity player) {
+    private boolean creeperSeesPlayer(PlayerEntity player, double radius) {
+        // --- End Correction ---
         World world = player.getWorld();
-        // Search radius for creepers
-        double radius = 16.0;
+        // --- Corrected: Use parameter for search box ---
         Box searchBox = new Box(player.getPos().subtract(radius, radius, radius), player.getPos().add(radius, radius, radius));
+        // --- End Correction ---
 
         List<CreeperEntity> nearbyCreepers = world.getEntitiesByClass(
                 CreeperEntity.class,
                 searchBox,
-                // Predicate: Creeper is alive AND its target is the player
                 creeper -> creeper.isAlive() && creeper.getTarget() == player && EntityPredicates.VALID_ENTITY.test(creeper)
         );
-
-
-        return !nearbyCreepers.isEmpty(); // Return true if any creeper targeting the player is found
+        return !nearbyCreepers.isEmpty();
     }
     // --- End creeperSeesPlayer Method ---
 }
