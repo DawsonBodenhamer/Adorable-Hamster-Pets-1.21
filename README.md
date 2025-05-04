@@ -23,7 +23,7 @@ Or maybe you didn't. Doesn't matter. You're here now, considering adding hamster
 *   **Cheek Pouches of Holding:** Yes, inventory... *in their face*. Sneak + Right-click a tamed hamster to access 6 slots of prime real estate for small, logically-sized items. No, you can't stuff a Netherite block in there. Don't even try. They'll even automatically scarf down **Hamster Food Mix** from their cheeks if they take a tumble. Because convenience.
 *   **Advanced Combat (?) Techniques:**
     *   **Melee:** They'll bravely nibble on things that hurt you, or things you decide to hurt first. Valiant, if statistically unimpressive.
-    *   **The Hamster Yeet™:** Press **'G'** (by default - maybe check your keybinds if nothing happens?) while *not* staring intently at a block. Behold as your shoulder companion becomes a surprisingly effective, albeit concussed, projectile. Gentle interaction required for post-impact recovery. (Note: Using babies for this is frowned upon. Mostly.)
+    *   **The Hamster Yeet™:** Press **'G'** (by default - maybe check your keybinds if nothing happens?) while *not* staring intently at a block. Behold as your shoulder companion becomes a surprisingly effective, albeit concussed, projectile. Gentle interaction required for post-impact recovery.
 *   **New Questionable Flora:**
     *   **Wild Cucumber & Green Bean Bushes:** Find these lurking in appropriate biomes. Right-click the seeded ones for seeds. Try not to step on your potential hamster bait supply.
     *   **Slightly Less Useless Sunflowers:** Look like vanilla ones, but these actually *do* something. Right-click the top block when it looks seeded for **Sunflower Seeds**. They regrow. Eventually. Patience is a virtue you probably lack.
