@@ -720,7 +720,6 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         // --- 1. Write Core Data ---
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("HamsterVariant", this.getVariant());
-        nbt.putBoolean("IsSleeping", this.isSleeping());
         nbt.putBoolean("Sitting", this.dataTracker.get(IS_SITTING)); // Write raw sitting state
         nbt.putBoolean("KnockedOut", this.isKnockedOut());
         nbt.putLong("ThrowCooldownEnd", this.throwCooldownEndTick);
@@ -741,15 +740,19 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     public void readCustomDataFromNbt(NbtCompound nbt) {
         // --- 1. Read Core Data ---
         super.readCustomDataFromNbt(nbt);
+        AdorableHamsterPets.LOGGER.info("[NBT Read {}] Start reading NBT data.", this.getId());
         this.setVariant(nbt.getInt("HamsterVariant"));
-        this.setSleeping(nbt.getBoolean("IsSleeping"));
-        this.setSitting(nbt.getBoolean("Sitting"), true); // Read raw sitting state, suppress sound
+        boolean wasSitting = nbt.getBoolean("Sitting");
+        this.setSitting(wasSitting, true); // Apply loaded sitting state
+
+
         this.setKnockedOut(nbt.getBoolean("KnockedOut"));
         this.throwCooldownEndTick = nbt.getLong("ThrowCooldownEnd");
         this.steamedBeansCooldownEndTick = nbt.getLong("SteamedBeansCooldownEnd");
         this.autoEatCooldownTicks = nbt.getInt("AutoEatCooldown");
         this.ejectionCheckCooldown = nbt.contains("EjectionCheckCooldown", NbtElement.INT_TYPE) ? nbt.getInt("EjectionCheckCooldown") : 20;
         // --- End 1. Read Core Data ---
+
 
         // --- 2. Read Inventory ---
         this.items.clear();
@@ -759,6 +762,10 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         }
         this.updateCheekTrackers();
         // --- End 2. Read Inventory ---
+
+        // Log state after reading
+        AdorableHamsterPets.LOGGER.info("[NBT Read {}] Finished NBT read. State from NBT: isSitting={}",
+                this.getId(), this.dataTracker.get(IS_SITTING));
     }
 
     // --- Shoulder Riding Data Handling ---
@@ -1130,6 +1137,15 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     // --- Tick Logic ---
     @Override
     public void tick() {
+
+        // Log first few ticks (keep for debugging)
+        if (!this.getWorld().isClient() && this.age < 5) {
+            AdorableHamsterPets.LOGGER.info("[Tick {} Age {}] State: isSleeping={}, isSittingPose={}, Navigating={}",
+                    this.getId(), this.age, this.isSleeping(), this.isInSittingPose(), !this.getNavigation().isIdle());
+        }
+
+
+
         // --- 1. Decrement Timers ---
         if (this.interactionCooldown > 0) this.interactionCooldown--;
         if (this.cleaningCooldownTimer > 0) this.cleaningCooldownTimer--;
@@ -1597,14 +1613,16 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     // --- AI Goals ---
     @Override
     protected void initGoals() {
+        AdorableHamsterPets.LOGGER.info("[AI Init {} Tick {}] Initializing goals. Current State: isSleeping={}, isSittingPose={}",
+                this.getId(), this.getWorld().isClient ? "ClientTick?" : this.getWorld().getTime(), this.isSleeping(), this.isInSittingPose());
         // --- 1. Initialize Goals ---
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new HamsterMeleeAttackGoal(this, 1.0D, true));
         this.goalSelector.add(2, new HamsterMateGoal(this, 1.0D));
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.2D, 4.0F, 16.0F));
         this.goalSelector.add(4, new HamsterFleeGoal<>(this, LivingEntity.class, 8.0F, 1.0D, 1.5D));
-        this.goalSelector.add(5, new HamsterBegGoal(this));
-        this.goalSelector.add(6, new HamsterTemptGoal(this, 1.4D, stack -> stack.isOf(ModItems.SLICED_CUCUMBER), false));
+        this.goalSelector.add(5, new HamsterTemptGoal(this, 1.4D, stack -> stack.isOf(ModItems.SLICED_CUCUMBER), false));
+        this.goalSelector.add(6, new HamsterBegGoal(this));
         this.goalSelector.add(7, new SitGoal(this)); // Vanilla SitGoal uses TameableEntity.isInSittingPose()
         this.goalSelector.add(8, new HamsterSleepGoal(this));
         this.goalSelector.add(9, new WanderAroundFarGoal(this, 0.75D));
@@ -1617,6 +1635,8 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
         // --- End Target Selector Goals ---
         // --- End 1. Initialize Goals ---
+        AdorableHamsterPets.LOGGER.info("[AI Init {} Tick {}] Finished initializing goals.",
+                this.getId(), this.getWorld().isClient ? "ClientTick?" : this.getWorld().getTime());
     }
 
     // --- Sounds ---
