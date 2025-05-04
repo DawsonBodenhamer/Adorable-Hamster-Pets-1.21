@@ -740,7 +740,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     public void readCustomDataFromNbt(NbtCompound nbt) {
         // --- 1. Read Core Data ---
         super.readCustomDataFromNbt(nbt);
-        AdorableHamsterPets.LOGGER.info("[NBT Read {}] Start reading NBT data.", this.getId());
+        AdorableHamsterPets.LOGGER.debug("[NBT Read {}] Start reading NBT data.", this.getId());
         this.setVariant(nbt.getInt("HamsterVariant"));
         boolean wasSitting = nbt.getBoolean("Sitting");
         this.setSitting(wasSitting, true); // Apply loaded sitting state
@@ -764,7 +764,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         // --- End 2. Read Inventory ---
 
         // Log state after reading
-        AdorableHamsterPets.LOGGER.info("[NBT Read {}] Finished NBT read. State from NBT: isSitting={}",
+        AdorableHamsterPets.LOGGER.debug("[NBT Read {}] Finished NBT read. State from NBT: isSitting={}",
                 this.getId(), this.dataTracker.get(IS_SITTING));
     }
 
@@ -1140,7 +1140,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
         // Log first few ticks (keep for debugging)
         if (!this.getWorld().isClient() && this.age < 5) {
-            AdorableHamsterPets.LOGGER.info("[Tick {} Age {}] State: isSleeping={}, isSittingPose={}, Navigating={}",
+            AdorableHamsterPets.LOGGER.debug("[Tick {} Age {}] State: isSleeping={}, isSittingPose={}, Navigating={}",
                     this.getId(), this.age, this.isSleeping(), this.isInSittingPose(), !this.getNavigation().isIdle());
         }
 
@@ -1613,7 +1613,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     // --- AI Goals ---
     @Override
     protected void initGoals() {
-        AdorableHamsterPets.LOGGER.info("[AI Init {} Tick {}] Initializing goals. Current State: isSleeping={}, isSittingPose={}",
+        AdorableHamsterPets.LOGGER.debug("[AI Init {} Tick {}] Initializing goals. Current State: isSleeping={}, isSittingPose={}",
                 this.getId(), this.getWorld().isClient ? "ClientTick?" : this.getWorld().getTime(), this.isSleeping(), this.isInSittingPose());
         // --- 1. Initialize Goals ---
         this.goalSelector.add(0, new SwimGoal(this));
@@ -1622,12 +1622,11 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.2D, 4.0F, 16.0F));
         this.goalSelector.add(4, new HamsterFleeGoal<>(this, LivingEntity.class, 8.0F, 1.0D, 1.5D));
         this.goalSelector.add(5, new HamsterTemptGoal(this, 1.4D, stack -> stack.isOf(ModItems.SLICED_CUCUMBER), false));
-        this.goalSelector.add(6, new HamsterBegGoal(this));
-        this.goalSelector.add(7, new SitGoal(this)); // Vanilla SitGoal uses TameableEntity.isInSittingPose()
-        this.goalSelector.add(8, new HamsterSleepGoal(this));
-        this.goalSelector.add(9, new WanderAroundFarGoal(this, 0.75D));
-        this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-        this.goalSelector.add(11, new LookAroundGoal(this));
+        this.goalSelector.add(6, new SitGoal(this)); // Vanilla SitGoal uses TameableEntity.isInSittingPose()
+        this.goalSelector.add(7, new HamsterSleepGoal(this));
+        this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.75D));
+        this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+        this.goalSelector.add(10, new LookAroundGoal(this));
 
         // --- Target Selector Goals ---
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
@@ -1635,7 +1634,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
         // --- End Target Selector Goals ---
         // --- End 1. Initialize Goals ---
-        AdorableHamsterPets.LOGGER.info("[AI Init {} Tick {}] Finished initializing goals.",
+        AdorableHamsterPets.LOGGER.debug("[AI Init {} Tick {}] Finished initializing goals.",
                 this.getId(), this.getWorld().isClient ? "ClientTick?" : this.getWorld().getTime());
     }
 

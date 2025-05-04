@@ -21,28 +21,43 @@ public class HamsterTemptGoal extends TemptGoal {
 
     @Override
     public void tick() {
-        super.tick();
+        super.tick(); // Handles movement towards player
 
-        // We'll re-check more frequently
+
+        // Re-check begging state frequently
         if (recheckTimer > 0) {
             recheckTimer--;
             return;
         }
-        recheckTimer = 5; // re-check roughly every 5 ticks
+        recheckTimer = 5; // Re-check roughly every 5 ticks
+
 
         World world = this.hamster.getWorld();
         if (world.isClient()) {
             return;
         }
 
-        PlayerEntity nearestPlayer = world.getClosestPlayer(this.hamster, 8.0D);
-        if (nearestPlayer != null && isHoldingTemptItem(nearestPlayer)) {
-            this.hamster.setBegging(true);
+        PlayerEntity target = this.closestPlayer; // Get the player targeted by the parent goal
+
+
+        if (target != null && target.isAlive() && this.hamster.squaredDistanceTo(target) < 64.0) { // Check range
+            // Set begging based on whether the *target* player is holding the item
+            this.hamster.setBegging(isHoldingTemptItem(target));
         } else {
+            // If no valid target player, ensure begging is off
             this.hamster.setBegging(false);
         }
     }
 
+    @Override
+    public void stop() {
+        super.stop(); // Call parent stop logic
+        // Explicitly ensure begging state is false when the goal stops for any reason
+        this.hamster.setBegging(false);
+        this.recheckTimer = 0; // Reset timer
+    }
+
+    // Helper method
     private boolean isHoldingTemptItem(PlayerEntity player) {
         ItemStack main = player.getMainHandStack();
         ItemStack off = player.getOffHandStack();
