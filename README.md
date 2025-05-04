@@ -85,3 +85,18 @@ Found a bug that isn't just a hamster exhibiting existential angst? Got a brilli
 ---
 
 Enjoy the squeaks. Or mute them. Your world, your rules.
+
+---
+
+---
+
+## Hat Tip to the Hamster Trailblazers
+
+Apparently, putting tiny digital rodents into Minecraft is a shared ambition. While figuring out how to make these particular fuzzballs look less like sentient bread loaves, the general aesthetic of the **Hamsters mod** by **Starfish Studios** served as an early visual reference point. It's a different spin on hamsters, focusing neatly on things like hamster wheels and nap schedules, last seen conquering Minecraft 1.20.1.
+
+You can check out their handiwork here:
+
+*    [**Starfish Studios' Hamsters Mod (Modrinth)**](https://modrinth.com/mod/hamsters)
+*    [**Starfish Studios Website**](https://starfish-studios.com/)
+
+**Standard Procedure Disclaimer:** Just to be clear, **Adorable Hamster Pets** is its own beast (well, rodent). All the assets you see here – models, textures, animations, code, questionable sounds – were built independently from the ground up *for this mod*. We appreciate the inspiration, went off and did our own thing entirely, and naturally respect their All Rights Reserved license on their assets.
