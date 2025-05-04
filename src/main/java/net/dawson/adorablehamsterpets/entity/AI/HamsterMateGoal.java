@@ -31,7 +31,7 @@ public class HamsterMateGoal extends Goal {
         if (inLove) {
             this.targetMate = this.getNearbyMate();
             // --- Add Logging ---
-            AdorableHamsterPets.LOGGER.info("[MateGoal {} Tick {}] Found potential mate: {}", this.hamster.getId(), this.hamster.getWorld().getTime(), this.targetMate != null ? this.targetMate.getId() : "null");
+            AdorableHamsterPets.LOGGER.debug("[MateGoal {} Tick {}] Found potential mate: {}", this.hamster.getId(), this.hamster.getWorld().getTime(), this.targetMate != null ? this.targetMate.getId() : "null");
             // --- End Logging ---
             return this.targetMate != null;
         }
@@ -69,7 +69,7 @@ public class HamsterMateGoal extends Goal {
     }
 
     private HamsterEntity getNearbyMate() {
-        AdorableHamsterPets.LOGGER.info("[MateGoal {} Tick {}] getNearbyMate() searching...", this.hamster.getId(), this.hamster.getWorld().getTime());
+        AdorableHamsterPets.LOGGER.debug("[MateGoal {} Tick {}] getNearbyMate() searching...", this.hamster.getId(), this.hamster.getWorld().getTime());
         List<HamsterEntity> candidates = this.hamster.getWorld().getEntitiesByClass(
                 HamsterEntity.class,
                 this.hamster.getBoundingBox().expand(8.0D),
@@ -77,7 +77,7 @@ public class HamsterMateGoal extends Goal {
                 h -> { // Check each potential mate 'h'
                     boolean potential = h != this.hamster && h.isInCustomLove() && h.getBreedingAge() == 0;
                     // Log check for each candidate inside the lambda
-                    AdorableHamsterPets.LOGGER.info("  - Checking candidate {}: isInCustomLove={}, getBreedingAge={}, isSelf={}, Result={}", h.getId(), h.isInCustomLove(), h.getBreedingAge(), h == this.hamster, potential);
+                    AdorableHamsterPets.LOGGER.debug("  - Checking candidate {}: isInCustomLove={}, getBreedingAge={}, isSelf={}, Result={}", h.getId(), h.isInCustomLove(), h.getBreedingAge(), h == this.hamster, potential);
                     return potential; // Return the result of the check for this candidate
                 }
         );
@@ -86,7 +86,7 @@ public class HamsterMateGoal extends Goal {
         HamsterEntity found = candidates.stream().findAny().orElse(null);
 
         // Log the final result after checking all candidates
-        AdorableHamsterPets.LOGGER.info("[MateGoal {} Tick {}] getNearbyMate() found: {}", this.hamster.getId(), this.hamster.getWorld().getTime(), found != null ? found.getId() : "null");
+        AdorableHamsterPets.LOGGER.debug("[MateGoal {} Tick {}] getNearbyMate() found: {}", this.hamster.getId(), this.hamster.getWorld().getTime(), found != null ? found.getId() : "null");
 
         return found;
     }

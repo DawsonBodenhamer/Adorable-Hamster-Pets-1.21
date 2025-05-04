@@ -101,7 +101,7 @@ public class HamsterModel extends GeoModel<HamsterEntity> {
         // --- END CHEEK BONE LOGIC ---
 
 
-        // --- BABY SCALING LOGIC (REVISED) ---
+        // --- BABY SCALING LOGIC ---
         GeoBone rootBone = this.getAnimationProcessor().getBone("root");
         if (rootBone != null) {
             final float adultScale = 1.0f; // Define adult scale constant for clarity
@@ -121,6 +121,6 @@ public class HamsterModel extends GeoModel<HamsterEntity> {
                 // The crash/ko/wakeup animations will still scale the body_parent relative to this root scale.
             }
         }
-        // --- END BABY SCALING LOGIC (REVISED) ---
+        // --- END BABY SCALING LOGIC ---
     }
 }

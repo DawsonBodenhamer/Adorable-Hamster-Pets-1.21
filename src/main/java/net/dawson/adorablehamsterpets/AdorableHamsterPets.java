@@ -138,7 +138,7 @@ public class AdorableHamsterPets implements ModInitializer {
 		ServerWorld world = player.getServerWorld(); // Get the server world
 
 		// Log that the handler was invoked, including coordinates
-		LOGGER.info("[ServerPacketHandler] handleSpawnAttackParticlesPacket invoked. Spawning at ({}, {}, {})", payload.x(), payload.y(), payload.z());
+		LOGGER.debug("[ServerPacketHandler] handleSpawnAttackParticlesPacket invoked. Spawning at ({}, {}, {})", payload.x(), payload.y(), payload.z());
 
 		if (world != null) {
 			// Spawn POOF particles at the *coordinates received from the client*
@@ -155,7 +155,7 @@ public class AdorableHamsterPets implements ModInitializer {
 			);
 		} else {
 			// Corrected log message for clarity
-			LOGGER.info("[ServerPacketHandler] Could not get server world for player {}", player.getName().getString());
+			LOGGER.debug("[ServerPacketHandler] Could not get server world for player {}", player.getName().getString());
 		}
 	}
 	// --- END Handler ---

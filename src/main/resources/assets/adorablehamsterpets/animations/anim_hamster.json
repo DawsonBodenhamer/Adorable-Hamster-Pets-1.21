@@ -554,7 +554,7 @@
 				}
 			},
 			"particle_effects": {
-				"0.4167": {
+				"0.125": {
 					"effect": "attack_poof",
 					"locator": "left_foot"
 				}
@@ -1351,7 +1351,7 @@
 						"vector": [-108.5, 0, 0]
 					},
 					"position": {
-						"vector": [0, -0.6, 0]
+						"vector": [0, -0.6, -4]
 					},
 					"scale": {
 						"0.0": {
@@ -1730,7 +1730,7 @@
 						}
 					},
 					"position": {
-						"vector": [0, -0.6, 0]
+						"vector": [0, -0.6, -4]
 					},
 					"scale": {
 						"0.0": {

@@ -52,11 +52,11 @@ public class HamsterRenderer extends GeoEntityRenderer<HamsterEntity> {
                 Vector3d ignoredPosition = bone.getWorldPosition();
 
             } else {
-                AdorableHamsterPets.LOGGER.info("[HamsterRenderer PreRender] Could not find 'left_foot' bone for entity {} in preRender!", animatable.getId());
+                AdorableHamsterPets.LOGGER.debug("[HamsterRenderer PreRender] Could not find 'left_foot' bone for entity {} in preRender!", animatable.getId());
             }
         } catch (Exception e) {
             // Catch potential exceptions during bone access/position calculation
-            AdorableHamsterPets.LOGGER.info("[HamsterRenderer PreRender] Exception while accessing bone/position for entity {} in preRender!", animatable.getId(), e);
+            AdorableHamsterPets.LOGGER.debug("[HamsterRenderer PreRender] Exception while accessing bone/position for entity {} in preRender!", animatable.getId(), e);
         }
     }
 }

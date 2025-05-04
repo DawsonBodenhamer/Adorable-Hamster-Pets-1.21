@@ -916,12 +916,12 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         // --- 1. Initial Setup ---
         ItemStack stack = player.getStackInHand(hand);
         World world = this.getWorld();
-        AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Interaction start. Player: {}, Hand: {}, Item: {}", this.getId(), world.getTime(), player.getName().getString(), hand, stack.getItem());
+        AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Interaction start. Player: {}, Hand: {}, Item: {}", this.getId(), world.getTime(), player.getName().getString(), hand, stack.getItem());
 
 
         // --- 2. Knocked Out Check ---
         if (this.isKnockedOut()) {
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Hamster is knocked out. Waking up.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Hamster is knocked out. Waking up.", this.getId(), world.getTime());
             if (!world.isClient()) {
                 SoundEvent wakeUpSound = getRandomSoundFrom(ModSounds.HAMSTER_WAKE_UP_SOUNDS, this.random);
                 if (wakeUpSound != null) {
@@ -937,7 +937,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
         // --- 3. Interaction Cooldown Check ---
         if (this.interactionCooldown > 0) {
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Interaction cooldown active ({} ticks left). Passing.", this.getId(), world.getTime(), this.interactionCooldown);
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Interaction cooldown active ({} ticks left). Passing.", this.getId(), world.getTime(), this.interactionCooldown);
             return ActionResult.PASS;
         }
         // --- End 3. Interaction Cooldown Check ---
@@ -945,13 +945,13 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
         // --- 4. Taming Logic ---
         if (!this.isTamed()) {
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Hamster not tamed. Checking for taming attempt.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Hamster not tamed. Checking for taming attempt.", this.getId(), world.getTime());
             if (player.isSneaking() && stack.isOf(ModItems.SLICED_CUCUMBER)) {
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Taming attempt detected.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Taming attempt detected.", this.getId(), world.getTime());
                 if (!world.isClient) { tryTame(player, stack); }
                 return ActionResult.success(world.isClient());
             }
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Not a taming attempt. Calling super.interactMob for untamed.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Not a taming attempt. Calling super.interactMob for untamed.", this.getId(), world.getTime());
             return super.interactMob(player, hand);
         }
         // --- End 4. Taming Logic ---
@@ -959,7 +959,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
         // --- 5. Owner Interaction Logic (Reordered) ---
         if (this.isOwner(player)) {
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Player is owner. Processing owner interactions.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Player is owner. Processing owner interactions.", this.getId(), world.getTime());
             boolean isSneaking = player.isSneaking();
 
 
@@ -968,7 +968,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
             // Inventory Access (Server-Side)
             if (!world.isClient() && isSneaking) {
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Owner sneaking. Opening inventory.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Owner sneaking. Opening inventory.", this.getId(), world.getTime());
                 player.openHandledScreen(new HamsterEntityScreenHandlerFactory(this));
                 return ActionResult.CONSUME;
             }
@@ -977,19 +977,19 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
             // Feeding Logic (Server-Side, only if not sneaking)
             boolean isPotentialFood = isIsFood(stack) || stack.isOf(ModItems.STEAMED_GREEN_BEANS);
             if (!world.isClient() && !isSneaking && isPotentialFood) {
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Owner not sneaking, holding potential food. Checking refusal.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Owner not sneaking, holding potential food. Checking refusal.", this.getId(), world.getTime());
                 if (checkRepeatFoodRefusal(stack, player)) {
-                    AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Food refused. Consuming interaction.", this.getId(), world.getTime());
+                    AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Food refused. Consuming interaction.", this.getId(), world.getTime());
                     return ActionResult.CONSUME; // Consume refusal action
                 }
 
 
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Attempting feeding via tryFeedingAsTamed.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Attempting feeding via tryFeedingAsTamed.", this.getId(), world.getTime());
                 boolean feedingOccurred = tryFeedingAsTamed(player, stack); // Calls the method with detailed logging
 
 
                 if (feedingOccurred) {
-                    AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] tryFeedingAsTamed returned true. Setting last food, decrementing stack.", this.getId(), world.getTime());
+                    AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] tryFeedingAsTamed returned true. Setting last food, decrementing stack.", this.getId(), world.getTime());
                     this.lastFoodItem = stack.copy(); // Track last food *only* if feeding was successful
                     if (!player.getAbilities().creativeMode) {
                         stack.decrement(1);
@@ -999,7 +999,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                     // If tryFeedingAsTamed returned false (e.g., cooldown, full health+no breed),
                     // We might still want to allow vanilla interaction or sitting.
                     // Let's PASS for now to allow super.interactMob to run.
-                    AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] tryFeedingAsTamed returned false. Passing to vanilla/sitting.", this.getId(), world.getTime());
+                    AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] tryFeedingAsTamed returned false. Passing to vanilla/sitting.", this.getId(), world.getTime());
                 }
             }
             // --- End 5a. Custom Owner Interactions ---
@@ -1010,9 +1010,9 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
             // Let vanilla handle Name Tags, Leashes, etc.
             // Also handles the sit toggle if hand is empty or item wasn't food.
             if (!isSneaking && !isPotentialFood) { // Only call super if not sneaking AND not holding food we handle
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Not sneaking or holding handled food. Calling super.interactMob.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Not sneaking or holding handled food. Calling super.interactMob.", this.getId(), world.getTime());
                 ActionResult vanillaResult = super.interactMob(player, hand);
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] super.interactMob returned: {}", this.getId(), world.getTime(), vanillaResult);
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] super.interactMob returned: {}", this.getId(), world.getTime(), vanillaResult);
                 if (vanillaResult.isAccepted()) {
                     return vanillaResult; // Return if vanilla handled it (e.g., name tag)
                 }
@@ -1024,7 +1024,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
             // This now acts as the default right-click action if not sneaking,
             // not feeding successfully, and vanilla didn't handle it.
             if (!world.isClient() && !isSneaking) {
-                AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Fallback: Toggling sitting state.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Fallback: Toggling sitting state.", this.getId(), world.getTime());
                 this.setSitting(!this.dataTracker.get(IS_SITTING)); // Toggle sitting state
                 this.jumping = false;
                 this.navigation.stop();
@@ -1035,13 +1035,13 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
 
             // Client-side success or fallback pass for owner
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Reached end of owner logic. Returning client-side success/pass.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Reached end of owner logic. Returning client-side success/pass.", this.getId(), world.getTime());
             return ActionResult.success(world.isClient());
 
 
         } else {
             // Interaction by a non-owner on a tamed hamster. Let vanilla handle it.
-            AdorableHamsterPets.LOGGER.info("[InteractMob {} Tick {}] Player is not owner. Calling super.interactMob.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[InteractMob {} Tick {}] Player is not owner. Calling super.interactMob.", this.getId(), world.getTime());
             return super.interactMob(player, hand);
         }
         // --- End 5. Owner Interaction Logic ---
@@ -1498,36 +1498,36 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
 
                             // --- 3a. Log Initial Trigger ---
                             final int currentEntityId = this.getId();
-                            AdorableHamsterPets.LOGGER.info("[ParticleHandler {} Tick {}] Particle keyframe handler triggered.", currentEntityId, this.getWorld().getTime());
+                            AdorableHamsterPets.LOGGER.debug("[ParticleHandler {} Tick {}] Particle keyframe handler triggered.", currentEntityId, this.getWorld().getTime());
 
                             // --- 3b. Extract Keyframe Data ---
                             String effect = event.getKeyframeData().getEffect();
                             String locator = event.getKeyframeData().getLocator(); // Get the locator string from the keyframe
-                            AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Received effect string: '{}', Locator: '{}'", this.getId(), effect, locator);
+                            AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Received effect string: '{}', Locator: '{}'", this.getId(), effect, locator);
 
                             // --- 3c. Handle Specific Effect ("attack_poof") ---
                             if ("attack_poof".equals(effect)) {
-                                AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Effect string matches 'attack_poof'.", this.getId());
+                                AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Effect string matches 'attack_poof'.", this.getId());
                                 World world = this.getWorld();
 
                                 // Particle spawning needs bone position, which is calculated client-side during rendering
-                                AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Checking world side. Is client? {}", this.getId(), world.isClient());
+                                AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Checking world side. Is client? {}", this.getId(), world.isClient());
                                 if (world.isClient()) {
                                     // --- 3c.i. Validate Locator ---
                                     if (locator == null || locator.isEmpty()) {
-                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Locator is null or empty for effect '{}'. Cannot calculate bone position.", this.getId(), effect);
+                                        AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Locator is null or empty for effect '{}'. Cannot calculate bone position.", this.getId(), effect);
                                         return;
                                     }
 
                                     // --- 3c.ii. Get Renderer and Model ---
                                     EntityRenderer<?> renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(this);
                                     if (!(renderer instanceof GeoEntityRenderer<?> geoRenderer)) {
-                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Could not get GeoEntityRenderer instance for entity.", this.getId());
+                                        AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Could not get GeoEntityRenderer instance for entity.", this.getId());
                                         return;
                                     }
                                     GeoModel<?> model = geoRenderer.getGeoModel();
                                     if (model == null) {
-                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Could not get model from GeoRenderer.", this.getId());
+                                        AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Could not get model from GeoRenderer.", this.getId());
                                         return;
                                     }
 
@@ -1540,11 +1540,13 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                                         double boneZ = boneWorldPos.z();
 
                                         // --- 3c.iv. Log and Send Packet ---
-                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Found bone '{}'. Calculated World Pos via Renderer: ({}, {}, {}). Sending payload.", currentEntityId, locator, boneX, boneY, boneZ);
-                                        ClientPlayNetworking.send(new SpawnAttackParticlesPayload(boneX, boneY, boneZ));
+                                        // --- (Temporarily disabled until we hear back from the Geckolib community) ---
+                                        // TODO: Re-enable attack particle effect when Geckolib multi-entity keyframe issue is resolved.
+                                        // ClientPlayNetworking.send(new SpawnAttackParticlesPayload(boneX, boneY, boneZ));
+                                        // AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Found bone '{}'. Calculated Pos: ({}, {}, {}). PACKET SENDING DISABLED.", currentEntityId, locator, boneX, boneY, boneZ); // Optional: Update log
 
                                     } else {
-                                        AdorableHamsterPets.LOGGER.info("[ParticleHandler {}] Could not find bone with locator '{}' for effect '{}'.", this.getId(), locator, effect);
+                                        AdorableHamsterPets.LOGGER.debug("[ParticleHandler {}] Could not find bone with locator '{}' for effect '{}'.", this.getId(), locator, effect);
                                     }
                                 }
                             }
@@ -1626,17 +1628,15 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
     @Override protected SoundEvent getHurtSound(DamageSource source) { return getRandomSoundFrom(ModSounds.HAMSTER_HURT_SOUNDS, this.random); }
     @Override protected SoundEvent getDeathSound() { return getRandomSoundFrom(ModSounds.HAMSTER_DEATH_SOUNDS, this.random); }
     @Override protected void playStepSound(BlockPos pos, BlockState state) {
-        // --- 1. Play Step Sound ---
         try {
-            java.lang.reflect.Method method = AbstractBlock.class.getDeclaredMethod("getSoundGroup", BlockState.class);
-            method.setAccessible(true);
-            BlockSoundGroup group = (BlockSoundGroup) method.invoke(state.getBlock(), state);
+            // Directly get the sound group from the block state
+            BlockSoundGroup group = state.getSoundGroup();
+            // Play the step sound using the obtained group
             this.playSound(group.getStepSound(), 0.5F, 1.2F);
         } catch (Exception ex) {
-            AdorableHamsterPets.LOGGER.error("Error obtaining block sound group for footstep", ex);
+            AdorableHamsterPets.LOGGER.debug("Error obtaining block sound group for footstep (direct call failed)", ex);
             this.playSound(SoundEvents.BLOCK_GRASS_STEP, 0.5F, 1.2F);
         }
-        // --- End 1. Play Step Sound ---
     }
 
 
@@ -1799,12 +1799,12 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
         boolean actionTaken = false; // Initialize return value
 
 
-        AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Entering tryFeedingAsTamed. Item: {}, isFood={}, isBuff={}, canHeal={}, breedingAge={}, isInCustomLove={}, readyToBreed={}",
+        AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Entering tryFeedingAsTamed. Item: {}, isFood={}, isBuff={}, canHeal={}, breedingAge={}, isInCustomLove={}, readyToBreed={}",
                 this.getId(), world.getTime(), stack.getItem(), isFood, isBuffItem, canHeal, this.getBreedingAge(), this.isInCustomLove(), readyToBreed);
 
 
         if (!isFood && !isBuffItem) {
-            AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Item is not valid food or buff item. Returning false.", this.getId(), world.getTime());
+            AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Item is not valid food or buff item. Returning false.", this.getId(), world.getTime());
             return false; // Not a valid item for feeding
         }
         // --- End 1. Initial Setup & Logging ---
@@ -1820,7 +1820,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                 long minutes = totalSecondsRemaining / 60;
                 long seconds = totalSecondsRemaining % 60;
                 player.sendMessage(Text.translatable("message.adorablehamsterpets.beans_cooldown", minutes, seconds).formatted(Formatting.RED), true);
-                AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Buff item used, but on cooldown ({} ticks remaining). Returning false.", this.getId(), world.getTime(), remainingTicks);
+                AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Buff item used, but on cooldown ({} ticks remaining). Returning false.", this.getId(), world.getTime(), remainingTicks);
                 return false; // Action failed due to cooldown
             } else {
                 // Apply Buffs
@@ -1845,7 +1845,7 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                 // Set cooldown
                 this.steamedBeansCooldownEndTick = currentTime + config.cooldowns.steamedGreenBeansBuffCooldown();
                 actionTaken = true; // Action was successful
-                AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Applied buffs from Steamed Green Beans. Cooldown set to {}. Returning true.", this.getId(), world.getTime(), this.steamedBeansCooldownEndTick);
+                AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Applied buffs from Steamed Green Beans. Cooldown set to {}. Returning true.", this.getId(), world.getTime(), this.steamedBeansCooldownEndTick);
             }
         }
         // --- End 2. Steamed Green Beans Logic ---
@@ -1857,16 +1857,16 @@ public class HamsterEntity extends TameableEntity implements GeoEntity, Implemen
                 float healAmount = config.behavior.standardFoodHealing();
                 this.heal(healAmount);
                 actionTaken = true;
-                AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Applied healing ({} HP) from standard food. Returning true.", this.getId(), world.getTime(), healAmount);
+                AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Applied healing ({} HP) from standard food. Returning true.", this.getId(), world.getTime(), healAmount);
             } else if (readyToBreed) {
                 this.setSitting(false, true); // Stand up, suppress sound
                 this.setCustomInLove(player); // Sets customLoveTimer and sends status packet
                 this.setInLove(true); // Sets data tracker IS_IN_LOVE
                 actionTaken = true;
-                AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Initiated love mode from standard food. customLoveTimer={}, IS_IN_LOVE={}. Returning true.", this.getId(), world.getTime(), this.customLoveTimer, this.dataTracker.get(IS_IN_LOVE));
+                AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Initiated love mode from standard food. customLoveTimer={}, IS_IN_LOVE={}. Returning true.", this.getId(), world.getTime(), this.customLoveTimer, this.dataTracker.get(IS_IN_LOVE));
             } else {
                 // Cannot heal (full health) AND cannot breed (e.g., baby, already in love, on cooldown)
-                AdorableHamsterPets.LOGGER.info("[FeedAttempt {} Tick {}] Standard food used, but cannot heal and not ready to breed. Returning false.", this.getId(), world.getTime());
+                AdorableHamsterPets.LOGGER.debug("[FeedAttempt {} Tick {}] Standard food used, but cannot heal and not ready to breed. Returning false.", this.getId(), world.getTime());
                 // actionTaken remains false
             }
         }
