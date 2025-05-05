@@ -72,7 +72,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	// ── GeckoLib ───────────────────────────────────────────────────────
-	modImplementation "software.bernie.geckolib:geckolib-fabric-${project.minecraft_version}:${project.geckolib_version}"
+	modImplementation "software.bernie.geckolib:geckolib-fabric-1.21.1:${geckolib_version}"
 
 	// ── Mod Menu ────────────────────────────────────────────
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
