@@ -32,8 +32,7 @@ public class ModItems {
             new Item(new Item.Settings().maxCount(1)) {
                 @Override
                 public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-                    // ... (tooltip code remains the same) ...
-                    tooltip.add(Text.translatable("tooltip.adorablehamsterpets.hamster_guide_book.hint1").formatted(Formatting.GRAY));
+                    tooltip.add(Text.translatable("tooltip.adorablehamsterpets.hamster_guide_book.hint1").formatted(Formatting.GOLD));
                     WrittenBookContentComponent content = stack.get(DataComponentTypes.WRITTEN_BOOK_CONTENT);
                     if (content != null && !content.title().raw().isEmpty()) {
                         tooltip.add(Text.translatable("book.byAuthor", content.author()).formatted(Formatting.GRAY));

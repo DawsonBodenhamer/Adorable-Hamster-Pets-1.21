@@ -73,7 +73,7 @@ Yes, inventory... *in their face*. Sneak + Right-click a tamed hamster to access
 <details>
 <summary>The Mandatory Guide Book</summary>
 
-You get one automatically when you join a world with this mod. It contains *hints*. Read it. Or use it as kindling. See if I care. (Command to get another is inside, just in case your lava-tossing aim is accurate).
+You get one automatically the first time you join a world with this mod. It contains *hints*. Read it. Or use it as kindling. See if I care. 
 </details>
 
 ---
