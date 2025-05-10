@@ -1,47 +1,47 @@
 # Adorable Hamster Pets
 
-**(Because your meticulously crafted world was clearly missing something small, furry, and prone to chewing on cables.)**
+**(Because your meticulously crafted world was clearly missing something small, furry—and prone to nibble through your redstone circuits.)**
 
 ---
 
-## So, What Fresh Heck is This?
+## Tiny Rodent, Big Attitude
 
-You looked upon your blocky domain, surveyed your automated farms spewing resources you probably don't need, your enchanted gear shimmering with overkill, your… *unique* architectural choices, and declared, "Needs more rodents."
+Let's go back to the beginning. You looked upon your blocky domain, surveyed your automated farms spewing resources you probably don't need, your enchanted gear shimmering with overkill, your… unique architectural choices, and declared, "Needs more rodents."
 
 Or maybe you didn't. Doesn't matter. You're here now, considering adding hamsters to a world already teeming with exploding plants and questionable physics. A truly inspired decision.
 
-**Adorable Hamster Pets** introduces, against potentially better judgment, *hamsters* to Minecraft. Tiny, fuzzy, occasionally helpful, frequently underfoot creatures destined to become your new favorite source of minor inventory clutter. They squeak, they run in tiny circles, they silently judge your life choices from the questionable safety of your shoulder. You can tame them (if you're patient), feed them various vegetable concoctions (results may vary), and even weaponize them (consult your local ethics committee, or don't, I'm not your supervisor).
+**Adorable Hamster Pets** introduces, against potentially better judgment, hamsters to Minecraft. Tiny, fuzzy, occasionally helpful, frequently underfoot creatures destined to become your new favorite source of minor inventory clutter. They squeak, they run in tiny circles, they silently judge your life choices from the questionable safety of your shoulder. You can tame them (if you're patient), feed them various vegetable concoctions (results may vary), and even weaponize them (consult your local ethics committee, or don't, I'm not your supervisor).
 
 ---
 
-## Features (The Bits You Might Actually Find Useful, Maybe)
+## Features (Skip to here if you're impatient—looking at you, John)
 
 *   **Hamsters:** Duh. They spawn in various biomes with suspiciously appropriate color schemes (because *immersion*, obviously). Can be tamed with **Sliced Cucumber** if you possess the stealth of a ninja and the patience of a particularly bored saint.
 *   **Biome Variants & Genetics:** Hamsters found shivering in snowy plains look different from those basking in deserts. Shocking, I know. They even pass these stunningly diverse beige and grey palettes on to their offspring, ensuring maximum genetic *variety* in your pocket pet population.
 *   **Taming & Sitting:** Bribe them with enough cucumber, and they'll follow you like a furry, ankle-biting shadow. Right-click to make them sit, lest they develop a sudden fascination with the nearest lava pool. Again.
-*   **Shoulder Surfing:** Lure your nearest owned hamster onto your shoulder with the irresistible siren call of **Cheese**. They'll offer "helpful" (read: noisy and incessant) alerts about nearby Creepers and possibly valuable shiny rocks.
+*   **Shoulder Surfing:** Lure your nearest owned hamster onto your shoulder with the irresistible siren call of **Cheese**. They'll offer helpful alerts about nearby Creepers and possibly valuable shiny rocks that start with a D, and rhyme with Simon. Kind of. They almost rhyme. Whatever.
 *   **Cheek Pouches of Holding:** Yes, inventory... *in their face*. Sneak + Right-click a tamed hamster to access 6 slots of prime real estate for small, logically-sized items. No, you can't stuff a Netherite block in there. Don't even try. They'll even automatically scarf down **Hamster Food Mix** from their cheeks if they take a tumble. Because convenience.
 *   **Advanced Combat (?) Techniques:**
     *   **Melee:** They'll bravely nibble on things that hurt you, or things you decide to hurt first. Valiant, if statistically unimpressive.
-    *   **The Hamster Yeet™:** Press **'G'** (by default - maybe check your keybinds if nothing happens?) while *not* staring intently at a block. Behold as your shoulder companion becomes a surprisingly effective, albeit concussed, projectile. Gentle interaction required for post-impact recovery.
+    *   **The Hamster Yeet™:** Press **'G'** (by default - maybe check your keybinds if nothing happens?) while *not* staring intently at a block. Behold as your shoulder companion becomes a surprisingly effective, albeit concussed, projectile. Does enough damage by default to kill a creeper, which is... really convenient. Gentle interaction required for post-impact recovery.
 *   **New Questionable Flora:**
-    *   **Wild Cucumber & Green Bean Bushes:** Find these lurking in appropriate biomes. Right-click the seeded ones for seeds. Try not to step on your potential hamster bait supply.
-    *   **Slightly Less Useless Sunflowers:** Look like vanilla ones, but these actually *do* something. Right-click the top block when it looks seeded for **Sunflower Seeds**. They regrow. Eventually. Patience is a virtue you probably lack.
+    *   **Wild Cucumber & Green Bean Bushes:** Find these lurking in specific biomes. *(See the Hamster Guide book for details.)* Right-click the seeded ones for seeds. Try not to step on them.
+    *   **Slightly Less Useless Sunflowers:** Sunflowers have had an upgrade. These look like vanilla ones, but these actually *do* something. Right-click the top block when it looks seeded for **Sunflower Seeds**. They regrow. Eventually. Patience is a virtue. Isnt that right, John?
 *   **Exciting New Foodstuffs:**
     *   **Cucumber/Green Beans:** Grow 'em, eat 'em raw (if you must), slice 'em, steam 'em. Culinary possibilities are… present.
     *   **Steamed Green Beans:** A suspiciously potent super-food for your hamster. Grants temporary buffs, followed by a mandatory "please wait" period. Don't get greedy.
     *   **Hamster Food Mix:** Allegedly gourmet. Heals well, bypasses their irritating pickiness. Craft it. Or don't. Your hamster, your problem.
-*   **The Mandatory Guide Book:** You get one automatically when you join a world with this mod. It contains *hints*. Read it. Or use it as kindling. See if I care. (Command to get another is inside, just in case your lava-tossing aim is tragically accurate).
+*   **The Mandatory Guide Book:** You get one automatically when you join a world with this mod. It contains *hints*. Read it. Or use it as kindling. See if I care. (Command to get another is inside, just in case your lava-tossing aim is accurate).
 
 ---
 
-## Getting Started (The "Okay, Fine, How Do I Make It Squeak?" Guide)
+## Getting Started (The "Bla Bla How Do I Make It Squeak?" Guide)
 
 1.  **Go Outside:** Wander aimlessly through Plains, Savannas, Forests, Swamps, etc., until you trip over **Wild Cucumber Bushes** or **Wild Green Bean Bushes**. Right-click the ones that look like they have seeds. Collect said seeds.
 2.  **Pretend to Farm:** Plant seeds on farmland. Wait. Harvest. Try not to starve while waiting for virtual vegetables.
-3.  **Questionable Crafting:** Turn Cucumbers into **Sliced Cucumber** (the Taming Tool™). Turn Green Beans into **Steamed Green Beans** via furnace (the Buffs™). Cobble together various seeds and carrots into **Hamster Food Mix** (the Healing™). Turn Milk into **Cheese** (the Shoulder Shenanigans™ starter kit). Refer to REI or equivalent, I'm not writing recipes here.
-4.  **Attempt Taming:** Find a wild hamster. **Sneak**. Hold **Sliced Cucumber**. Approach like you're diffusing a tiny, furry bomb. Click. Repeat until successful or you rage-quit and just use the spawn egg you totally didn't cheat in.
-5.  **Basic Hamster Operations:** Right-click to sit/stand. Sneak + Right-click for cheek inventory access. Wave Cheese around to shoulder-mount. Press 'G' (default) to unshoulder... *assertively*.
+3.  **Questionable Crafting:** Turn Cucumbers into **Sliced Cucumber** (the bait). Turn Green Beans into **Steamed Green Beans** via furnace (for buffs). Cobble together various seeds and carrots into **Hamster Food Mix** (for healing). Turn Milk into **Cheese** (the Shoulder Shenanigans™ starter kit). Refer to your recepie book, I'm not writing recipes here.
+4.  **Attempt Taming:** Find a wild hamster. **Sneak**. Hold **Sliced Cucumber**. Approach like you're diffusing a tiny, furry bomb. Click. Repeat until successful or rage-quit.
+5.  **Basic Hamster Operations:** Right-click to sit/stand. Sneak + Right-click for cheek inventory access. Wave Cheese around to shoulder-mount. Crouch to dismount, or Press 'G' to dismount... *assertively*.
 
 ---
 
@@ -51,13 +51,13 @@ Or maybe you didn't. Doesn't matter. You're here now, considering adding hamster
 *   **Fabric Loader:** >=0.16.10 (Or newer, probably)
 *   **Fabric API:** (*) (The big one. You need this.)
 *   **GeckoLib:** 4.7.3 (For the wiggles and jiggles. Essential.)
-*   **owo-lib:** 0.12.15.4+1.21 (Bundled, mostly for the config screen you might ignore)
+*   **owo-lib:** 0.12.15.4+1.21 (Bundled, mostly for the config screen you might ignore, unless you're nerdy like me and like to change the settings.)
 
 ---
 
 ## Installation (The Annoying But Necessary Bit)
 
-1.  Install Fabric Loader if you haven't already. Seriously?
+1.  Install Fabric Loader if you haven't already.
 2.  Install Fabric API, Geckolib.
 3.  Download the Adorable Hamster Pets `.jar` file. From where you got *this* file, presumably.
 4.  Shove the `.jar` file into your `mods` folder. If you don't know where that is, maybe modding isn't for you.
@@ -88,15 +88,13 @@ Enjoy the squeaks. Or mute them. Your world, your rules.
 
 ---
 
----
-
 ## Hat Tip to the Hamster Trailblazers
 
-Apparently, putting tiny digital rodents into Minecraft is a shared ambition. While figuring out how to make these particular fuzzballs look less like sentient bread loaves, the general aesthetic of the **Hamsters mod** by **Starfish Studios** served as an early visual reference point. It's a different spin on hamsters, focusing neatly on things like hamster wheels and nap schedules, last seen conquering Minecraft 1.20.1.
+Apparently, putting tiny digital rodents into Minecraft is a shared ambition. While figuring out how to make these particular fuzzballs look less like sentient bread loaves, the general aesthetic of the **Hamsters mod** by **Starfish Studios** served as an early visual reference point. It's a different spin on hamsters, focusing on things like hamster wheels and nap schedules, last seen conquering Minecraft 1.20.1.
 
 You can check out their handiwork here:
 
 *    [**Starfish Studios' Hamsters Mod (Modrinth)**](https://modrinth.com/mod/hamsters)
 *    [**Starfish Studios Website**](https://starfish-studios.com/)
 
-**Standard Procedure Disclaimer:** Just to be clear, **Adorable Hamster Pets** is its own beast (well, rodent). All the assets you see here – models, textures, animations, code, questionable sounds – were built independently from the ground up *for this mod*. We appreciate the inspiration, went off and did our own thing entirely, and naturally respect their All Rights Reserved license on their assets.
+**Standard Procedure Disclaimer:** Just to be clear, **Adorable Hamster Pets** is its own beast (well, rodent). All the assets you see here – models, textures, animations, code, questionable sounds – were built independently from the ground up *for this mod*. I appreciate the inspiration, went off and did my own thing entirely, and naturally respect their All Rights Reserved license on their assets.
