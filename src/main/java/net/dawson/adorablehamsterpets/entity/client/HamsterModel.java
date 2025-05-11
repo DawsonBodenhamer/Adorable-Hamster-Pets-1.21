@@ -14,9 +14,8 @@ public class HamsterModel extends GeoModel<HamsterEntity> {
 
     // --- 1. Constants for Scaling and Positioning ---
     private static final float ADULT_SCALE = 1.0f;
-    private static final float BABY_BODY_SCALE = 0.5f;
+    private static final float BABY_SCALE = 0.5f;
     private static final float BABY_HEAD_SCALE = 1.2f; // Your preferred value
-    private static final float BABY_Y_OFFSET = -0.75f; // Adjust this value as needed. Negative moves it down.
     // --- End 1. Constants ---
 
     @Override
@@ -89,44 +88,25 @@ public class HamsterModel extends GeoModel<HamsterEntity> {
             if (entity.isBaby()) {
                 // --- 2a. Baby Scaling ---
                 // Root bone remains at 1.0f scale for babies, acting as a neutral parent.
-                rootBone.setScaleX(ADULT_SCALE);
-                rootBone.setScaleY(ADULT_SCALE);
-                rootBone.setScaleZ(ADULT_SCALE);
-
-                // Scale down the body significantly. This scales down the head as well due to how the hierarchy is set up.
-                bodyParentBone.setScaleX(BABY_BODY_SCALE);
-                bodyParentBone.setScaleY(BABY_BODY_SCALE);
-                bodyParentBone.setScaleZ(BABY_BODY_SCALE);
+                rootBone.setScaleX(BABY_SCALE);
+                rootBone.setScaleY(BABY_SCALE);
+                rootBone.setScaleZ(BABY_SCALE);
 
                 // Scale up head slightly.
                 headParentBone.setScaleX(BABY_HEAD_SCALE);
                 headParentBone.setScaleY(BABY_HEAD_SCALE);
                 headParentBone.setScaleZ(BABY_HEAD_SCALE);
-
-                // Apply Y-Offset for Baby
-                rootBone.setPosY(BABY_Y_OFFSET);
-                rootBone.setPosX(0f);
-                rootBone.setPosZ(0f);
                 // --- End 2a. Baby Scaling ---
             } else {
                 // --- 2b. Adult Scaling (Explicit Reset) ---
-                // Ensure all relevant bones are reset to adult scale.
                 rootBone.setScaleX(ADULT_SCALE);
                 rootBone.setScaleY(ADULT_SCALE);
                 rootBone.setScaleZ(ADULT_SCALE);
-
-                bodyParentBone.setScaleX(ADULT_SCALE);
-                bodyParentBone.setScaleY(ADULT_SCALE);
-                bodyParentBone.setScaleZ(ADULT_SCALE);
 
                 headParentBone.setScaleX(ADULT_SCALE);
                 headParentBone.setScaleY(ADULT_SCALE);
                 headParentBone.setScaleZ(ADULT_SCALE);
 
-                // Reset Y-Offset for Adult using setPosY
-                rootBone.setPosY(0f);
-                rootBone.setPosX(0f);
-                rootBone.setPosZ(0f);
                 // --- End 2b. Adult Scaling ---
             }
         }
